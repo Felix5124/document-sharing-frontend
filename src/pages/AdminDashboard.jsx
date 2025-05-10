@@ -1,148 +1,152 @@
-import React, { useState, useEffect } from "react";
-import { Container, Typography, Tabs, Tab, Table, TableBody, TableCell, TableHead, TableRow, Button, Box } from "@mui/material";
-import { Bar } from "react-chartjs-2";
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
-import { getPendingDocuments, approveDocument, deleteDocument, getDocuments } from "../services/api";
-import { useAuth } from "../context/useAuth";
-import { useNavigate } from "react-router-dom";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useContext } from 'react';
+import { getPendingDocuments, approveDocument, getAllUsers } from '../services/api';
+import { toast } from 'react-toastify';
+import { AuthContext } from '../context/AuthContext';
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
-
-const AdminDashboard = () => {
-  const { user } = useAuth();
+function AdminDashboard() {
+  const { user, logout } = useContext(AuthContext);
+  const [pendingDocs, setPendingDocs] = useState([]);
+  const [users, setUsers] = useState([]);
   const navigate = useNavigate();
-  const [tab, setTab] = useState("documents");
-  const [pendingDocuments, setPendingDocuments] = useState([]);
-  const [stats, setStats] = useState({ documentCount: 0, userCount: 0, downloadCount: 0 });
-  const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!user || !user.isAdmin) {
-      navigate("/");
+    if (!user || !user.checkAdmin) {
+      navigate('/');
       return;
     }
 
-    const fetchData = async () => {
-      try {
-        const pendingResponse = await getPendingDocuments();
-        const docResponse = await getDocuments();
-        setPendingDocuments(pendingResponse.data);
-        
-        // Tính thống kê
-        const documentCount = docResponse.data.length;
-        const downloadCount = docResponse.data.reduce((sum, doc) => sum + doc.downloadCount, 0);
-        setStats({ documentCount, userCount: 0, downloadCount });
-      } catch (error) {
-        setError(error.response?.data?.message || "Không thể tải dữ liệu");
+    fetchPendingDocs();
+    fetchUsers();
+  }, [navigate, user]);
+
+  const fetchPendingDocs = async () => {
+    try {
+      const response = await getPendingDocuments();
+      let data = response.data;
+      if (Array.isArray(data.$values)) {
+        data = data.$values;
       }
-    };
-    fetchData();
-  }, [user, navigate]);
+      setPendingDocs(data);
+    } catch (error) {
+      toast.error('Không thể tải tài liệu chờ duyệt.');
+    }
+  };
+
+  const fetchUsers = async () => {
+    try {
+      const response = await getAllUsers();
+      let data = response.data;
+      if (Array.isArray(data.$values)) {
+        data = data.$values;
+      }
+      setUsers(data);
+    } catch (error) {
+      toast.error('Không thể tải danh sách người dùng.');
+    }
+  };
 
   const handleApprove = async (id) => {
     try {
       await approveDocument(id);
-      setPendingDocuments(pendingDocuments.filter((doc) => doc.documentId !== id));
+      toast.success('Tài liệu đã được duyệt.');
+      fetchPendingDocs();
     } catch (error) {
-      setError(error.response?.data?.message || "Duyệt thất bại");
+      toast.error('Duyệt tài liệu thất bại.');
     }
   };
 
-  const handleDelete = async (id) => {
-    try {
-      await deleteDocument(id);
-      setPendingDocuments(pendingDocuments.filter((doc) => doc.documentId !== id));
-    } catch (error) {
-      setError(error.response?.data?.message || "Xóa thất bại");
-    }
+  const handleLogout = () => {
+    logout();
+    toast.success('Đăng xuất thành công!');
+    navigate('/login');
   };
 
-  const chartData = {
-    labels: ["Tài liệu", "Lượt tải"],
-    datasets: [
-      {
-        label: "Thống kê",
-        data: [stats.documentCount, stats.downloadCount],
-        backgroundColor: ["#1976d2", "#ff9800"],
-      },
-    ],
-  };
+  if (!user || !user.checkAdmin) {
+    return null; // Không hiển thị gì nếu không phải admin
+  }
 
   return (
-    <>
-    <Header />
-    <Container>
-      <Typography variant="h4" mt={4} mb={2}>
-        Bảng quản trị
-      </Typography>
-      {error && <Typography color="error">{error}</Typography>}
-      <Tabs value={tab} onChange={(e, newValue) => setTab(newValue)} centered>
-        <Tab label="Kiểm duyệt tài liệu" value="documents" />
-        <Tab label="Quản lý người dùng" value="users" disabled />
-        <Tab label="Thống kê" value="stats" />
-      </Tabs>
-      {tab === "documents" && (
-        <Table sx={{ mt: 2 }}>
-          <TableHead>
-            <TableRow>
-              <TableCell>Tiêu đề</TableCell>
-              <TableCell>Tác giả</TableCell>
-              <TableCell>Hành động</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {pendingDocuments.length > 0 ? (
-              pendingDocuments.map((doc) => (
-                <TableRow key={doc.documentId}>
-                  <TableCell>{doc.title}</TableCell>
-                  <TableCell>{doc.user?.fullName || "Không xác định"}</TableCell>
-                  <TableCell>
-                    <Button
-                      variant="contained"
-                      color="success"
-                      onClick={() => handleApprove(doc.documentId)}
-                      sx={{ mr: 1 }}
-                    >
-                      Duyệt
-                    </Button>
-                    <Button
-                      variant="contained"
-                      color="error"
-                      onClick={() => handleDelete(doc.documentId)}
-                    >
-                      Xóa
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={3}>Không có tài liệu chờ duyệt.</TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      )}
-      {tab === "users" && (
-        <Typography mt={2}>
-          Tính năng này sẽ được triển khai trong tương lai.
-        </Typography>
-      )}
-      {tab === "stats" && (
-        <Box mt={4}>
-          <Typography variant="h6">Thống kê hệ thống</Typography>
-          <Typography variant="body2" mb={2}>
-            Số người dùng: Chưa khả dụng (yêu cầu endpoint /api/users).
-          </Typography>
-          <Bar data={chartData} options={{ responsive: true }} />
-        </Box>
-      )}
-    </Container>
-    <Footer />
-    </>
+    <div className="admin-container">
+      <div className="admin-header">
+        <h2 className="admin-title">
+          <i className="bi bi-gear me-2"></i> Bảng điều khiển quản trị
+        </h2>
+      </div>
+
+      <div className="admin-section">
+        <h4 className="section-title">
+          <i className="bi bi-file-earmark-check me-2"></i> Tài liệu chờ duyệt
+        </h4>
+        {pendingDocs.length > 0 ? (
+          <div className="admin-table-wrapper">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Tiêu đề</th>
+                  <th>Mô tả</th>
+                  <th>Hành động</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pendingDocs.map((doc) => (
+                  <tr key={doc.documentId}>
+                    <td>{doc.title}</td>
+                    <td>{doc.description}</td>
+                    <td>
+                      <button
+                        className="action-button approve-button"
+                        onClick={() => handleApprove(doc.documentId)}
+                      >
+                        <i className="bi bi-check-circle me-2"></i> Duyệt
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="empty-state">
+            <i className="bi bi-folder-x empty-icon"></i>
+            <p>Không có tài liệu chờ duyệt.</p>
+          </div>
+        )}
+      </div>
+
+      <div className="admin-section">
+        <h4 className="section-title">
+          <i className="bi bi-people me-2"></i> Danh sách người dùng
+        </h4>
+        {users.length > 0 ? (
+          <div className="admin-table-wrapper">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Họ tên</th>
+                  <th>Email</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.map((user) => (
+                  <tr key={user.userId}>
+                    <td>{user.fullName}</td>
+                    <td>{user.email}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="empty-state">
+            <i className="bi bi-person-x empty-icon"></i>
+            <p>Không có người dùng nào để hiển thị.</p>
+          </div>
+        )}
+      </div>
+    </div>
   );
-};
+}
 
 export default AdminDashboard;
