@@ -1,0 +1,141 @@
+/* AdminDashboard.css */
+.admin-dashboard-container {
+  min-height: calc(100vh - 56px); /* 56px is Bootstrap's default navbar height */
+  padding-top: 56px; /* To prevent content from being obscured by a fixed-top navbar */
+}
+
+.sidebar {
+  position: fixed;
+  top: 0; 
+  bottom: 0;
+  left: 0;
+  z-index: 1000; 
+  padding: 0; 
+  box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1); /* Keep a subtle separator */
+  width: 230px; /* Slightly wider for comfort */
+  margin-top: 56px; 
+  height: calc(100vh - 56px); 
+  background-color: #f8f9fa; /* Standard light background, can be changed */
+  /* --- NEW: Added a right border for better separation --- */
+  border-right: 1px solid #dee2e6; 
+}
+
+.sidebar-sticky {
+  position: relative; 
+  height: 100%; 
+  padding-top: 1rem; 
+  overflow-x: hidden;
+  overflow-y: auto; 
+}
+
+@media (max-width: 767.98px) {
+  .sidebar {
+    position: fixed; 
+    top: 56px;
+    bottom: 0;
+    left: -230px; /* Hidden initially, matches new width */
+    width: 230px;
+    transition: left 0.3s ease-in-out;
+    margin-top: 0; 
+    border-right: 1px solid #dee2e6; /* Ensure border is also on mobile */
+  }
+  .sidebar.collapse.show { 
+    left: 0; 
+  }
+  .admin-main-content {
+    margin-left: 0 !important; 
+  }
+}
+
+.sidebar .nav-link {
+  font-weight: 500;
+  /* --- UPDATED: Darker text color for better visibility --- */
+  color: #212529; /* Bootstrap's default dark text color */
+  padding: .75rem 1.25rem; /* Slightly more padding */
+  display: flex; 
+  align-items: center;
+  border-radius: 0.3rem; /* Rounded corners for links */
+  margin: 0.1rem 0.5rem; /* Margin around links */
+}
+
+.sidebar .nav-link i.bi {
+  font-size: 1.15rem; /* Slightly larger icons */
+  min-width: 28px; 
+  margin-right: 0.6rem; /* More space after icon */
+  /* --- UPDATED: Icon color to match text --- */
+  color: #495057; 
+}
+
+/* --- UPDATED: More prominent active and hover states --- */
+.sidebar .nav-link.active,
+.sidebar .nav-link:hover {
+  color: #0056b3; /* Darker blue for active/hover text */
+  background-color: #ddeeff; /* Lighter blue background for active/hover */
+  font-weight: 600; /* Make active link bolder */
+}
+
+.sidebar .nav-link.active i.bi,
+.sidebar .nav-link:hover i.bi {
+  color: #0056b3; /* Icon color matches text on active/hover */
+}
+
+.sidebar .nav-link .badge {
+  font-size: 0.75em; /* Slightly larger badge text */
+  padding: 0.3em 0.5em; /* More padding for badge */
+}
+
+.sidebar-heading {
+  font-size: .85rem; 
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #5a6268; /* Slightly darker heading */
+  padding: .75rem 1.25rem;
+  margin-top: 0.5rem;
+}
+
+.admin-main-content {
+  padding-top: 1.5rem; 
+  margin-left: 230px; /* Match new sidebar width */
+  transition: margin-left .3s ease-in-out;
+}
+
+@media (max-width: 767.98px) {
+    .admin-main-content {
+        margin-left: 0;
+    }
+}
+
+.admin-table {
+  margin-top: 0; 
+  font-size: 0.9rem;
+}
+
+.admin-table th {
+  font-weight: 600;
+  background-color: #e9ecef; /* Slightly darker table header */
+}
+
+.admin-table .btn-sm {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.8rem;
+}
+
+.empty-state {
+    color: #6c757d;
+    background-color: #f8f9fa;
+    border: 1px dashed #ced4da;
+    border-radius: .25rem;
+    padding: 2rem; /* More padding for empty state */
+}
+.empty-state .empty-icon{
+    font-size: 3.5rem; /* Larger icon for empty state */
+}
+
+.card-header h5 {
+    font-size: 1.15rem; /* Slightly larger card header text */
+    font-weight: 500;
+}
+
+.bg-light-subtle { 
+    background-color: rgba(var(--bs-light-rgb), .75) !important; /* Adjust opacity if needed */
+}
