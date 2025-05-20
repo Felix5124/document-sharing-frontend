@@ -1,11 +1,47 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { useContext } from 'react';
+// src/components/Navbar.jsx
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { toast } from 'react-toastify';
+import { getUserNotifications } from '../services/api';
 
 function Navbar() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, logout } = useContext(AuthContext);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  const fetchUnreadNotifications = async () => {
+    if (!user || user.checkAdmin) return; // Không lấy thông báo cho admin
+    try {
+      const response = await getUserNotifications(user.userId);
+      let data = response.data;
+      if (Array.isArray(data.$values)) {
+        data = data.$values;
+      }
+      const unread = data.filter((notification) => !notification.isRead).length;
+      setUnreadCount(unread);
+    } catch (error) {
+      console.error('Fetch unread notifications error:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (!user || user.checkAdmin) return;
+
+    fetchUnreadNotifications();
+
+    const interval = setInterval(() => {
+      fetchUnreadNotifications();
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, [user]);
+
+  useEffect(() => {
+    if (!user || user.checkAdmin) return;
+    fetchUnreadNotifications();
+  }, [location, user]);
 
   const handleLogout = () => {
     logout();
@@ -13,8 +49,6 @@ function Navbar() {
     navigate('/login');
   };
 
-  // Log để debug
-  console.log('Navbar user:', user);
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark custom-navbar">
@@ -36,20 +70,53 @@ function Navbar() {
             <li className="nav-item">
               <Link className="nav-link" to="/">Home</Link>
             </li>
+            <li className="nav-item">
+              <Link className="nav-link" to="/posts">Diễn đàn</Link>
+            </li>
             {user && (
               <>
-                {!user.checkAdmin && (
-                  <li className="nav-item">
-                    <Link className="nav-link" to="/upload">Tải lên tài liệu</Link>
-                  </li>
-                )}
-                <li className="nav-item">
-                  <Link className="nav-link" to="/profile">Hồ sơ</Link>
-                </li>
-                {user.checkAdmin && (
-                  <li className="nav-item">
-                    <Link className="nav-link" to="/admin">Quản trị</Link>
-                  </li>
+                {/* Menu cho admin */}
+                {user.checkAdmin ? (
+                  <>
+                    <li className="nav-item">
+                      <Link className="nav-link" to="/profile">Hồ sơ</Link>
+                    </li>
+                    <li className="nav-item">
+                      <Link className="nav-link" to="/admin">Quản trị</Link>
+                    </li>
+                  </>
+                ) : (
+                  /* Menu cho người dùng thông thường */
+                  <>
+                    <li className="nav-item">
+                      <Link className="nav-link" to="/upload">Tải lên tài liệu</Link>
+                    </li>
+                    <li className="nav-item">
+                      <Link className="nav-link" to="/profile">Hồ sơ</Link>
+                    </li>
+                    <li className="nav-item" style={{ position: 'relative' }}>
+                      <Link className="nav-link" to="/notifications">
+                        Thông báo
+                        {unreadCount > 0 && (
+                          <span
+                            style={{
+                              position: 'absolute',
+                              top: '-2px',
+                              right: '0px',
+                              width: '12px',
+                              height: '12px',
+                              backgroundColor: '#dc3545',
+                              borderRadius: '50%',
+                              border: '2px solid #1f2937',
+                            }}
+                          />
+                        )}
+                      </Link>
+                    </li>
+                    <li className="nav-item">
+                      <Link className="nav-link" to="/follow">Theo dõi</Link>
+                    </li>
+                  </>
                 )}
                 <li className="nav-item">
                   <button className="nav-link btn btn-logout" onClick={handleLogout}>
