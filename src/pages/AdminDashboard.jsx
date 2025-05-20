@@ -1,61 +1,18 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useContext } from 'react';
-import { getPendingDocuments, approveDocument, getAllUsers } from '../services/api';
 import { toast } from 'react-toastify';
 import { AuthContext } from '../context/AuthContext';
+import DocumentApproval from '../components/DocumentApproval';
+import AccountManagement from '../components/AccountManagement';
+import CategoryManagement from '../components/CategoryManagement';
+import DocumentManagement from '../components/DocumentManagement';
+import AdminStatistics from '../components/AdminStatistics'; // Import AdminStatistics
 
 function AdminDashboard() {
   const { user, logout } = useContext(AuthContext);
-  const [pendingDocs, setPendingDocs] = useState([]);
-  const [users, setUsers] = useState([]);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!user || !user.checkAdmin) {
-      navigate('/');
-      return;
-    }
-
-    fetchPendingDocs();
-    fetchUsers();
-  }, [navigate, user]);
-
-  const fetchPendingDocs = async () => {
-    try {
-      const response = await getPendingDocuments();
-      let data = response.data;
-      if (Array.isArray(data.$values)) {
-        data = data.$values;
-      }
-      setPendingDocs(data);
-    } catch (error) {
-      toast.error('Không thể tải tài liệu chờ duyệt.');
-    }
-  };
-
-  const fetchUsers = async () => {
-    try {
-      const response = await getAllUsers();
-      let data = response.data;
-      if (Array.isArray(data.$values)) {
-        data = data.$values;
-      }
-      setUsers(data);
-    } catch (error) {
-      toast.error('Không thể tải danh sách người dùng.');
-    }
-  };
-
-  const handleApprove = async (id) => {
-    try {
-      await approveDocument(id);
-      toast.success('Tài liệu đã được duyệt.');
-      fetchPendingDocs();
-    } catch (error) {
-      toast.error('Duyệt tài liệu thất bại.');
-    }
-  };
+  const [activeSection, setActiveSection] = useState('document-approval');
 
   const handleLogout = () => {
     logout();
@@ -63,8 +20,25 @@ function AdminDashboard() {
     navigate('/login');
   };
 
+  const getSectionTitle = () => {
+    switch (activeSection) {
+      case 'document-approval':
+        return 'Duyệt Tài Liệu';
+      case 'account-management':
+        return 'Quản Lý Tài Khoản';
+      case 'category-management':
+        return 'Quản Lý Thể Loại';
+      case 'document-management':
+        return 'Quản Lý Tài Liệu';
+      case 'statistics':
+        return 'Thống Kê Hệ Thống';
+      default:
+        return '';
+    }
+  };
+
   if (!user || !user.checkAdmin) {
-    return null; // Không hiển thị gì nếu không phải admin
+    return null;
   }
 
   return (
@@ -75,75 +49,52 @@ function AdminDashboard() {
         </h2>
       </div>
 
-      <div className="admin-section">
-        <h4 className="section-title">
-          <i className="bi bi-file-earmark-check me-2"></i> Tài liệu chờ duyệt
-        </h4>
-        {pendingDocs.length > 0 ? (
-          <div className="admin-table-wrapper">
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>Tiêu đề</th>
-                  <th>Mô tả</th>
-                  <th>Hành động</th>
-                </tr>
-              </thead>
-              <tbody>
-                {pendingDocs.map((doc) => (
-                  <tr key={doc.documentId}>
-                    <td>{doc.title}</td>
-                    <td>{doc.description}</td>
-                    <td>
-                      <button
-                        className="action-button approve-button"
-                        onClick={() => handleApprove(doc.documentId)}
-                      >
-                        <i className="bi bi-check-circle me-2"></i> Duyệt
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <div className="empty-state">
-            <i className="bi bi-folder-x empty-icon"></i>
-            <p>Không có tài liệu chờ duyệt.</p>
-          </div>
-        )}
+      {/* Menu điều hướng */}
+      <div className="admin-nav mb-4">
+        <button
+          className={`nav-button ${activeSection === 'document-approval' ? 'active' : ''}`}
+          onClick={() => setActiveSection('document-approval')}
+        >
+          <i className="bi bi-file-earmark-check me-2"></i> Duyệt tài liệu
+        </button>
+        <button
+          className={`nav-button ${activeSection === 'account-management' ? 'active' : ''}`}
+          onClick={() => setActiveSection('account-management')}
+        >
+          <i className="bi bi-people me-2"></i> Quản lý tài khoản
+        </button>
+        <button
+          className={`nav-button ${activeSection === 'category-management' ? 'active' : ''}`}
+          onClick={() => setActiveSection('category-management')}
+        >
+          <i className="bi bi-tags me-2"></i> Quản lý thể loại
+        </button>
+        <button
+          className={`nav-button ${activeSection === 'document-management' ? 'active' : ''}`}
+          onClick={() => setActiveSection('document-management')}
+        >
+          <i className="bi bi-file-earmark-lock me-2"></i> Quản lý tài liệu
+        </button>
+        <button
+          className={`nav-button ${activeSection === 'statistics' ? 'active' : ''}`}
+          onClick={() => setActiveSection('statistics')}
+        >
+          <i className="bi bi-bar-chart-line me-2"></i> Thống kê
+        </button>
       </div>
 
-      <div className="admin-section">
-        <h4 className="section-title">
-          <i className="bi bi-people me-2"></i> Danh sách người dùng
-        </h4>
-        {users.length > 0 ? (
-          <div className="admin-table-wrapper">
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>Họ tên</th>
-                  <th>Email</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.map((user) => (
-                  <tr key={user.userId}>
-                    <td>{user.fullName}</td>
-                    <td>{user.email}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <div className="empty-state">
-            <i className="bi bi-person-x empty-icon"></i>
-            <p>Không có người dùng nào để hiển thị.</p>
-          </div>
-        )}
+      {/* Hiển thị nội dung tương ứng với phần được chọn */}
+      <div className="admin-content">
+        <div className="section-header">
+          <h3 className="section-action-title">{getSectionTitle()}</h3>
+        </div>
+        <div className="section-body">
+          {activeSection === 'document-approval' && <DocumentApproval />}
+          {activeSection === 'account-management' && <AccountManagement />}
+          {activeSection === 'category-management' && <CategoryManagement />}
+          {activeSection === 'document-management' && <DocumentManagement />}
+          {activeSection === 'statistics' && <AdminStatistics />}
+        </div>
       </div>
     </div>
   );

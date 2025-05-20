@@ -4,7 +4,7 @@ import { uploadDocument, getCategories } from '../services/api';
 import { toast } from 'react-toastify';
 
 function UploadDocument() {
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  const { register, handleSubmit, formState: { errors }, reset } = useForm(); // Thêm reset
   const [categories, setCategories] = useState([]);
   const user = JSON.parse(localStorage.getItem('user'));
   const userId = user?.userId;
@@ -26,36 +26,28 @@ function UploadDocument() {
   };
 
   const onSubmit = async (data) => {
-    const formData = new FormData();
-    formData.append('Title', data.Title);
-    formData.append('Description', data.Description || '');
-    formData.append('CategoryId', parseInt(data.CategoryId, 10));
-    formData.append('UploadedBy', userId?.toString());
-    formData.append('PointsRequired', data.PointsRequired?.toString() || '0');
-    if (data.File && data.File.length > 0) {
-      formData.append('File', data.File[0]);
-    } else {
-      throw new Error('No file selected');
-    }
+  const formData = new FormData();
+  formData.append('Title', data.Title);
+  formData.append('Description', data.Description || '');
+  formData.append('CategoryId', parseInt(data.CategoryId, 10).toString());
+  formData.append('UploadedBy', userId.toString());
+  formData.append('PointsRequired', (data.PointsRequired || 0).toString());
+  if (data.File && data.File.length > 0) {
+    formData.append('File', data.File[0]);
+  } else {
+    toast.error('Vui lòng chọn file.');
+    return;
+  }
 
-    try {
-      if (!userId) throw new Error('Không có userId, vui lòng đăng nhập lại.');
-      const token = localStorage.getItem('token');
-      console.log('Current Token:', token);
-      if (!token || typeof token !== 'string') throw new Error('Token không hợp lệ, vui lòng đăng nhập lại.');
-
-      for (let [key, value] of formData.entries()) {
-        console.log('FormData key:', key, 'value:', value);
-      }
-
-      const response = await uploadDocument(formData);
-      console.log('Upload response:', response.data);
-      toast.success('Tải tài liệu thành công!');
-    } catch (error) {
-      console.error('Upload error details:', error.response?.data || error.message, 'Status:', error.response?.status);
-      toast.error('Tải tài liệu thất bại: ' + (error.response?.data?.message || error.message));
-    }
-  };
+  try {
+    const response = await uploadDocument(formData);
+    toast.success('Tải tài liệu thành công, xin chờ duyệt!');
+    reset(); // Reset form
+    window.scrollTo(0, 0); // Cuộn lên   // Cuộn lên đầu trang
+  } catch (error) {
+    toast.error('Tải tài liệu thất bại: ' + (error.response?.data?.message || error.message));
+  }
+};
 
   return (
     <div className="upload-container">
@@ -110,10 +102,13 @@ function UploadDocument() {
             <div className="input-wrapper">
               <i className="bi bi-star input-icon"></i>
               <input
-                type="number"
-                className="form-input"
-                {...register('PointsRequired', { required: 'Vui lòng nhập điểm', min: 0 })}
-              />
+  type="number"
+  className="form-input"
+  {...register('PointsRequired', { 
+    required: 'Vui lòng nhập điểm', 
+    min: { value: 0, message: 'Điểm không được nhỏ hơn 0' } // Thêm kiểm tra min
+  })}
+/>
             </div>
             {errors.PointsRequired && <p className="error-text">{errors.PointsRequired.message}</p>}
           </div>

@@ -16,10 +16,9 @@ function Login() {
     try {
       const response = await login(data);
       console.log('Login response:', response.data);
-      const userData = response.data.user || response.data; // Đảm bảo lấy đúng user object
+      const userData = response.data.user || response.data;
       const token = response.data.token;
 
-      // Kiểm tra token và userData
       if (!token || typeof token !== 'string') {
         throw new Error('Token không hợp lệ từ server.');
       }
@@ -27,14 +26,11 @@ function Login() {
         throw new Error('Không nhận được UserId từ server.');
       }
 
-      // Log để kiểm tra
       console.log('Received user:', userData, 'Token:', token);
 
-      // Gọi authLogin để cập nhật state và localStorage
       authLogin(userData, token);
 
-      // Kiểm tra isAdmin và chuyển hướng
-      if (userData.isAdmin === true) {
+      if (userData.checkAdmin === true) {
         navigate('/admin');
       } else {
         navigate('/');
@@ -42,46 +38,74 @@ function Login() {
 
       toast.success('Đăng nhập thành công!');
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Đăng nhập thất bại. Vui lòng kiểm tra email và mật khẩu.';
+      const errorMessage = error.response?.data || 'Đăng nhập thất bại. Vui lòng kiểm tra email và mật khẩu.';
       console.error('Login error:', errorMessage);
-      toast.error(errorMessage);
+      if (error.response?.status === 401 && errorMessage === 'Tài khoản đã bị khóa.') {
+        toast.error('Tài khoản đã bị khóa.');
+      } else {
+        toast.error(errorMessage);
+      }
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="container mt-5">
-      <h2>Đăng nhập</h2>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="mb-3">
-          <label className="form-label">Email</label>
-          <input
-            type="email"
-            className="form-control"
-            {...formRegister('Email', {
-              required: 'Vui lòng nhập email',
-              pattern: {
-                value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                message: 'Email không hợp lệ',
-              },
-            })}
-          />
-          {errors.Email && <p className="text-danger">{errors.Email.message}</p>}
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Mật khẩu</label>
-          <input
-            type="password"
-            className="form-control"
-            {...formRegister('Password', { required: 'Vui lòng nhập mật khẩu' })}
-          />
-          {errors.Password && <p className="text-danger">{errors.Password.message}</p>}
-        </div>
-        <button type="submit" className="btn btn-primary" disabled={loading}>
-          {loading ? 'Đang xử lý...' : 'Đăng nhập'}
-        </button>
-      </form>
+    <div className="auth-container">
+      <div className="auth-card">
+        <h2 className="auth-title">
+          <i className="bi bi-box-arrow-in-right me-2"></i> Đăng nhập
+        </h2>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="form-group">
+            <label className="form-label">Email</label>
+            <div className="input-wrapper">
+              <i className="bi bi-envelope input-icon"></i>
+              <input
+                type="email"
+                className="form-input"
+                {...formRegister('Email', {
+                  required: 'Vui lòng nhập email',
+                  pattern: {
+                    value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                    message: 'Email không hợp lệ',
+                  },
+                })}
+              />
+            </div>
+            {errors.Email && <p className="error-message">{errors.Email.message}</p>}
+          </div>
+          <div className="form-group">
+            <label className="form-label">Mật khẩu</label>
+            <div className="input-wrapper">
+              <i className="bi bi-lock input-icon"></i>
+              <input
+                type="password"
+                className="form-input"
+                {...formRegister('Password', { required: 'Vui lòng nhập mật khẩu' })}
+              />
+            </div>
+            {errors.Password && <p className="error-message">{errors.Password.message}</p>}
+          </div>
+          <button type="submit" className="submit-button" disabled={loading}>
+            {loading ? (
+              <>
+                <i className="bi bi-arrow-clockwise spinning me-2"></i> Đang xử lý...
+              </>
+            ) : (
+              <>
+                <i className="bi bi-box-arrow-in-right me-2"></i> Đăng nhập
+              </>
+            )}
+          </button>
+          <p className="auth-link">
+            Chưa có tài khoản?{' '}
+            <span onClick={() => navigate('/register')} className="link-text">
+              Đăng ký ngay
+            </span>
+          </p>
+        </form>
+      </div>
     </div>
   );
 }
