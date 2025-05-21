@@ -12,6 +12,7 @@ import Notifications from './components/Notifications';
 import NotificationDetail from './components/NotificationDetail';
 import Follow from './components/Follow';
 import Post from './components/Post';
+import RankingsPage from './pages/RankingsPage';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -68,10 +69,13 @@ function App() {
           <Route path="/upload" element={<PrivateRoute allowNonAdmin={true}><UploadDocument /></PrivateRoute>} />
           <Route path="/update/:id" element={<ErrorBoundary><UpdateDocument /></ErrorBoundary>} />
           <Route path="/posts" element={<ErrorBoundary><Post /></ErrorBoundary>} />
+          <Route path="/rankings" element={<RankingsPage />} /> 
+
           {/* Routes cho thông báo và theo dõi */}
           <Route path="/notifications" element={<PrivateRoute><Notifications /></PrivateRoute>} />
           <Route path="/notifications/:notificationId" element={<PrivateRoute><NotificationDetail /></PrivateRoute>} />
           <Route path="/follow" element={<PrivateRoute><Follow /></PrivateRoute>} />
+
         </Routes>
 
         {/* Footer */}

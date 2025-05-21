@@ -3,8 +3,7 @@ import { searchDocuments, getCategories, getTopCommenter, getTopPointsUser, getT
 import { toast } from 'react-toastify';
 import { Link, useNavigate } from 'react-router-dom';
 import bannerImage from '../assets/images/anhbg.jpg';
-import api from '../services/api';
-
+import { getFullImageUrl } from '../utils/imageUtils';
 function Home() {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -21,12 +20,6 @@ function Home() {
   const [topPointsUser, setTopPointsUser] = useState(null);
   const [topDownloadedDoc, setTopDownloadedDoc] = useState(null);
 
-  const getFullImageUrl = (relativePath) => {
-    if (!relativePath || typeof relativePath !== 'string') {
-      return `${api.defaults.baseURL.replace('/api', '')}/ImageCovers/cat.jpg`;
-    }
-    return `${api.defaults.baseURL.replace('/api', '')}/${relativePath}`;
-  };
 
 
   const fetchCategories = async () => {
@@ -80,16 +73,40 @@ function Home() {
   const fetchTopContributors = async () => {
     try {
       const commenterResponse = await getTopCommenter();
+      let commenterData = commenterResponse.data;
+      if (commenterData && Object.prototype.hasOwnProperty.call(commenterData, '$value')) {
+        commenterData = commenterData.$value;
+      } else if (commenterData && Array.isArray(commenterData.$values)) { 
+        commenterData = commenterData.$values.length > 0 ? commenterData.$values[0] : null;
+      }
       setTopCommenter(commenterResponse.data);
 
       const pointsResponse = await getTopPointsUser();
+            let pointsData = pointsResponse.data;
+      if (pointsData && pointsData.hasOwnProperty.call('$value')) {
+          pointsData = pointsData.$value;
+      } else if (pointsData && Array.isArray(pointsData.$values)) {
+          pointsData = pointsData.$values.length > 0 ? pointsData.$values[0] : null;
+      }
       setTopPointsUser(pointsResponse.data);
 
       const docResponse = await getTopDownloadedDocument();
-      setTopDownloadedDoc(docResponse.data);
+      let docData = docResponse.data;
+      console.log("Raw docResponse.data for top downloaded document:", docResponse.data);
+      if (docData && Array.isArray(docData.$values) && docData.$values) {
+        docData = docData.$values.length > 0 ? docData.$values[0] : null;
+      } else if (docData && Object.prototype.hasOwnProperty.call(docData, '$value')) {
+        docData = docData.$value;
+      }
+      console.log("Processed docData for top downloaded document:", docData);
+      setTopDownloadedDoc(docData);
+
     } catch (error) {
       console.error('Error fetching top contributors:', error);
-      toast.error('Không thể tải dữ liệu bảng xếp hạng.');
+      if (error.config.url.includes('top-commenter')) toast.error('Không thể tải top người bình luận.');
+      else if (error.config.url.includes('top-points')) toast.error('Không thể tải top người dùng điểm cao.');
+      else if (error.config.url.includes('top-downloaded')) toast.error('Không thể tải tài liệu tải nhiều nhất.');
+      else toast.error('Không thể tải dữ liệu bảng xếp hạng.');
     }
   };
 
@@ -310,21 +327,48 @@ function Home() {
               <p>Không có dữ liệu</p>
             )}
           </div>
-          <div className="contributor-column">
-            <h4 className="column-title">Bài viết tải nhiều nhất</h4>
-            {topDownloadedDoc ? (
-              <div className="contributor-card">
-                <i className="bi bi-download contributor-icon"></i>
-                <p className="contributor-name">{topDownloadedDoc.title}</p>
-                <p className="contributor-stat">Lượt tải: {topDownloadedDoc.downloadCount}</p>
-                <Link to={`/document/${topDownloadedDoc.documentId}`} className="view-details-link">
-                  Xem chi tiết
-                </Link>
-              </div>
-            ) : (
-              <p>Không có dữ liệu</p>
-            )}
-          </div>
+           <div className="contributor-column">
+                  <h4 className="column-title">Bài viết tải nhiều nhất</h4>
+                  {topDownloadedDoc ? (
+                    <div className="contributor-card text-center"> 
+                      <img
+                        src={getFullImageUrl(topDownloadedDoc.coverImageUrl)}
+                        alt={topDownloadedDoc.title || 'Document cover'}
+                        style={{
+                          width: '100%', 
+                          height: '180px', 
+                          objectFit: 'cover', 
+                          borderRadius: '8px', 
+                          marginBottom: '1rem' 
+                        }}
+                        onError={(e) => {
+                          e.target.onerror = null; 
+                          e.target.src = getFullImageUrl(null); 
+                        }}
+                      />
+                      <h5 className="contributor-name mt-2" style={{ fontSize: '1.1rem', fontWeight: 'bold',  whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {topDownloadedDoc.title}
+                      </h5>
+                      <p className="contributor-stat mb-2">
+                        <i className="bi bi-download me-1"></i>
+                        Lượt tải: {topDownloadedDoc.downloadCount}
+                      </p>
+                      <Link 
+                        to={`/document/${topDownloadedDoc.documentId}`} 
+                        className="btn btn-sm btn-outline-primary w-100" // Make button full width of card padding
+                      >
+                        Xem chi tiết
+                      </Link>
+                    </div>
+                  ) : (
+                    <p>Không có dữ liệu</p>
+                  )}
+                </div>
+        </div>
+        <div className="text-center mt-0 mb-5"> 
+          <Link to="/rankings" className="btn btn-primary btn-lg shadow">
+            <i className="bi bi-bar-chart-steps me-2"></i> Xem Tất Cả Bảng Xếp Hạng
+          </Link>
         </div>
       </div>
     </div>
