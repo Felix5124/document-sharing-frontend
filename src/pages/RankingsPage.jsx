@@ -133,7 +133,6 @@ function RankingsPage() {
           <RankingList
             title="TOP ĐIỂM SỐ"
             data={rankings.points}
-            valueKey="points" // Ensure this key matches your API response for user points
             unit="điểm"
             itemType="user"
             iconClass="bi bi-star-fill text-warning me-2"
@@ -143,8 +142,6 @@ function RankingsPage() {
           <RankingList
             title="TOP NGƯỜI DÙNG ĐĂNG TÀI LIỆU"
             data={rankings.uploads}
-            // Ensure 'documentsUploadedCount' or similar key matches your API response
-            valueKey="documentsUploadedCount" // Example: user object has 'documentsUploadedCount'
             unit="tài liệu"
             itemType="user"
             iconClass="bi bi-cloud-upload-fill text-info me-2"
@@ -156,8 +153,6 @@ function RankingsPage() {
           <RankingList
             title="TOP NGƯỜI DÙNG BÌNH LUẬN"
             data={rankings.comments}
-            // Ensure 'commentsCount' or similar key matches your API response
-            valueKey="commentsCount" // Example: user object has 'commentsCount'
             unit="bình luận"
             itemType="user"
             iconClass="bi bi-chat-dots-fill text-primary me-2"
@@ -167,8 +162,6 @@ function RankingsPage() {
           <RankingList
             title="TOP NGƯỜI DÙNG TẢI TÀI LIỆU"
             data={rankings.docDownloads}
-             // Ensure this key matches API (e.g., user has a count of downloads their docs received)
-            valueKey="totalDownloadsOnUserDocuments" // Example key
             unit="lượt tải về"
             itemType="user"
             iconClass="bi bi-person-check-fill text-success me-2"
