@@ -14,9 +14,7 @@ import { AuthContext } from '../context/AuthContext';
 import { Modal, Button, Form } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { useEffect, useState, useContext } from 'react';
-import api from '../services/api'; // Ensure this is correctly imported
-
-// (Worker setup for pdfjs remains the same)
+import { getFullImageUrl } from '../utils/imageUtils';
 let workerUrl;
 try {
   workerUrl = new URL('pdfjs-dist/build/pdf.worker.mjs', import.meta.url).toString();
@@ -36,30 +34,6 @@ const formatFileSize = (bytes) => {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 };
 
-const getFullImageUrl = (relativePath) => {
-  const defaultImageRelativePath = 'ImageCovers/cat.jpg';
-  let apiBaseUrl = '';
-  try {
-    if (api && api.defaults && typeof api.defaults.baseURL === 'string') {
-      apiBaseUrl = api.defaults.baseURL.replace('/api', '');
-    } else {
-      console.warn('API base URL không được cấu hình trong DocumentDetail.jsx. Đường dẫn ảnh có thể không chính xác.');
-      const imagePath = (relativePath && typeof relativePath === 'string' && relativePath.trim() !== '') ? relativePath : defaultImageRelativePath;
-      return `/${imagePath.startsWith('/') ? imagePath.substring(1) : imagePath}`;
-    }
-  } catch (e) {
-    console.error("Lỗi khi lấy API base URL cho ảnh trong DocumentDetail.jsx:", e);
-    const imagePath = (relativePath && typeof relativePath === 'string' && relativePath.trim() !== '') ? relativePath : defaultImageRelativePath;
-    return `/${imagePath.startsWith('/') ? imagePath.substring(1) : imagePath}`;
-  }
-
-  if (!relativePath || typeof relativePath !== 'string' || relativePath.trim() === '') {
-    return `${apiBaseUrl}/${defaultImageRelativePath}`;
-  }
-
-  const cleanRelativePath = relativePath.startsWith('/') ? relativePath.substring(1) : relativePath;
-  return `${apiBaseUrl}/${cleanRelativePath}`;
-};
 
 const StarRatingDisplay = ({ rating, totalReviews }) => {
   const fullStars = Math.floor(rating);
