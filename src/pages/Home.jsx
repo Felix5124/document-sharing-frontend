@@ -3,6 +3,7 @@ import { searchDocuments, getCategories, getTopCommenter, getTopPointsUser, getT
 import { toast } from 'react-toastify';
 import { Link, useNavigate } from 'react-router-dom';
 import bannerImage from '../assets/images/anhbg.jpg';
+import api from '../services/api';
 
 function Home() {
   const [documents, setDocuments] = useState([]);
@@ -19,6 +20,14 @@ function Home() {
   const [topCommenter, setTopCommenter] = useState(null);
   const [topPointsUser, setTopPointsUser] = useState(null);
   const [topDownloadedDoc, setTopDownloadedDoc] = useState(null);
+
+  const getFullImageUrl = (relativePath) => {
+    if (!relativePath || typeof relativePath !== 'string') {
+      return `${api.defaults.baseURL.replace('/api', '')}/ImageCovers/cat.jpg`;
+    }
+    return `${api.defaults.baseURL.replace('/api', '')}/${relativePath}`;
+  };
+
 
   const fetchCategories = async () => {
     try {
@@ -114,7 +123,6 @@ function Home() {
 
   return (
     <div>
-      {/* Banner dính sát navbar */}
       <div
         className="banner-section"
         style={{
@@ -202,28 +210,43 @@ function Home() {
           </div>
         ) : documents.length > 0 ? (
           <>
-            <div className="documents-grid">
+            <div className="documents-grid row row-cols-1 row-cols-md-2 row-cols-lg-1 g-4"> {/* Bootstrap grid */}
               {documents.map((doc) => (
-                <div key={doc.documentId} className="document-card">
-                  <div className="card-content">
-                    <h5 className="card-title">{doc.title}</h5>
-                    <p className="card-description">Mô tả: {doc.description}</p>
-                    <div className="card-meta">
-                      <span>
-                        <i className="bi bi-calendar me-1"></i>
-                        Tải lên: {new Date(doc.uploadedAt).toLocaleDateString()}
-                      </span>
-                      <span>
-                        <i className="bi bi-download me-1"></i>
-                        Lượt tải: {doc.downloadCount}
-                      </span>
+                <div key={doc.documentId} className="col">
+                  <div className="document-card card h-100 shadow-sm"> {/* Bootstrap card */}
+                    <img
+                      src={getFullImageUrl(doc.coverImageUrl)}
+                      alt={doc.title || 'Cover'}
+                      className="card-img-top"
+                      style={{ height: '250px', objectFit: 'cover' }}
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = getFullImageUrl(null); // Fallback to default
+                      }}
+                    />
+                    <div className="card-body d-flex flex-column"> {/* card-body */}
+                      <h5 className="card-title text-truncate">{doc.title}</h5>
+                      <p className="card-text flex-grow-1" style={{ fontSize: '0.9rem', minHeight: '60px', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical' }}>
+                        {doc.description ? doc.description : "Không có mô tả."}
+                      </p>
+                      <div className="card-meta mt-auto text-muted" style={{ fontSize: '0.8rem' }}>
+                        <small className="d-block text-truncate">
+                          <i className="bi bi-person me-1"></i>
+                          Người đăng: {doc.email || 'Không xác định'}
+                        </small>
+                        <small className="d-block">
+                          <i className="bi bi-calendar me-1"></i>
+                          Tải lên: {new Date(doc.uploadedAt).toLocaleDateString()}
+                        </small>
+                        <small className="d-block">
+                          <i className="bi bi-download me-1"></i>
+                          Lượt tải: {doc.downloadCount}
+                        </small>
+                      </div>
+                      <Link to={`/document/${doc.documentId}`} className="btn btn-primary btn-sm mt-2">
+                        Xem chi tiết
+                      </Link>
                     </div>
-                    <p className="card-uploader">
-                      Người đăng: {doc.email || 'Không xác định'}
-                    </p>
-                    <Link to={`/document/${doc.documentId}`} className="card-button">
-                      Xem chi tiết
-                    </Link>
                   </div>
                 </div>
               ))}

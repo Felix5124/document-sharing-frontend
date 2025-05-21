@@ -2,16 +2,35 @@ import { useForm } from 'react-hook-form';
 import { useState, useEffect } from 'react';
 import { uploadDocument, getCategories } from '../services/api';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 function UploadDocument() {
-  const { register, handleSubmit, formState: { errors }, reset } = useForm(); // Thêm reset
+  const { register, handleSubmit, formState: { errors }, reset ,watch} = useForm(); // Thêm reset
   const [categories, setCategories] = useState([]);
+  const [previewCover, setPreviewCover] = useState(null);
+  const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('user'));
   const userId = user?.userId;
+
+
+  const coverImageFile = watch('ImageCovers');
 
   useEffect(() => {
     fetchCategories();
   }, []);
+
+  useEffect(() => {
+    if (coverImageFile && coverImageFile.length > 0) {
+      const file = coverImageFile[0];
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewCover(reader.result);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setPreviewCover(null);
+    }
+  }, [coverImageFile]);
 
   const fetchCategories = async () => {
     try {
@@ -26,6 +45,11 @@ function UploadDocument() {
   };
 
   const onSubmit = async (data) => {
+  if (!userId) {
+      toast.error('Không tìm thấy thông tin người dùng. Vui lòng đăng nhập lại.');
+      navigate('/login'); 
+      return;
+  }
   const formData = new FormData();
   formData.append('Title', data.Title);
   formData.append('Description', data.Description || '');
@@ -39,11 +63,16 @@ function UploadDocument() {
     return;
   }
 
+  if (data.CoverImage && data.CoverImage.length > 0) {
+      formData.append('CoverImage', data.CoverImage[0]);
+    }
+
   try {
-    const response = await uploadDocument(formData);
+    await uploadDocument(formData);
     toast.success('Tải tài liệu thành công, xin chờ duyệt!');
     reset(); // Reset form
     window.scrollTo(0, 0); // Cuộn lên   // Cuộn lên đầu trang
+    // navigate('/'); Thêm vô nếu upload xong rồi chuyển sang Home
   } catch (error) {
     toast.error('Tải tài liệu thất bại: ' + (error.response?.data?.message || error.message));
   }
@@ -125,12 +154,32 @@ function UploadDocument() {
             </div>
             {errors.File && <p className="error-text">{errors.File.message}</p>}
           </div>
+          <div className="form-group mb-3">
+            <label className="form-label">Ảnh bìa (JPG, PNG, GIF - tùy chọn)</label>
+            <div className="input-wrapper input-group">
+                <span className="input-group-text"><i className="bi bi-image"></i></span>
+                <input
+                    type="file"
+                    className="form-control" // No specific validation for optional field via react-hook-form here
+                    accept="image/jpeg,image/png,image/gif"
+                    {...register('CoverImage')} // Register without validation for optional
+                />
+            </div>
+            {previewCover && (
+              <div className="mt-2 text-center">
+                <p>Xem trước ảnh bìa:</p>
+                <img src={previewCover} alt="Xem trước ảnh bìa" style={{ maxWidth: '200px', maxHeight: '200px', objectFit: 'cover', border: '1px solid #ddd' }} />
+              </div>
+            )}
+          </div>
           <button type="submit" className="submit-button">
             <i className="bi bi-cloud-upload me-2"></i> Tải lên
           </button>
         </form>
       </div>
+      
     </div>
+    
   );
 }
 
