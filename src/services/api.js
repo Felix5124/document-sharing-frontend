@@ -94,6 +94,11 @@ export const previewDocument = (id) =>
   api.get(`/documents/${id}/preview`, { responseType: 'arraybuffer' });
 export const getUploadCount = (userId) => api.get('/documents/upload-count', { params: { userId } });
 
+export const getRelatedDocuments = (documentId, count = 4) => {
+  return api.get(`/documents/${documentId}/related?count=${count}`);
+};
+
+
 // API cho danh mục
 export const getCategories = () => api.get('/categories');
 export const createCategory = (data) => api.post('/categories', data);

@@ -2,21 +2,26 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { getDocumentById, updateDocument, getCategories } from '../services/api';
+import api, { getDocumentById, updateDocument, getCategories } from '../services/api';
 
 function UpdateDocument() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { register, handleSubmit, formState: { errors }, setValue } = useForm();
+  const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm();
   const [document, setDocument] = useState(null);
   const [categories, setCategories] = useState([]);
   const [file, setFile] = useState(null);
   const [fileName, setFileName] = useState('');
+  const [currentCoverImageUrl, setCurrentCoverImageUrl] = useState('');
+  const [previewNewCover, setPreviewNewCover] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const newCoverImageFile = watch('ImageCovers');
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        
         const [docResponse, catResponse] = await Promise.all([
           getDocumentById(id),
           getCategories(),
@@ -32,6 +37,11 @@ function UpdateDocument() {
           ? docResponse.data.fileUrl.split('/').pop()
           : '';
         setFileName(fileNameFromUrl);
+        if (docResponse.data.coverImageUrl) {
+            setCurrentCoverImageUrl(`${api.defaults.baseURL.replace('/api', '')}/${docResponse.data.coverImageUrl}`);
+        } else {
+            setCurrentCoverImageUrl(`${api.defaults.baseURL.replace('/api', '')}/Files/Covers/default-cover.png`); // Default
+        }
         setLoading(false);
       } catch (error) {
         console.error('Fetch error:', error.response?.data || error.message);
@@ -41,6 +51,7 @@ function UpdateDocument() {
     };
     fetchData();
   }, [id, navigate, setValue]);
+
 
   const handleFileChange = (e) => {
     if (e.target.files[0]) {
@@ -55,6 +66,19 @@ function UpdateDocument() {
     }
   };
 
+  useEffect(() => {
+    if (newCoverImageFile && newCoverImageFile.length > 0) {
+      const file = newCoverImageFile[0];
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewNewCover(reader.result);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setPreviewNewCover(null); 
+    }
+  }, [newCoverImageFile]);
+
   const onSubmit = async (data) => {
     try {
       const formData = new FormData();
@@ -63,20 +87,32 @@ function UpdateDocument() {
       formData.append('CategoryId', parseInt(data.CategoryId, 10));
       formData.append('UploadedBy', parseInt(data.UploadedBy, 10));
       formData.append('PointsRequired', parseInt(data.PointsRequired, 10) || 0);
-      if (file) {
-        formData.append('File', file);
+
+      if (data.File && data.File.length > 0) {
+        const selectedFile = data.File[0];
+        const extension = selectedFile.name.split('.').pop().toLowerCase();
+        if (!['pdf', 'docx', 'txt'].includes(extension)) {
+            toast.error('File tài liệu chỉ chấp nhận định dạng PDF, DOCX, hoặc TXT.');
+            return;
+        }
+        formData.append('File', selectedFile);
       }
 
+      if (data.CoverImage && data.CoverImage.length > 0) {
+        formData.append('ImageCovers', data.CoverImage[0]);
+      }
       for (let [key, value] of formData.entries()) {
         console.log(`${key}: ${value}`);
       }
 
+      setLoading(true);
       await updateDocument(id, formData);
       toast.success('Cập nhật tài liệu thành công.');
       navigate('/profile');
     } catch (error) {
       const errorMessage =
         error.response?.data?.message ||
+        error.response?.data?.title ||
         error.response?.data ||
         error.message ||
         'Cập nhật tài liệu thất bại.';
@@ -86,7 +122,10 @@ function UpdateDocument() {
         message: errorMessage,
       });
       toast.error(errorMessage, { toastId: 'update-error' });
+    } finally {
+        setLoading(false);
     }
+
   };
 
   if (loading || !document) return <div>Đang tải...</div>;
@@ -185,6 +224,36 @@ function UpdateDocument() {
             onChange={handleFileChange}
           />
         </div>
+
+        <div className="form-group mb-3">
+            <label className="form-label">Ảnh bìa</label>
+            {currentCoverImageUrl && !previewNewCover && (
+                <div className="mb-2 text-center">
+                    <p>Ảnh bìa hiện tại:</p>
+                    <img src={currentCoverImageUrl} alt="Ảnh bìa hiện tại" 
+                         style={{ maxWidth: '200px', maxHeight: '200px', objectFit: 'cover', border: '1px solid #ddd' }}
+                         onError={(e) => { e.target.style.display = 'none'; /* Hide if error */ }}/>
+                </div>
+            )}
+            {previewNewCover && (
+                 <div className="mb-2 text-center">
+                    <p>Ảnh bìa mới (xem trước):</p>
+                    <img src={previewNewCover} alt="Xem trước ảnh bìa mới" 
+                         style={{ maxWidth: '200px', maxHeight: '200px', objectFit: 'cover', border: '1px solid #ddd' }} />
+                </div>
+            )}
+            <div className="input-wrapper input-group">
+                <span className="input-group-text"><i className="bi bi-image"></i></span>
+                <input
+                    type="file"
+                    className="form-control"
+                    accept="image/jpeg,image/png,image/gif"
+                    {...register('CoverImage')} // Register for new cover image
+                />
+            </div>
+            <small className="form-text text-muted">Để trống nếu không muốn thay đổi ảnh bìa.</small>
+          </div>
+        
 
         <button
           type="submit"
