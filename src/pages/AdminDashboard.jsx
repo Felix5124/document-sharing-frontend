@@ -14,9 +14,12 @@ function AdminDashboard() {
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState('document-approval');
 
+console.log("%c[AdminDashboard] Component Rendered/Mounting. User from context:", "color: purple; font-weight: bold;",
+    user ? { userId: user.userId, isAdmin: user.isAdmin, email: user.email } : null
+  );
   const handleLogout = () => {
     logout();
-    toast.success('Đăng xuất thành công!');
+    //toast.success('Đăng xuất thành công!');
     navigate('/login');
   };
 
@@ -37,9 +40,11 @@ function AdminDashboard() {
     }
   };
 
-  if (!user || !user.checkAdmin) {
+  if (!user || !user.isAdmin) {
+    console.warn("AdminDashboard: User is not admin or user is null, rendering null. This shouldn't happen if PrivateRoute is working.");
     return null;
   }
+  console.log("[AdminDashboard] User is admin. Rendering dashboard content.");
 
   return (
     <div className="admin-container">

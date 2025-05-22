@@ -13,7 +13,7 @@ function CategoryManagement() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!user || !user.checkAdmin) {
+    if (!user || !user.isAdmin) {
       navigate('/');
       return;
     }
@@ -86,7 +86,7 @@ function CategoryManagement() {
     }
   };
 
-  if (!user || !user.checkAdmin) {
+  if (!user || !user.isAdmin) {
     return null;
   }
 

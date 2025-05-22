@@ -12,36 +12,40 @@ function Navbar() {
   const [unreadCount, setUnreadCount] = useState(0);
 
   const fetchUnreadNotifications = async () => {
-    if (!user || user.checkAdmin) return; // Không lấy thông báo cho admin
+    if (!user || user.isAdmin) return; 
     try {
       const response = await getUserNotifications(user.userId);
       let data = response.data;
-      if (Array.isArray(data.$values)) {
+            if (data && Array.isArray(data.$values)) {
         data = data.$values;
+      } else if (!Array.isArray(data)) {
+        // Nếu data không phải mảng và cũng không phải object có $values, coi như mảng rỗng để tránh lỗi
+        console.warn("Dữ liệu thông báo không đúng định dạng mảng:", response.data);
+        data = [];
       }
       const unread = data.filter((notification) => !notification.isRead).length;
       setUnreadCount(unread);
     } catch (error) {
       console.error('Fetch unread notifications error:', error);
+      // setUnreadCount(0); // Reset nếu có lỗi
     }
+
   };
 
   useEffect(() => {
-    if (!user || user.checkAdmin) return;
-
+    if (user && !user.isAdmin) {
     fetchUnreadNotifications();
 
     const interval = setInterval(() => {
       fetchUnreadNotifications();
-    }, 10000);
+    }, 30000);
 
     return () => clearInterval(interval);
+  } else {
+      setUnreadCount(0); // Reset unread count nếu là admin hoặc không có user
+    }
   }, [user]);
 
-  useEffect(() => {
-    if (!user || user.checkAdmin) return;
-    fetchUnreadNotifications();
-  }, [location, user]);
 
   const handleLogout = () => {
     logout();
@@ -76,7 +80,7 @@ function Navbar() {
             {user && (
               <>
                 {/* Menu cho admin */}
-                {user.checkAdmin ? (
+                {user.isAdmin ? (
                   <>
                     <li className="nav-item">
                       <Link className="nav-link" to="/profile">Hồ sơ</Link>
