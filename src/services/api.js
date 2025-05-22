@@ -1,160 +1,157 @@
 import axios from 'axios';
-import { toast } from 'react-toastify';
 import qs from 'qs';
 
-const api = axios.create({
-  baseURL: 'https://localhost:7013/api',
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+const apiClient = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
   paramsSerializer: (params) => {
-    return qs.stringify(params, { skipNulls: false });
+    return qs.stringify(params, { arrayFormat: 'repeat', skipNulls: false });
   },
 });
 
-api.interceptors.request.use(
+apiClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
-    if (token && typeof token === 'string') {
-      config.headers.Authorization = `Bearer ${token}`;
-    } else {
-      console.warn('No valid token found in localStorage');
+    if (token) {
+      // Kiểm tra kỹ hơn URL trước khi đính kèm token
+      // Ví dụ: chỉ đính kèm nếu URL bắt đầu bằng API_BASE_URL thực sự
+      if (config.url && config.url.startsWith(API_BASE_URL) && !config.headers.Authorization) {
+         config.headers.Authorization = `Bearer ${token}`;
+      } else if (!config.url && config.baseURL === API_BASE_URL && !config.headers.Authorization) {
+        // Trường hợp config.url không được set nhưng baseURL là API của chúng ta
+         config.headers.Authorization = `Bearer ${token}`;
+      }
     }
     return config;
   },
-  (error) => Promise.reject(error)
-);
-
-api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    if (error.response && error.response.data) {
-      if (error.response.data instanceof Blob) {
-        try {
-          const text = await error.response.data.text();
-          error.response.data = text ? JSON.parse(text) : text;
-        } catch (e) {
-          console.error('Error parsing Blob response:', e);
-          error.response.data = 'Lỗi không xác định từ server';
-        }
-      } else {
-        error.response.data = error.response.data.toString();
-      }
-    }
+  (error) => {
     return Promise.reject(error);
   }
 );
 
-// API cho người dùng
-export const register = (data) => api.post('/users/register', data);
-export const login = (data) => api.post('/users/login', data);
-export const updateUser = (id, data) => api.put(`/users/${id}`, data);
-export const getUser = (id) => api.get(`/users/${id}`);
-export const getAllUsers = () => api.get('/users/all');
-export const lockUser = (userId, isLocked) => api.put(`/users/${userId}/lock`, { isLocked });
+// --- API cho người dùng ---
+export const register = (data) => apiClient.post('/users/register', data);
 
-// API cho tài liệu
-export const getDocuments = () => api.get('/documents');
-export const getDocumentById = (id) => api.get(`/documents/${id}`);
+// export const login = (data) => apiClient.post('/users/login', data); // Endpoint này có thể không cần thiết nếu chỉ dùng Firebase client auth
+
+export const getUserByFirebaseUid = (uid) => apiClient.get(`/Users/by-uid/${uid}`);
+
+// Hàm mới để tạo người dùng backend cho Auth Provider (ví dụ: Google)
+export const createBackendUserForAuthProvider = async (firebaseUser) => {
+  const payload = {
+    FirebaseUid: firebaseUser.uid,
+    Email: firebaseUser.email,
+    FullName: firebaseUser.displayName || firebaseUser.email, // Lấy FullName, nếu không có thì dùng email làm fallback
+    // AvatarUrl: firebaseUser.photoURL, // Tùy chọn: bạn có thể gửi và lưu URL ảnh đại diện từ Google
+  };
+  console.log("API Call: Sending payload to /users/authprovider-register:", payload);
+  // POST request đến endpoint bạn đã tạo trong UsersController.cs
+  const response = await apiClient.post('/users/authprovider-register', payload);
+  return response.data; // Trả về thông tin người dùng đã được tạo (hoặc đã tồn tại) từ backend
+};
+
+
+export const updateUser = (id, data) => apiClient.put(`/users/${id}`, data);
+export const getUser = (id) => apiClient.get(`/users/${id}`);
+export const getAllUsers = () => apiClient.get('/users/all');
+export const lockUser = (userId, isLocked) => apiClient.put(`/users/${userId}/lock`, { isLocked });
+export const uploadAvatar = (userId, file) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  return apiClient.post(`/users/${userId}/avatar`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+};
+
+// --- API cho tài liệu ---
+// ... (giữ nguyên các hàm API khác của bạn) ...
+export const getDocuments = (params) => apiClient.get('/documents', { params });
+export const getDocumentById = (id) => apiClient.get(`/documents/${id}`);
 export const uploadDocument = (data) =>
-  api.post('/documents/upload', data, {
+  apiClient.post('/documents/upload', data, {
     headers: { 'Content-Type': 'multipart/form-data' },
   });
 export const updateDocument = (id, data) =>
-  api.put(`/documents/${id}`, data, {
+  apiClient.put(`/documents/${id}`, data, {
     headers: { 'Content-Type': 'multipart/form-data' },
   });
-export const deleteDocument = (id) => api.delete(`/documents/${id}`);
+export const deleteDocument = (id) => apiClient.delete(`/documents/${id}`);
 export const searchDocuments = (params) => {
-  const filteredParams = {};
-  if (params.Keyword !== undefined && params.Keyword !== '') {
-    filteredParams.Keyword = params.Keyword;
-  }
-  if (params.CategoryId !== undefined && params.CategoryId !== 0) {
-    filteredParams.CategoryId = params.CategoryId;
-  }
-  if (params.FileType !== undefined && params.FileType !== '') {
-    filteredParams.FileType = params.FileType;
-  }
-  if (params.SortBy !== undefined) {
-    filteredParams.SortBy = params.SortBy;
-  }
-  if (params.Page !== undefined) {
-    filteredParams.Page = params.Page;
-  }
-  if (params.PageSize !== undefined) {
-    filteredParams.PageSize = params.PageSize;
-  }
+  const filteredParams = Object.entries(params).reduce((acc, [key, value]) => {
+    if (value !== undefined && value !== '' && (typeof value !== 'number' || value !== 0)) {
+      acc[key] = value;
+    }
+    return acc;
+  }, {});
   console.log('Sending search params:', filteredParams);
-  return api.get('/documents/search', { params: filteredParams });
+  return apiClient.get('/documents/search', { params: filteredParams });
 };
 export const downloadDocument = (id, userId) =>
-  api.get(`/documents/${id}/download`, {
+  apiClient.get(`/documents/${id}/download`, {
     params: { userId },
     responseType: 'blob',
   });
 export const previewDocument = (id) =>
-  api.get(`/documents/${id}/preview`, { responseType: 'arraybuffer' });
-export const getUploadCount = (userId) => api.get('/documents/upload-count', { params: { userId } });
-
+  apiClient.get(`/documents/${id}/preview`, { responseType: 'arraybuffer' });
+export const getUploadCount = (userId) => apiClient.get('/documents/upload-count', { params: { userId } });
 export const getRelatedDocuments = (documentId, count = 4) => {
-  return api.get(`/documents/${documentId}/related?count=${count}`);
+  return apiClient.get(`/documents/${documentId}/related`, { params: { count } });
 };
 
 
-// API cho danh mục
-export const getCategories = () => api.get('/categories');
-export const createCategory = (data) => api.post('/categories', data);
-export const updateCategory = (id, data) => api.put(`/categories/${id}`, data);
-export const deleteCategory = (id) => api.delete(`/categories/${id}`);
+// --- API cho danh mục ---
+export const getCategories = () => apiClient.get('/categories');
+export const createCategory = (data) => apiClient.post('/categories', data);
+export const updateCategory = (id, data) => apiClient.put(`/categories/${id}`, data);
+export const deleteCategory = (id) => apiClient.delete(`/categories/${id}`);
 
-// API cho bình luận
+// --- API cho bình luận ---
 export const getCommentsByDocument = (documentId) =>
-  api.get(`/comments/document/${documentId}`);
-export const addComment = (data) => api.post('/comments', data);
-export const deleteComment = (id) => api.delete(`/comments/${id}`);
-export const getCommentCount = (userId) => api.get('/comments/count', { params: { userId } });
+  apiClient.get(`/comments/document/${documentId}`);
+export const addComment = (data) => apiClient.post('/comments', data);
+export const deleteComment = (id) => apiClient.delete(`/comments/${id}`);
+export const getCommentCount = (userId) => apiClient.get('/comments/count', { params: { userId } });
 
-// API cho bài viết (diễn đàn)
-export const getPosts = () => api.get('/posts');
-export const createPost = (data) => api.post('/posts', data);
-export const getPostComments = (postId) => api.get(`/postcomments/post/${postId}`);
-export const addPostComment = (data) => api.post('/postcomments', data);
+// --- API cho bài viết (diễn đàn) ---
+export const getPosts = () => apiClient.get('/posts');
+export const createPost = (data) => apiClient.post('/posts', data);
+export const getPostComments = (postId) => apiClient.get(`/postcomments/post/${postId}`);
+export const addPostComment = (data) => apiClient.post('/postcomments', data);
 
-// API cho quản trị
-export const getPendingDocuments = () => api.get('/documents/pending');
-export const approveDocument = (id) => api.put(`/documents/${id}/approve`);
-export const lockDocument = (id, isLocked) => api.put(`/documents/${id}/lock`, { isLocked }); // Thêm API khóa/mở khóa tài liệu
+// --- API cho quản trị ---
+export const getPendingDocuments = () => apiClient.get('/documents/pending');
+export const approveDocument = (id) => apiClient.put(`/documents/${id}/approve`);
+export const lockDocument = (id, isLocked) => apiClient.put(`/documents/${id}/lock`, { isLocked });
 
-// API cho tài liệu của người dùng
-export const getUploads = () => api.get('/UserDocuments/uploads');
-export const getDownloads = (userId) => api.get('/UserDocuments/downloads', { params: { userId } });
+// --- API cho tài liệu của người dùng ---
+export const getUploads = () => apiClient.get('/UserDocuments/uploads');
+export const getDownloads = (userId) => apiClient.get('/UserDocuments/downloads', { params: { userId } });
 
-// API cho thông báo
-export const getUserNotifications = (userId) => api.get('/notifications', { params: { userId } });
-export const getNotificationById = (notificationId) => api.get(`/notifications/${notificationId}`);
-export const markNotificationAsRead = (notificationId) => api.put(`/notifications/${notificationId}/read`);
-export const deleteNotification = (notificationId) => api.delete(`/notifications/${notificationId}`);
+// --- API cho thông báo ---
+export const getUserNotifications = (userId) => apiClient.get('/notifications', { params: { userId } });
+export const getNotificationById = (notificationId) => apiClient.get(`/notifications/${notificationId}`);
+export const markNotificationAsRead = (notificationId) => apiClient.put(`/notifications/${notificationId}/read`);
+export const deleteNotification = (notificationId) => apiClient.delete(`/notifications/${notificationId}`);
 
-// API cho theo dõi
-export const getUserFollowing = (userId) => api.get('/follows', { params: { userId } });
-export const getUserFollows = (followedUserId) => api.get('/follows/followers', { params: { followedUserId } });
-export const follow = (data) => api.post('/follows', data);
-export const unfollow = (id) => api.delete(`/follows/${id}`);
+// --- API cho theo dõi ---
+export const getUserFollowing = (userId) => apiClient.get('/follows', { params: { userId } });
+export const getUserFollows = (followedUserId) => apiClient.get('/follows/followers', { params: { followedUserId } });
+export const follow = (data) => apiClient.post('/follows', data);
+export const unfollow = (followerId, followedUserId) => apiClient.delete(`/follows`, { params: { followerId, followedUserId } });
 
-// API cho huy hiệu
-export const getAllBadges = () => api.get('/badges');
-export const getUserBadges = (userId) => api.get('/userbadges', { params: { userId } });
+// --- API cho huy hiệu ---
+export const getAllBadges = () => apiClient.get('/badges');
+export const getUserBadges = (userId) => apiClient.get('/userbadges', { params: { userId } });
 
-// API cho avatar
-export const uploadAvatar = (userId, file) => {
-  const formData = new FormData();
-  formData.append('file', file);
-  return api.post(`/users/${userId}/avatar`, formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  });
-};
 
-// API cho Bảng xếp hạng (Top đóng góp)
-export const getTopCommenter = () => api.get('/users/top-commenter');
-export const getTopPointsUser = () => api.get('/users/top-points');
-export const getTopDownloadedDocument = () => api.get('/documents/top-downloaded');
+// --- API cho Bảng xếp hạng (Top đóng góp) ---
+export const getTopCommenter = () => apiClient.get('/users/top-commenter');
+export const getTopPointsUser = () => apiClient.get('/users/top-points');
+export const getTopDownloadedDocument = () => apiClient.get('/documents/top-downloaded');
 
-export default api;
+
+export default apiClient;

@@ -26,8 +26,14 @@ import UpdateDocument from './components/UpdateDocument';
 // Component PrivateRoute để bảo vệ các route
 function PrivateRoute({ children, requireAdmin = false, allowNonAdmin = false }) {
   const { user, isLoading } = useContext(AuthContext);
-  const token = localStorage.getItem('token');
-  const isAuthenticated = !!user && !!token && typeof token === 'string';
+  const isAuthenticated = !!user;
+
+  console.log("[PrivateRoute] Status:", {
+    isLoading,
+    user: user ? { userId: user.userId, isAdmin: user.isAdmin, email: user.email } : null, // Log thông tin quan trọng, tránh log cả object lớn
+    isAuthenticated,
+    requireAdmin
+  });
 
   if (isLoading) {
     return <div>Đang kiểm tra đăng nhập...</div>;
@@ -37,11 +43,14 @@ function PrivateRoute({ children, requireAdmin = false, allowNonAdmin = false })
     return <Navigate to="/login" />;
   }
 
-  if (requireAdmin && !user.checkAdmin) {
+  if (requireAdmin && (user && !user.isAdmin)) {
+    console.log("[PrivateRoute] Admin access required, but user is not admin. Navigating to /.");
     return <Navigate to="/" />;
   }
 
-  if (allowNonAdmin && user.checkAdmin) {
+
+  if (allowNonAdmin && (user && user.isAdmin)) {
+    console.log("[PrivateRoute] Non-admin access required, but user IS admin. Navigating to /.");
     return <Navigate to="/" />;
   }
 
@@ -65,11 +74,19 @@ function App() {
           <Route path="/document/:id" element={<ErrorBoundary><DocumentDetail /></ErrorBoundary>} />
           <Route path="/postcommentdetail/:id" element={<ErrorBoundary><PostCommentDetail /></ErrorBoundary>} />
           <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
-          <Route path="/admin" element={<PrivateRoute requireAdmin={true}><AdminDashboard /></PrivateRoute>} />
-          <Route path="/upload" element={<PrivateRoute allowNonAdmin={true}><UploadDocument /></PrivateRoute>} />
+          <Route
+            path="/admin"
+            element={
+              <PrivateRoute requireAdmin={true}>
+                <ErrorBoundary> {/* Bọc AdminDashboard */}
+                  <AdminDashboard />
+                </ErrorBoundary>
+              </PrivateRoute>
+            }
+          />          <Route path="/upload" element={<PrivateRoute allowNonAdmin={true}><UploadDocument /></PrivateRoute>} />
           <Route path="/update/:id" element={<ErrorBoundary><UpdateDocument /></ErrorBoundary>} />
           <Route path="/posts" element={<ErrorBoundary><Post /></ErrorBoundary>} />
-          <Route path="/rankings" element={<RankingsPage />} /> 
+          <Route path="/rankings" element={<RankingsPage />} />
 
           {/* Routes cho thông báo và theo dõi */}
           <Route path="/notifications" element={<PrivateRoute><Notifications /></PrivateRoute>} />

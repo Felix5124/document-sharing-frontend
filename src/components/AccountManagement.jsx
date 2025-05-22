@@ -11,7 +11,7 @@ function AccountManagement() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!user || !user.checkAdmin) {
+    if (!user || !user.isAdmin) {
       navigate('/');
       return;
     }
@@ -44,7 +44,7 @@ function AccountManagement() {
     }
   };
 
-  if (!user || !user.checkAdmin) {
+  if (!user || !user.isAdmin) {
     return null;
   }
 
