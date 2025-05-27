@@ -5,20 +5,49 @@ import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 
 function UploadDocument() {
-  const { register, handleSubmit, formState: { errors }, reset ,watch} = useForm(); // Thêm reset
+  const { register, handleSubmit, formState: { errors }, reset, watch } = useForm();
   const [categories, setCategories] = useState([]);
   const [previewCover, setPreviewCover] = useState(null);
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('user'));
   const userId = user?.userId;
+  const schoolId = user?.schoolId;
 
-
-  const coverImageFile = watch('ImageCovers');
-
+  // Kiểm tra đăng nhập và schoolId ngay khi component mount
   useEffect(() => {
+    if (!userId) {
+      toast.error('Vui lòng đăng nhập để tải tài liệu lên.');
+      navigate('/login');
+      return;
+    }
+    if (!schoolId || schoolId === 0) {
+      toast.error('Bạn phải xác nhận trường học trước khi đăng bài.', {
+        toastId: 'no-school-error', // Đặt toastId để tránh trùng lặp
+      });
+      navigate('/profile');
+    }
+  }, [userId, schoolId, navigate]);
+
+  // Fetch danh mục
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await getCategories();
+        const cats = response.data.$values || response.data || [];
+        setCategories(Array.isArray(cats) ? cats : []);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+        toast.error('Không thể tải danh mục.');
+        setCategories([]);
+      }
+    };
     fetchCategories();
   }, []);
 
+  // Định nghĩa coverImageFile trước useEffect
+  const coverImageFile = watch('CoverImage');
+
+  // Xử lý preview ảnh bìa
   useEffect(() => {
     if (coverImageFile && coverImageFile.length > 0) {
       const file = coverImageFile[0];
@@ -32,51 +61,42 @@ function UploadDocument() {
     }
   }, [coverImageFile]);
 
-  const fetchCategories = async () => {
-    try {
-      const response = await getCategories();
-      const cats = response.data.$values || response.data || [];
-      setCategories(Array.isArray(cats) ? cats : []);
-    } catch (error) {
-      console.error('Error fetching categories:', error);
-      toast.error('Không thể tải danh mục.');
-      setCategories([]);
-    }
-  };
+  // Nếu không có userId hoặc schoolId, không render form
+  if (!userId || !schoolId || schoolId === 0) {
+    return null; // Ngăn render để tránh lỗi hoặc toast dư thừa
+  }
 
   const onSubmit = async (data) => {
-  if (!userId) {
-      toast.error('Không tìm thấy thông tin người dùng. Vui lòng đăng nhập lại.');
-      navigate('/login'); 
-      return;
-  }
-  const formData = new FormData();
-  formData.append('Title', data.Title);
-  formData.append('Description', data.Description || '');
-  formData.append('CategoryId', parseInt(data.CategoryId, 10).toString());
-  formData.append('UploadedBy', userId.toString());
-  formData.append('PointsRequired', (data.PointsRequired || 0).toString());
-  if (data.File && data.File.length > 0) {
-    formData.append('File', data.File[0]);
-  } else {
-    toast.error('Vui lòng chọn file.');
-    return;
-  }
+    const formData = new FormData();
+    formData.append('Title', data.Title);
+    formData.append('Description', data.Description || '');
+    formData.append('CategoryId', parseInt(data.CategoryId, 10).toString());
+    formData.append('UploadedBy', userId.toString());
+    formData.append('PointsRequired', (data.PointsRequired || 0).toString());
+    formData.append('SchoolId', schoolId.toString());
 
-  if (data.CoverImage && data.CoverImage.length > 0) {
+    if (data.File && data.File.length > 0) {
+      formData.append('File', data.File[0]);
+    } else {
+      toast.error('Vui lòng chọn file.');
+      return;
+    }
+
+    if (data.CoverImage && data.CoverImage.length > 0) {
       formData.append('CoverImage', data.CoverImage[0]);
     }
 
-  try {
-    await uploadDocument(formData);
-    toast.success('Tải tài liệu thành công, xin chờ duyệt!');
-    reset(); // Reset form
-    window.scrollTo(0, 0); // Cuộn lên   // Cuộn lên đầu trang
-    // navigate('/'); Thêm vô nếu upload xong rồi chuyển sang Home
-  } catch (error) {
-    toast.error('Tải tài liệu thất bại: ' + (error.response?.data?.message || error.message));
-  }
-};
+    try {
+      await uploadDocument(formData);
+      toast.success('Tải tài liệu thành công, xin chờ duyệt!');
+      reset();
+      setPreviewCover(null);
+      window.scrollTo(0, 0);
+      navigate('/');
+    } catch (error) {
+      toast.error('Tải tài liệu thất bại: ' + (error.response?.data?.message || error.message));
+    }
+  };
 
   return (
     <div className="upload-container">
@@ -111,7 +131,10 @@ function UploadDocument() {
             <label className="form-label">Danh mục</label>
             <select
               className="form-select"
-              {...register('CategoryId', { required: 'Vui lòng chọn danh mục' })}
+              {...register('CategoryId', {
+                required: 'Vui lòng chọn danh mục',
+                validate: (value) => parseInt(value) !== 0 || 'Vui lòng chọn danh mục',
+              })}
             >
               <option value="">Chọn danh mục</option>
               {Array.isArray(categories) && categories.length > 0 ? (
@@ -131,13 +154,13 @@ function UploadDocument() {
             <div className="input-wrapper">
               <i className="bi bi-star input-icon"></i>
               <input
-  type="number"
-  className="form-input"
-  {...register('PointsRequired', { 
-    required: 'Vui lòng nhập điểm', 
-    min: { value: 0, message: 'Điểm không được nhỏ hơn 0' } // Thêm kiểm tra min
-  })}
-/>
+                type="number"
+                className="form-input"
+                {...register('PointsRequired', {
+                  required: 'Vui lòng nhập điểm',
+                  min: { value: 0, message: 'Điểm không được nhỏ hơn 0' },
+                })}
+              />
             </div>
             {errors.PointsRequired && <p className="error-text">{errors.PointsRequired.message}</p>}
           </div>
@@ -157,18 +180,29 @@ function UploadDocument() {
           <div className="form-group mb-3">
             <label className="form-label">Ảnh bìa (JPG, PNG, GIF - tùy chọn)</label>
             <div className="input-wrapper input-group">
-                <span className="input-group-text"><i className="bi bi-image"></i></span>
-                <input
-                    type="file"
-                    className="form-control" // No specific validation for optional field via react-hook-form here
-                    accept="image/jpeg,image/png,image/gif"
-                    {...register('CoverImage')} // Register without validation for optional
-                />
+              <span className="input-group-text">
+                <i className="bi bi-image"></i>
+              </span>
+              <input
+                type="file"
+                className="form-control"
+                accept="image/jpeg,image/png,image/gif"
+                {...register('CoverImage')}
+              />
             </div>
             {previewCover && (
               <div className="mt-2 text-center">
                 <p>Xem trước ảnh bìa:</p>
-                <img src={previewCover} alt="Xem trước ảnh bìa" style={{ maxWidth: '200px', maxHeight: '200px', objectFit: 'cover', border: '1px solid #ddd' }} />
+                <img
+                  src={previewCover}
+                  alt="Xem trước ảnh bìa"
+                  style={{
+                    maxWidth: '200px',
+                    maxHeight: '200px',
+                    objectFit: 'cover',
+                    border: '1px solid #ddd',
+                  }}
+                />
               </div>
             )}
           </div>
@@ -177,9 +211,7 @@ function UploadDocument() {
           </button>
         </form>
       </div>
-      
     </div>
-    
   );
 }
 

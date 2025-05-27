@@ -415,9 +415,6 @@ function DocumentDetail() {
     <div className="container my-4 document-detail-page">
       <div className="row">
         <div className="col-lg-4 mb-4">
-          <Button variant="link" onClick={() => navigate(-1)} className="mb-2 p-0 text-decoration-none text-muted">
-            <i className="bi bi-arrow-left me-1"></i> Quay lại
-          </Button>
           <img
             src={getFullImageUrl(doc.coverImageUrl)}
             alt={doc.title}
@@ -440,22 +437,44 @@ function DocumentDetail() {
         </div>
 
         <div className="col-lg-8">
-          <h1 className="h2 mb-1">{doc.title}</h1>
-          <div className="mb-3 text-muted">
-            <span>Tác giả: {doc.email || 'Ẩn danh'}</span>
-            {user && user.userId !== doc.uploadedBy && doc.uploadedBy && (
-              <Button
-                variant={isFollowing ? "success" : "outline-success"}
-                size="sm"
-                onClick={handleFollowAuthor}
-                disabled={loadingFollow}
-                className="ms-3"
-              >
-                <i className={`bi ${isFollowing ? 'bi-person-check-fill' : 'bi-person-plus'} me-1`}></i>
-                {isFollowing ? 'Đã theo dõi' : loadingFollow ? 'Đang xử lý...' : 'Theo dõi'}
-              </Button>
-            )}
-          </div>
+          <div className="d-flex align-items-center mb-1">
+    <h1 className="h2 mb-0" style={{ flex: 1 }}>{doc.title}</h1>
+    {doc.school?.logoUrl && (
+      <img
+        src={`https://localhost:7013/${doc.school.logoUrl}`}
+        alt={doc.school.name || 'School Logo'}
+        className="school-logo"
+        style={{
+          width: '90px',
+          height: '90px',
+          borderRadius: '50%',
+          objectFit: 'cover',
+          border: '2px solid white',
+          backgroundColor: 'white',
+          marginLeft: '10px',
+        }}
+        onError={(e) => {
+          e.target.onerror = null;
+          e.target.src = '/default-school-logo.png';
+        }}
+      />
+    )}
+  </div>
+  <div className="mb-3 text-muted">
+    <span>Tác giả: {doc.email || 'Ẩn danh'}</span>
+    {user && user.userId !== doc.uploadedBy && doc.uploadedBy && (
+      <Button
+        variant={isFollowing ? "success" : "outline-success"}
+        size="sm"
+        onClick={handleFollowAuthor}
+        disabled={loadingFollow}
+        className="ms-3"
+      >
+        <i className={`bi ${isFollowing ? 'bi-person-check-fill' : 'bi-person-plus'} me-1`}></i>
+        {isFollowing ? 'Đã theo dõi' : loadingFollow ? 'Đang xử lý...' : 'Theo dõi'}
+      </Button>
+    )}
+  </div>
 
           <div className="mb-3 d-flex align-items-center" style={{gap: '0.5rem'}}>
             {totalRatedComments > 0 ? <StarRatingDisplay rating={averageRating} totalReviews={totalRatedComments} /> : <span>Chưa có đánh giá</span>}

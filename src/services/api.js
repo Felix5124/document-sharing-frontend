@@ -17,13 +17,10 @@ apiClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
     if (token) {
-      // Kiểm tra kỹ hơn URL trước khi đính kèm token
-      // Ví dụ: chỉ đính kèm nếu URL bắt đầu bằng API_BASE_URL thực sự
       if (config.url && config.url.startsWith(API_BASE_URL) && !config.headers.Authorization) {
-         config.headers.Authorization = `Bearer ${token}`;
+        config.headers.Authorization = `Bearer ${token}`;
       } else if (!config.url && config.baseURL === API_BASE_URL && !config.headers.Authorization) {
-        // Trường hợp config.url không được set nhưng baseURL là API của chúng ta
-         config.headers.Authorization = `Bearer ${token}`;
+        config.headers.Authorization = `Bearer ${token}`;
       }
     }
     return config;
@@ -34,27 +31,19 @@ apiClient.interceptors.request.use(
 );
 
 // --- API cho người dùng ---
+// (Giữ nguyên các API người dùng, không thay đổi)
 export const register = (data) => apiClient.post('/users/register', data);
-
-// export const login = (data) => apiClient.post('/users/login', data); // Endpoint này có thể không cần thiết nếu chỉ dùng Firebase client auth
-
 export const getUserByFirebaseUid = (uid) => apiClient.get(`/Users/by-uid/${uid}`);
-
-// Hàm mới để tạo người dùng backend cho Auth Provider (ví dụ: Google)
-export const createBackendUserForAuthProvider = async (firebaseUser) => {
-  const payload = {
-    FirebaseUid: firebaseUser.uid,
-    Email: firebaseUser.email,
-    FullName: firebaseUser.displayName || firebaseUser.email, // Lấy FullName, nếu không có thì dùng email làm fallback
-    // AvatarUrl: firebaseUser.photoURL, // Tùy chọn: bạn có thể gửi và lưu URL ảnh đại diện từ Google
-  };
-  console.log("API Call: Sending payload to /users/authprovider-register:", payload);
-  // POST request đến endpoint bạn đã tạo trong UsersController.cs
-  const response = await apiClient.post('/users/authprovider-register', payload);
-  return response.data; // Trả về thông tin người dùng đã được tạo (hoặc đã tồn tại) từ backend
+export const createBackendUserForAuthProvider = async (payload) => {
+  try {
+    console.log("API Call: Sending payload to /users/authprovider-register:", payload);
+    const response = await apiClient.post('/users/authprovider-register', payload);
+    return response.data;
+  } catch (error) {
+    console.error("Error in createBackendUserForAuthProvider:", error.response?.data);
+    throw error;
+  }
 };
-
-
 export const updateUser = (id, data) => apiClient.put(`/users/${id}`, data);
 export const getUser = (id) => apiClient.get(`/users/${id}`);
 export const getAllUsers = () => apiClient.get('/users/all');
@@ -68,7 +57,7 @@ export const uploadAvatar = (userId, file) => {
 };
 
 // --- API cho tài liệu ---
-// ... (giữ nguyên các hàm API khác của bạn) ...
+// (Giữ nguyên các API tài liệu)
 export const getDocuments = (params) => apiClient.get('/documents', { params });
 export const getDocumentById = (id) => apiClient.get(`/documents/${id}`);
 export const uploadDocument = (data) =>
@@ -87,7 +76,6 @@ export const searchDocuments = (params) => {
     }
     return acc;
   }, {});
-  console.log('Sending search params:', filteredParams);
   return apiClient.get('/documents/search', { params: filteredParams });
 };
 export const downloadDocument = (id, userId) =>
@@ -101,7 +89,6 @@ export const getUploadCount = (userId) => apiClient.get('/documents/upload-count
 export const getRelatedDocuments = (documentId, count = 4) => {
   return apiClient.get(`/documents/${documentId}/related`, { params: { count } });
 };
-
 
 // --- API cho danh mục ---
 export const getCategories = () => apiClient.get('/categories');
@@ -147,11 +134,35 @@ export const unfollow = (followerId, followedUserId) => apiClient.delete(`/follo
 export const getAllBadges = () => apiClient.get('/badges');
 export const getUserBadges = (userId) => apiClient.get('/userbadges', { params: { userId } });
 
-
-// --- API cho Bảng xếp hạng (Top đóng góp) ---
+// --- API cho bảng xếp hạng ---
 export const getTopCommenter = () => apiClient.get('/users/top-commenter');
 export const getTopPointsUser = () => apiClient.get('/users/top-points');
 export const getTopDownloadedDocument = () => apiClient.get('/documents/top-downloaded');
 
+// --- API cho trường học ---
+export const getSchools = () => apiClient.get('/schools');
+export const createSchool = async (schoolData) => {
+  const formData = new FormData();
+  formData.append('Name', schoolData.name);
+  formData.append('Logo', schoolData.logo);
+  formData.append('ExternalUrl', schoolData.externalUrl);
+  return await apiClient.post('/schools', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+};
+export const updateSchool = async (id, schoolData) => {
+  const formData = new FormData();
+  formData.append('Name', schoolData.name);
+  if (schoolData.logo) {
+    formData.append('Logo', schoolData.logo);
+  }
+  formData.append('ExternalUrl', schoolData.externalUrl);
+  return await apiClient.put(`/schools/${id}`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+};
+export const deleteSchool = async (id) => {
+  return await apiClient.delete(`/schools/${id}`);
+};
 
 export default apiClient;

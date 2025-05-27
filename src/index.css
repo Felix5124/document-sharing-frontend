@@ -189,7 +189,7 @@ body {
 }
 
 .card-meta {
-  display: flex;
+  display: block;
   justify-content: space-between;
   font-size: 0.9rem;
   color: #9CA3AF;
@@ -229,7 +229,14 @@ body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   width: 100%;
 }
+.nav-link.active {
+  color: #3B82F6 !important; /* Màu xanh nổi bật */
+  font-weight: 600; /* Đậm hơn để nhấn mạnh */
+}
 
+.nav-link.active::after {
+  width: 60%; /* Hiển thị gạch chân giống hiệu ứng hover */
+}
 .navbar-brand {
   font-size: 1.6rem;
   font-weight: 700;
@@ -264,13 +271,15 @@ body {
   left: 50%;
   transform: translateX(-50%);
   background-color: #3B82F6;
-  transition: width 0.3s ease;
+  transition: width 0.3s ease, opacity 0.3s ease; /* Thêm opacity */
+  opacity: 0;
 }
 
-.nav-link:hover::after {
+.nav-link:hover::after,
+.nav-link.active::after {
   width: 60%;
+  opacity: 1;
 }
-
 .btn-logout {
   color: #ffffff !important;
   border: 1px solid #3B82F6;
@@ -985,20 +994,6 @@ System: t */
   margin-bottom: 24px;
 }
 
-.action-button {
-  display: inline-flex;
-  align-items: center;
-  padding: 10px 20px;
-  background: linear-gradient(90deg, #3B82F6 0%, #2563EB 100%);
-  color: #FFFFFF;
-  text-decoration: none;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  font-weight: 500;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
 
 .action-button:hover {
   background: linear-gradient(90deg, #2563EB 0%, #1E40AF 100%);
@@ -1234,167 +1229,134 @@ System: t */
   }
 }
 
-/* Admin Dashboard Section */
+/* Admin Container */
 .admin-container {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 48px 24px;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background-color: #F9FAFB; /* Nền nhẹ, đồng bộ Home */
+  padding: 32px 24px;
+  background: linear-gradient(to bottom, #f9fafb, #ffffff);
+  font-family: 'Inter', sans-serif;
 }
 
+/* Admin Header */
 .admin-header {
-  margin-bottom: 32px;
+  margin-bottom: 24px;
+  padding: 16px;
+  background: linear-gradient(90deg, #3B82F6 0%, #2563EB 100%);
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .admin-title {
-  font-size: 2.4rem;
+  font-size: 2rem;
   font-weight: 700;
-  color: #111827;
+  color: #ffffff;
   display: flex;
   align-items: center;
+  margin: 0;
 }
 
-/* Navigation */
+/* Admin Navigation */
 .admin-nav {
   display: flex;
+  flex-wrap: wrap;
   gap: 12px;
   margin-bottom: 24px;
-  flex-wrap: wrap;
+  background: #ffffff;
+  padding: 12px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .nav-button {
   display: inline-flex;
   align-items: center;
   padding: 10px 20px;
-  background: #6B7280; /* Xám khi nghỉ */
-  border: 1px solid #4B5563;
+  background: #e5e7eb;
+  border: 1px solid #d1d5db;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 500;
-  color: #FFFFFF;
+  color: #374151;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .nav-button:hover {
-  background: #4B5563; /* Xám đậm hơn khi hover */
-  border-color: #374151;
-  transform: translateY(-1px);
+  background: #d1d5db;
+  transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .nav-button.active {
-  background: #374151; /* Xám đậm nhất khi active */
-  border-color: #1F2937;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(90deg, #3B82F6 0%, #2563EB 100%);
+  border-color: #3B82F6;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
-/* Content Sections (DocumentApproval, AccountManagement, CategoryManagement) */
+/* Admin Content */
 .admin-content {
-  background: linear-gradient(180deg, #FFFFFF 0%, #F9FAFB 100%); /* Gradient nhẹ */
-  border: 1px solid rgba(0, 0, 0, 0.1); /* Viền trong suốt */
-  border-radius: 12px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1); /* Đổ bóng mạnh */
-  transition: box-shadow 0.3s ease;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
-.admin-content:hover {
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15); /* Tăng bóng khi hover */
+.admin-content.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.admin-content.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .section-header {
-  background: #1F2937; /* Nền đen (gần đen) */
-  padding: 16px 24px;
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
+  background: linear-gradient(90deg, #1F2937 0%, #374151 100%);
+  padding: 12px 20px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .section-action-title {
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   font-weight: 600;
-  color: #FFFFFF;
+  color: #ffffff;
   margin: 0;
 }
 
 .section-body {
-  padding: 24px;
+  padding: 20px;
 }
 
-/* General styles for tables (giả định cho component con) */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #FFFFFF;
-  border-radius: 8px;
-  overflow: hidden;
+/* Sticky Header */
+.admin-header.sticky {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  animation: slideDown 0.3s ease;
 }
 
-th, td {
-  padding: 12px 16px;
-  text-align: left;
-  font-size: 0.95rem;
-  color: #374151;
-}
-
-th {
-  background: linear-gradient(90deg, #3B82F6 0%, #2563EB 100%);
-  color: #FFFFFF;
-  font-weight: 600;
-}
-
-tr {
-  border-bottom: 1px solid #E5E7EB;
-  transition: background 0.2s ease;
-}
-
-tr:hover {
-  background: #F3F4F6;
-}
-
-td button {
-  padding: 8px 16px;
-  background: linear-gradient(90deg, #3B82F6 0%, #2563EB 100%);
-  color: #FFFFFF;
-  border: none;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-td button:hover {
-  background: linear-gradient(90deg, #2563EB 0%, #1E40AF 100%);
-  transform: translateY(-1px);
-}
-
-td .approve-button {
-  background: linear-gradient(90deg, #10B981 0%, #059669 100%); /* Xanh cho duyệt */
-}
-
-td .approve-button:hover {
-  background: linear-gradient(90deg, #059669 0%, #047857 100%);
-  transform: translateY(-1px);
-}
-
-td .lock-button {
-  background: linear-gradient(90deg, #EF4444 0%, #DC2626 100%); /* Đỏ cho khóa */
-}
-
-td .lock-button:hover {
-  background: linear-gradient(90deg, #DC2626 0%, #B91C1C 100%);
-  transform: translateY(-1px);
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-  .admin-title {
-    font-size: 2rem;
-  }
-
   .admin-container {
     padding: 24px 16px;
+  }
+
+  .admin-title {
+    font-size: 1.8rem;
   }
 
   .admin-nav {
@@ -1405,29 +1367,7 @@ td .lock-button:hover {
   .nav-button {
     width: 100%;
     justify-content: center;
-  }
-
-  .section-header {
-    padding: 12px 20px;
-  }
-
-  .section-action-title {
-    font-size: 1.6rem;
-  }
-
-  .section-body {
-    padding: 20px;
-  }
-
-  th, td {
-    padding: 10px 12px;
-    font-size: 0.9rem;
-  }
-}
-
-@media (max-width: 576px) {
-  .section-header {
-    padding: 10px 16px;
+    padding: 12px;
   }
 
   .section-action-title {
@@ -1437,16 +1377,365 @@ td .lock-button:hover {
   .section-body {
     padding: 16px;
   }
+}
 
-  th, td {
-    padding: 8px 10px;
-    font-size: 0.85rem;
+@media (max-width: 576px) {
+  .admin-header {
+    padding: 12px;
   }
 
-  td button {
-    padding: 6px 12px;
-    font-size: 0.85rem;
+  .admin-title {
+    font-size: 1.6rem;
   }
+
+  .section-body {
+    padding: 12px;
+  }
+}
+/* Admin Section */
+.admin-section {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Section Title */
+.section-title {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+}
+
+/* Category Form */
+.category-form {
+  background: #f9fafb;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin-bottom: 24px;
+}
+
+.category-form h5 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 12px;
+}
+
+.category-form .form-group {
+  margin-bottom: 12px;
+}
+
+.category-form .form-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #111827;
+  margin-bottom: 6px;
+}
+
+.category-form .form-input {
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+/* Admin Table Wrapper */
+.admin-table-wrapper {
+  overflow-x: auto; /* Cho phép cuộn ngang nếu nội dung vượt khung */
+}
+
+/* Admin Table */
+.admin-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+.admin-table th {
+  background: linear-gradient(90deg, #58677e 0%, #2b2e36 100%);
+  color: #ffffff;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+}
+
+.admin-table tr {
+  border-bottom: 1px solid #e5e7eb;
+  transition: background 0.2s ease, transform 0.3s ease;
+}
+
+.admin-table tr:hover {
+  background: #f3f4f6;
+  transform: translateY(-2px); /* Hiệu ứng nâng nhẹ khi hover */
+}
+
+/* Document Table (cho DocumentManagement) */
+.document-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.document-table th,
+.document-table td {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+.document-table th {
+  background: linear-gradient(90deg, #242d3b 0%, #323947 100%);
+  color: #ffffff;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+}
+
+.document-table tr {
+  border-bottom: 1px solid #e5e7eb;
+  transition: background 0.2s ease, transform 0.3s ease;
+}
+
+.document-table tr:hover {
+  background: #f3f4f6;
+  transform: translateY(-2px);
+}
+
+/* Status Badge (cho DocumentManagement) */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  animation: pulse 2s infinite;
+}
+
+.status-approved {
+  background: #e6f3ec;
+  color: #059669;
+}
+
+.status-pending {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.status-locked {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.status-unlocked {
+  background: #e6f3ec;
+  color: #059669;
+}
+
+/* Statistics Card (cho AdminStatistics) */
+.stats-card {
+  background: #404946;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stats-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+}
+
+.stats-card .card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.stats-card .card-text {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #5f81bd;
+  animation: pulse 2s infinite;
+  text-align: center;
+}
+
+/* Action Button */
+.action-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.submit-button {
+  background: linear-gradient(90deg, #10B981 0%, #059669 100%);
+  color: #ffffff;
+}
+
+.submit-button:hover {
+  background: linear-gradient(90deg, #059669 0%, #047857 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.edit-button {
+  background: linear-gradient(90deg, #EF4444 0%, #DC2626 100%);
+  color: #ffffff;
+}
+.approve-button {
+  background: linear-gradient(90deg, #10B981 0%, #059669 100%); /* Xanh lá cây */
+  color: #ffffff;
+}
+.edit-button:hover {
+  background: linear-gradient(90deg, #DC2626 0%, #B91C1C 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+.approve-button:hover {
+  background: linear-gradient(90deg, #059669 0%, #047857 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+.delete-button, .cancel-button {
+  background: linear-gradient(90deg, #EF4444 0%, #DC2626 100%);
+  color: #ffffff;
+}
+
+.delete-button:hover, .cancel-button:hover {
+  background: linear-gradient(90deg, #DC2626 0%, #B91C1C 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.lock-button {
+  background: linear-gradient(90deg, #EF4444 0%, #DC2626 100%);
+  color: #ffffff;
+}
+
+.lock-button:hover {
+  background: linear-gradient(90deg, #DC2626 0%, #B91C1C 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.unlock-button {
+  background: linear-gradient(90deg, #10B981 0%, #059669 100%);
+  color: #ffffff;
+}
+
+.unlock-button:hover {
+  background: linear-gradient(90deg, #059669 0%, #047857 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+/* Fade-in Effect */
+.fade-in {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger Effect for Table Rows and Cards */
+.admin-table tr:nth-child(1), .stats-card:nth-child(1) {
+  transition-delay: 0.1s;
+}
+.admin-table tr:nth-child(2), .stats-card:nth-child(2) {
+  transition-delay: 0.2s;
+}
+.admin-table tr:nth-child(3), .stats-card:nth-child(3) {
+  transition-delay: 0.3s;
+}
+
+/* Pulse Animation */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(59, 130, 246, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 40px 0;
+  background: #f9fafb;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.empty-icon {
+  font-size: 3rem;
+  color: #9ca3af;
+  margin-bottom: 16px;
+}
+
+.empty-state p {
+  font-size: 1.1rem;
+  color: #6b7280;
+}
+
+/* Loading Container */
+.loading-container {
+  text-align: center;
+  padding: 40px 0;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e5e7eb;
+  border-top: 4px solid #3B82F6;
+  border-radius: 50%;
+  animation: spin 1s ease-in-out infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  margin-top: 16px;
+  color: #6b7280;
+  font-size: 1rem;
 }
 /* Auth Pages (Login & Register) */
 .auth-container {
@@ -1887,7 +2176,7 @@ td .lock-button:hover {
   display: inline-flex;
   align-items: center;
   padding: 8px 16px;
-  background: linear-gradient(90deg, #3B82F6 0%, #2563EB 100%);
+  background: linear-gradient(90deg, #2e8053 0%, #2a6634 100%);
   color: #FFFFFF;
   text-decoration: none;
   border-radius: 8px;
@@ -1899,7 +2188,7 @@ td .lock-button:hover {
 }
 
 .action-button:hover {
-  background: linear-gradient(90deg, #2563EB 0%, #1E40AF 100%);
+  background: linear-gradient(90deg, #01491c 0%, #006e1c 100%);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
@@ -2012,8 +2301,18 @@ td .lock-button:hover {
   padding: 0;
   border-radius: 0;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-attachment: fixed; /* Parallax effect */
+  position: relative;
+  overflow: hidden;
+}
+.banner-section .banner-content {
+  transform: translateY(0);
+  transition: transform 0.5s ease-out;
 }
 
+.banner-section.scrolled .banner-content {
+  transform: translateY(-20px);
+}
 .banner-content {
   display: flex;
   flex-direction: column;
@@ -2309,7 +2608,7 @@ footer .btn-social:hover {
 .document-table th {
   background-color: #f1f1f1;
   font-weight: bold;
-  color: #333;
+  color: #ffffff;
 }
 
 .document-table tr:hover {
@@ -2455,160 +2754,308 @@ footer .btn-social:hover {
 .preview-content canvas {
   margin: 10px 0; /* Thêm khoảng cách giữa các trang PDF */
 }
-/* Forum Section */
+/* Forum Container */
 .forum-container {
   max-width: 1280px;
   margin: 0 auto;
+  padding: 32px 24px;
   background: linear-gradient(to bottom, #ffffff, #f9fafb);
-  border-radius: 1rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-  padding: 2rem;
-  margin-top: 2rem; /* Cách navbar 32px */
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  font-family: 'Inter', sans-serif;
 }
 
-/* Form tạo bài viết và bình luận */
-.forum-container form {
+/* Form tạo bài viết */
+.forum-form {
   background: #ffffff;
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  padding: 1.5rem;
-  margin-bottom: 2rem;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 32px;
 }
 
-.forum-container input,
-.forum-container textarea {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  transition: all 0.2s ease;
+.forum-form .form-group {
+  margin-bottom: 16px;
 }
 
-.forum-container input:focus,
-.forum-container textarea:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.forum-container button {
-  background: linear-gradient(to right, #3b82f6, #2563eb);
-  color: #ffffff;
-  border: none;
-  border-radius: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
+.forum-form .form-label {
+  font-size: 0.95rem;
   font-weight: 500;
-  cursor: pointer;
+  color: #111827;
+  margin-bottom: 6px;
+}
+
+.forum-form .form-input {
+  padding: 10px 12px 10px 40px;
+  border-radius: 8px;
+  font-size: 0.95rem;
   transition: all 0.2s ease;
 }
 
-.forum-container button:hover {
-  background: linear-gradient(to right, #2563eb, #1e40af);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+.forum-form textarea.form-input {
+  min-height: 100px;
 }
 
-/* Bài viết */
-.forum-container .post-card {
+.forum-form .submit-button {
+  padding: 10px 20px;
+  font-size: 0.95rem;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #3B82F6 0%, #2563EB 100%);
+}
+
+.forum-form .submit-button:hover {
+  background: linear-gradient(90deg, #2563EB 0%, #1E40AF 100%);
+  transform: translateY(-1px);
+}
+
+/* Post Card */
+.post-card {
   background: #ffffff;
   border: 1px solid #e5e7eb;
-  border-radius: 0.75rem;
-  padding: 1.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.forum-container .post-card:hover {
+.post-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
 }
 
-.forum-container .post-card .avatar {
-  width: 24px;
-  height: 24px;
+.post-card .avatar {
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   object-fit: cover;
+  border: 2px solid #e5e7eb;
 }
 
-.forum-container .post-card .username {
-  font-size: 0.875rem;
-  color: #4b5563;
+.post-card .username {
+  font-size: 0.9rem;
   font-weight: 600;
-  margin-left: 0.75rem;
+  color: #374151;
+  margin-left: 12px;
   flex: 1;
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.forum-container .post-card h2 {
-  font-size: 1.25rem;
+.post-card .post-title {
+  font-size: 1.2rem;
   font-weight: 600;
-  color: #1f2937;
-  margin-bottom: 0.5rem;
+  color: #111827;
+  margin-bottom: 8px;
 }
 
-.forum-container .post-card p {
+.post-card .post-content {
   font-size: 0.95rem;
   color: #4b5563;
   line-height: 1.6;
+  margin-bottom: 12px;
 }
 
-.forum-container .post-card .comment-toggle {
-  color: #3b82f6;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: color 0.2s ease;
+.post-card .post-date {
+  font-size: 0.85rem;
+  color: #6b7280;
+  background: #f3f4f6;
+  padding: 4px 12px;
+  border-radius: 12px;
+  display: inline-block;
 }
 
-.forum-container .post-card .comment-toggle:hover {
-  color: #2563eb;
+.post-card .comment-toggle {
+  font-size: 0.9rem;
+  padding: 8px 16px;
+  background: linear-gradient(90deg, #10B981 0%, #059669 100%);
+  color: #ffffff;
+  border-radius: 8px;
+  transition: all 0.2s ease;
 }
 
-/* Bình luận */
-.forum-container .comment-item {
+.post-card .comment-toggle:hover {
+  background: linear-gradient(90deg, #059669 0%, #047857 100%);
+  transform: translateY(-1px);
+}
+
+/* Comment Section */
+.comment-item {
   border-top: 1px solid #e5e7eb;
-  padding-top: 0.75rem;
-  margin-top: 0.75rem;
+  padding: 12px 0;
+  margin-top: 12px;
 }
 
-.forum-container .comment-item p {
+.comment-item p {
   font-size: 0.9rem;
   color: #374151;
+  margin-bottom: 4px;
 }
 
-.forum-container .comment-item .comment-meta {
-  font-size: 0.75rem;
+.comment-item .comment-meta {
+  font-size: 0.8rem;
   color: #6b7280;
+}
+
+/* Hiệu ứng fade-in cho post-card */
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* Responsive */
 @media (max-width: 768px) {
   .forum-container {
-    padding: 1.5rem;
-    margin-top: 1.5rem;
+    padding: 24px 16px;
   }
 
-  .forum-container .post-card {
-    padding: 1rem;
+  .forum-form {
+    padding: 16px;
   }
 
-  .forum-container .post-card .avatar {
-    width: 20px;
-    height: 20px;
+  .post-card {
+    padding: 16px;
   }
 
-  .forum-container .post-card .username {
-    font-size: 0.75rem;
-    margin-left: 0.5rem;
+  .post-card .avatar {
+    width: 36px;
+    height: 36px;
+  }
+
+  .post-card .username {
+    font-size: 0.85rem;
+  }
+
+  .post-card .post-title {
+    font-size: 1.1rem;
   }
 }
 
 @media (max-width: 576px) {
-  .forum-container {
-    padding: 1rem;
-    margin-top: 1rem;
+  .forum-form .form-input {
+    padding: 8px 10px 8px 36px;
   }
+
+  .forum-form .submit-button {
+    width: 100%;
+  }
+
+  .post-card .comment-toggle {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* Đảm bảo hiệu ứng áp dụng cho document-card và contributor-column */
+.document-card,
+.contributor-column {
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.documents-grid .col,
+.top-contributors-section .contributor-column {
+  transition-delay: 0s;
+}
+
+.documents-grid .col:nth-child(1),
+.top-contributors-section .contributor-column:nth-child(1) {
+  transition-delay: 0.1s;
+}
+
+.documents-grid .col:nth-child(2),
+.top-contributors-section .contributor-column:nth-child(2) {
+  transition-delay: 0.2s;
+}
+
+.documents-grid .col:nth-child(3),
+.top-contributors-section .contributor-column:nth-child(3) {
+  transition-delay: 0.3s;
+}
+/* School Card Styles */
+.school-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.school-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.schools-grid .col {
+  flex: 0 0 auto;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .schools-grid .col {
+    width: 50%;
+  }
+}
+
+@media (min-width: 992px) {
+  .schools-grid .col {
+    width: 25%;
+  }
+}
+
+.school-card .card-img-top {
+  background-color: #f8f9fa;
+}
+
+.school-card .card-title {
+  fontSize: 1.25rem;
+  fontWeight: 600;
+  marginBottom: 0.5rem;
+}
+
+.school-card .card-text {
+  color: #6c757d;
+}
+
+.school-card .btn {
+  fontSize: 0.875rem;
+}
+
+/* Fade-in animation */
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Divider và title-group */
+.custom-divider {
+  text-align: center;
+  margin: 3rem 0;
+}
+
+.divider-text {
+  background-color: #fff;
+  padding: 0 1rem;
+  font-size: 1.25rem;
+  color: #6c757d;
+}
+
+.title-group {
+  margin-bottom: 2rem;
+}
+
+.main-title {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.sub-title {
+  font-size: 1.25rem;
+  color: #6c757d;
 }

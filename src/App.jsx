@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom'; // Thêm Link vào import
+import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -30,9 +30,9 @@ function PrivateRoute({ children, requireAdmin = false, allowNonAdmin = false })
 
   console.log("[PrivateRoute] Status:", {
     isLoading,
-    user: user ? { userId: user.userId, isAdmin: user.isAdmin, email: user.email } : null, // Log thông tin quan trọng, tránh log cả object lớn
+    user: user ? { userId: user.userId, isAdmin: user.isAdmin, email: user.email } : null,
     isAuthenticated,
-    requireAdmin
+    requireAdmin,
   });
 
   if (isLoading) {
@@ -43,13 +43,12 @@ function PrivateRoute({ children, requireAdmin = false, allowNonAdmin = false })
     return <Navigate to="/login" />;
   }
 
-  if (requireAdmin && (user && !user.isAdmin)) {
+  if (requireAdmin && user && !user.isAdmin) {
     console.log("[PrivateRoute] Admin access required, but user is not admin. Navigating to /.");
     return <Navigate to="/" />;
   }
 
-
-  if (allowNonAdmin && (user && user.isAdmin)) {
+  if (allowNonAdmin && user && user.isAdmin) {
     console.log("[PrivateRoute] Non-admin access required, but user IS admin. Navigating to /.");
     return <Navigate to="/" />;
   }
@@ -78,21 +77,28 @@ function App() {
             path="/admin"
             element={
               <PrivateRoute requireAdmin={true}>
-                <ErrorBoundary> {/* Bọc AdminDashboard */}
+                <ErrorBoundary>
                   <AdminDashboard />
                 </ErrorBoundary>
               </PrivateRoute>
             }
-          />          <Route path="/upload" element={<PrivateRoute allowNonAdmin={true}><UploadDocument /></PrivateRoute>} />
+          />
+          <Route path="/upload" element={<PrivateRoute allowNonAdmin={true}><UploadDocument /></PrivateRoute>} />
           <Route path="/update/:id" element={<ErrorBoundary><UpdateDocument /></ErrorBoundary>} />
           <Route path="/posts" element={<ErrorBoundary><Post /></ErrorBoundary>} />
           <Route path="/rankings" element={<RankingsPage />} />
-
-          {/* Routes cho thông báo và theo dõi */}
           <Route path="/notifications" element={<PrivateRoute><Notifications /></PrivateRoute>} />
           <Route path="/notifications/:notificationId" element={<PrivateRoute><NotificationDetail /></PrivateRoute>} />
           <Route path="/follow" element={<PrivateRoute><Follow /></PrivateRoute>} />
 
+          {/* Xóa route cho SchoolDocuments */}
+          {/* <Route path="/schools/:schoolId" element={<ErrorBoundary><SchoolDocuments /></ErrorBoundary>} /> */}
+
+          {/* Thêm route cho các trang tĩnh trong footer */}
+          <Route path="/about" element={<ErrorBoundary><div>Giới thiệu</div></ErrorBoundary>} />
+          <Route path="/contact" element={<ErrorBoundary><div>Liên hệ</div></ErrorBoundary>} />
+          <Route path="/privacy" element={<ErrorBoundary><div>Bảo mật</div></ErrorBoundary>} />
+          <Route path="/help" element={<ErrorBoundary><div>Trợ giúp</div></ErrorBoundary>} />
         </Routes>
 
         {/* Footer */}
@@ -136,7 +142,7 @@ function App() {
               <div className="col-lg-4 col-md-6">
                 <h4 className="text-white mb-3">Bản đồ</h4>
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3918.6142029797343!2d106.80632377421058!3d10.840807489311873!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3175274f07046f89%3A0x3a9cb196c5e1a7de!2zSFVURUNIIC0gxJDhuqFpIGjhu41jIEPDtG5nIG5naOG7hyBUUC5IQ00gKEhpdGVjaCBQYXJrIENhbXB1cyk!5e0!3m2!1svi!2s!4v1743307008388!5m2!1svi!2s"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3918.6142029797343!2d106.80632377421058!3d10.840807489311873!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3175274f07046f89%3A0x3a9cb196c5e1a7de!2zSFVURUNIIC0gxJDhuqFpIGjhu41jIEPDtG5nIG5naOG7hyBUUC5IQ00!5e0!3m2!1svi!2s!4v1743307008388!5m2!1svi!2s"
                   width="100%"
                   height="250"
                   style={{ border: 0 }}
@@ -147,14 +153,12 @@ function App() {
               </div>
             </div>
 
-            {/* Phần bản quyền */}
             <div className="mt-4">
               <p>© 2025 - DoAn_Web. Tất cả quyền lợi thuộc về DoAn_Web.</p>
             </div>
           </div>
         </footer>
 
-        {/* Nút Back to Top */}
         <div id="back-to-top">
           <button type="button" className="btn btn-primary" onClick={scrollToTop}>
             <i className="fas fa-arrow-up"></i>

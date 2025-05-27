@@ -13,11 +13,17 @@ function Register() {
   const onSubmit = async (data) => {
     setLoading(true);
     try {
-      const response = await register(data);
+      const payload = {
+        Email: data.Email,
+        Password: data.Password,
+        FullName: data.FullName
+        // Không gửi SchoolId
+      };
+      const response = await register(payload);
       toast.success('Đăng ký thành công! Vui lòng kiểm tra email để xác minh.');
       navigate('/login');
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Đăng ký thất bại. Vui lòng thử lại.';
+      const errorMessage = error.response?.data?.message || 'Tài khoản đã tồn tại. Vui lòng thử lại.';
       toast.error(errorMessage);
     } finally {
       setLoading(false);

@@ -10,38 +10,48 @@ function UpdateDocument() {
   const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm();
   const [document, setDocument] = useState(null);
   const [categories, setCategories] = useState([]);
-  const [file, setFile] = useState(null);
   const [fileName, setFileName] = useState('');
   const [currentCoverImageUrl, setCurrentCoverImageUrl] = useState('');
   const [previewNewCover, setPreviewNewCover] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const newCoverImageFile = watch('ImageCovers');
+  const newCoverImageFile = watch('CoverImage'); // Đổi từ 'ImageCovers' thành 'CoverImage'
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        
         const [docResponse, catResponse] = await Promise.all([
           getDocumentById(id),
           getCategories(),
         ]);
-        setDocument(docResponse.data);
-        setCategories(catResponse.data);
-        setValue('Title', docResponse.data.title);
-        setValue('Description', docResponse.data.description);
-        setValue('CategoryId', docResponse.data.categoryId);
-        setValue('UploadedBy', docResponse.data.uploadedBy);
-        setValue('PointsRequired', docResponse.data.pointsRequired);
-        const fileNameFromUrl = docResponse.data.fileUrl
-          ? docResponse.data.fileUrl.split('/').pop()
+
+        const docData = docResponse.data;
+        setDocument(docData);
+
+        // Kiểm tra định dạng dữ liệu trả về từ BE (PascalCase)
+        setValue('Title', docData.Title || docData.title || '');
+        setValue('Description', docData.Description || docData.description || '');
+        setValue('CategoryId', docData.CategoryId || docData.categoryId || '');
+        setValue('UploadedBy', docData.UploadedBy || docData.uploadedBy || '');
+        setValue('PointsRequired', docData.PointsRequired || docData.pointsRequired || 0);
+
+        // Xử lý danh mục
+        const cats = catResponse.data.$values || catResponse.data || [];
+        setCategories(Array.isArray(cats) ? cats : []);
+
+        // Xử lý tên file
+        const fileNameFromUrl = docData.FileUrl
+          ? docData.FileUrl.split('/').pop()
           : '';
         setFileName(fileNameFromUrl);
-        if (docResponse.data.coverImageUrl) {
-            setCurrentCoverImageUrl(`${api.defaults.baseURL.replace('/api', '')}/${docResponse.data.coverImageUrl}`);
+
+        // Xử lý ảnh bìa hiện tại
+        if (docData.CoverImageUrl) {
+          setCurrentCoverImageUrl(`${api.defaults.baseURL.replace('/api', '')}/${docData.CoverImageUrl}`);
         } else {
-            setCurrentCoverImageUrl(`${api.defaults.baseURL.replace('/api', '')}/Files/Covers/default-cover.png`); // Default
+          setCurrentCoverImageUrl(`${api.defaults.baseURL.replace('/api', '')}/Files/Covers/default-cover.png`);
         }
+
         setLoading(false);
       } catch (error) {
         console.error('Fetch error:', error.response?.data || error.message);
@@ -52,20 +62,7 @@ function UpdateDocument() {
     fetchData();
   }, [id, navigate, setValue]);
 
-
-  const handleFileChange = (e) => {
-    if (e.target.files[0]) {
-      const selectedFile = e.target.files[0];
-      const extension = selectedFile.name.split('.').pop().toLowerCase();
-      if (!['pdf', 'docx', 'txt'].includes(extension)) {
-        toast.error('Chỉ chấp nhận file PDF, DOCX, hoặc TXT.');
-        return;
-      }
-      setFile(selectedFile);
-      setFileName(selectedFile.name);
-    }
-  };
-
+  // Xử lý preview ảnh bìa mới
   useEffect(() => {
     if (newCoverImageFile && newCoverImageFile.length > 0) {
       const file = newCoverImageFile[0];
@@ -75,32 +72,73 @@ function UpdateDocument() {
       };
       reader.readAsDataURL(file);
     } else {
-      setPreviewNewCover(null); 
+      setPreviewNewCover(null);
     }
   }, [newCoverImageFile]);
+
+  const handleFileChange = (e) => {
+    if (e.target.files[0]) {
+      const selectedFile = e.target.files[0];
+      const extension = selectedFile.name.split('.').pop().toLowerCase();
+      if (!['pdf', 'docx', 'txt'].includes(extension)) {
+        toast.error('Chỉ chấp nhận file PDF, DOCX, hoặc TXT.');
+        e.target.value = ''; // Reset input file
+        return;
+      }
+      setFileName(selectedFile.name);
+    }
+  };
 
   const onSubmit = async (data) => {
     try {
       const formData = new FormData();
-      formData.append('Title', data.Title);
-      formData.append('Description', data.Description || '');
-      formData.append('CategoryId', parseInt(data.CategoryId, 10));
-      formData.append('UploadedBy', parseInt(data.UploadedBy, 10));
-      formData.append('PointsRequired', parseInt(data.PointsRequired, 10) || 0);
 
+      // Đảm bảo các trường bắt buộc không rỗng
+      if (!data.Title) {
+        toast.error('Tiêu đề không được để trống.');
+        return;
+      }
+      formData.append('Title', data.Title);
+
+      formData.append('Description', data.Description || '');
+
+      // Kiểm tra và chuyển đổi CategoryId
+      const categoryId = parseInt(data.CategoryId, 10);
+      if (isNaN(categoryId) || categoryId <= 0) {
+        toast.error('Vui lòng chọn danh mục hợp lệ.');
+        return;
+      }
+      formData.append('CategoryId', categoryId.toString());
+
+      // Kiểm tra và chuyển đổi UploadedBy
+      const uploadedBy = parseInt(data.UploadedBy, 10);
+      if (isNaN(uploadedBy) || uploadedBy <= 0) {
+        toast.error('ID người tải lên không hợp lệ.');
+        return;
+      }
+      formData.append('UploadedBy', uploadedBy.toString());
+
+      // Chuyển đổi PointsRequired
+      const pointsRequired = parseInt(data.PointsRequired, 10);
+      formData.append('PointsRequired', (isNaN(pointsRequired) ? 0 : pointsRequired).toString());
+
+      // Xử lý file tài liệu (nếu có)
       if (data.File && data.File.length > 0) {
         const selectedFile = data.File[0];
         const extension = selectedFile.name.split('.').pop().toLowerCase();
         if (!['pdf', 'docx', 'txt'].includes(extension)) {
-            toast.error('File tài liệu chỉ chấp nhận định dạng PDF, DOCX, hoặc TXT.');
-            return;
+          toast.error('File tài liệu chỉ chấp nhận định dạng PDF, DOCX, hoặc TXT.');
+          return;
         }
         formData.append('File', selectedFile);
       }
 
+      // Xử lý ảnh bìa (nếu có)
       if (data.CoverImage && data.CoverImage.length > 0) {
-        formData.append('ImageCovers', data.CoverImage[0]);
+        formData.append('CoverImage', data.CoverImage[0]); // Sửa từ 'ImageCovers' thành 'CoverImage'
       }
+
+      // Log dữ liệu gửi lên để debug
       for (let [key, value] of formData.entries()) {
         console.log(`${key}: ${value}`);
       }
@@ -123,9 +161,8 @@ function UpdateDocument() {
       });
       toast.error(errorMessage, { toastId: 'update-error' });
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
-
   };
 
   if (loading || !document) return <div>Đang tải...</div>;
@@ -169,7 +206,10 @@ function UpdateDocument() {
             <select
               className="form-input"
               style={{ width: '100%', padding: '10px 10px 10px 35px', border: '1px solid #ccc', borderRadius: '4px' }}
-              {...register('CategoryId', { required: 'Vui lòng chọn danh mục' })}
+              {...register('CategoryId', { 
+                required: 'Vui lòng chọn danh mục',
+                validate: (value) => parseInt(value, 10) > 0 || 'Vui lòng chọn danh mục hợp lệ'
+              })}
             >
               <option value="">Chọn danh mục</option>
               {categories.map((category) => (
@@ -190,7 +230,10 @@ function UpdateDocument() {
               type="number"
               className="form-input"
               style={{ width: '100%', padding: '10px 10px 10px 35px', border: '1px solid #ccc', borderRadius: '4px' }}
-              {...register('UploadedBy', { required: 'Vui lòng nhập ID người tải lên' })}
+              {...register('UploadedBy', { 
+                required: 'Vui lòng nhập ID người tải lên',
+                validate: (value) => parseInt(value, 10) > 0 || 'ID người tải lên không hợp lệ'
+              })}
               disabled
             />
           </div>
@@ -221,46 +264,53 @@ function UpdateDocument() {
             type="file"
             accept=".pdf,.docx,.txt"
             style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '4px' }}
+            {...register('File')} // Sử dụng register thay vì onChange để đồng bộ với react-hook-form
             onChange={handleFileChange}
           />
         </div>
 
         <div className="form-group mb-3">
-            <label className="form-label">Ảnh bìa</label>
-            {currentCoverImageUrl && !previewNewCover && (
-                <div className="mb-2 text-center">
-                    <p>Ảnh bìa hiện tại:</p>
-                    <img src={currentCoverImageUrl} alt="Ảnh bìa hiện tại" 
-                         style={{ maxWidth: '200px', maxHeight: '200px', objectFit: 'cover', border: '1px solid #ddd' }}
-                         onError={(e) => { e.target.style.display = 'none'; /* Hide if error */ }}/>
-                </div>
-            )}
-            {previewNewCover && (
-                 <div className="mb-2 text-center">
-                    <p>Ảnh bìa mới (xem trước):</p>
-                    <img src={previewNewCover} alt="Xem trước ảnh bìa mới" 
-                         style={{ maxWidth: '200px', maxHeight: '200px', objectFit: 'cover', border: '1px solid #ddd' }} />
-                </div>
-            )}
-            <div className="input-wrapper input-group">
-                <span className="input-group-text"><i className="bi bi-image"></i></span>
-                <input
-                    type="file"
-                    className="form-control"
-                    accept="image/jpeg,image/png,image/gif"
-                    {...register('CoverImage')} // Register for new cover image
-                />
+          <label className="form-label">Ảnh bìa</label>
+          {currentCoverImageUrl && !previewNewCover && (
+            <div className="mb-2 text-center">
+              <p>Ảnh bìa hiện tại:</p>
+              <img
+                src={currentCoverImageUrl}
+                alt="Ảnh bìa hiện tại"
+                style={{ maxWidth: '200px', maxHeight: '200px', objectFit: 'cover', border: '1px solid #ddd' }}
+                onError={(e) => { e.target.style.display = 'none'; }}
+              />
             </div>
-            <small className="form-text text-muted">Để trống nếu không muốn thay đổi ảnh bìa.</small>
+          )}
+          {previewNewCover && (
+            <div className="mb-2 text-center">
+              <p>Ảnh bìa mới (xem trước):</p>
+              <img
+                src={previewNewCover}
+                alt="Xem trước ảnh bìa mới"
+                style={{ maxWidth: '200px', maxHeight: '200px', objectFit: 'cover', border: '1px solid #ddd' }}
+              />
+            </div>
+          )}
+          <div className="input-wrapper input-group">
+            <span className="input-group-text"><i className="bi bi-image"></i></span>
+            <input
+              type="file"
+              className="form-control"
+              accept="image/jpeg,image/png,image/gif"
+              {...register('CoverImage')} // Đổi tên từ 'ImageCovers' thành 'CoverImage'
+            />
           </div>
-        
+          <small className="form-text text-muted">Để trống nếu không muốn thay đổi ảnh bìa.</small>
+        </div>
 
         <button
           type="submit"
           className="submit-button"
           style={{ width: '100%', padding: '10px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+          disabled={loading}
         >
-          <i className="bi bi-check-circle me-2"></i> Cập nhật tài liệu
+          <i className="bi bi-check-circle me-2"></i> {loading ? 'Đang cập nhật...' : 'Cập nhật tài liệu'}
         </button>
         <button
           type="button"

@@ -1,6 +1,5 @@
-// src/components/Navbar.jsx
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState, useRef } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 import { getUserNotifications } from '../services/api';
@@ -10,16 +9,17 @@ function Navbar() {
   const location = useLocation();
   const { user, logout } = useContext(AuthContext);
   const [unreadCount, setUnreadCount] = useState(0);
+  const navbarRef = useRef(null);
 
+  // Hàm lấy số thông báo chưa đọc
   const fetchUnreadNotifications = async () => {
-    if (!user || user.isAdmin) return; 
+    if (!user || user.isAdmin) return;
     try {
       const response = await getUserNotifications(user.userId);
       let data = response.data;
-            if (data && Array.isArray(data.$values)) {
+      if (data && Array.isArray(data.$values)) {
         data = data.$values;
       } else if (!Array.isArray(data)) {
-        // Nếu data không phải mảng và cũng không phải object có $values, coi như mảng rỗng để tránh lỗi
         console.warn("Dữ liệu thông báo không đúng định dạng mảng:", response.data);
         data = [];
       }
@@ -27,35 +27,47 @@ function Navbar() {
       setUnreadCount(unread);
     } catch (error) {
       console.error('Fetch unread notifications error:', error);
-      // setUnreadCount(0); // Reset nếu có lỗi
     }
-
   };
 
+  // Lắng nghe sự kiện cuộn để thu nhỏ navbar
+  useEffect(() => {
+    const handleScroll = () => {
+      if (navbarRef.current) {
+        if (window.scrollY > 50) {
+          navbarRef.current.classList.add('scrolled');
+        } else {
+          navbarRef.current.classList.remove('scrolled');
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Lấy thông báo khi user thay đổi
   useEffect(() => {
     if (user && !user.isAdmin) {
-    fetchUnreadNotifications();
-
-    const interval = setInterval(() => {
       fetchUnreadNotifications();
-    }, 30000);
-
-    return () => clearInterval(interval);
-  } else {
-      setUnreadCount(0); // Reset unread count nếu là admin hoặc không có user
+      const interval = setInterval(() => {
+        fetchUnreadNotifications();
+      }, 30000);
+      return () => clearInterval(interval);
+    } else {
+      setUnreadCount(0);
     }
   }, [user]);
 
-
+  // Xử lý đăng xuất
   const handleLogout = () => {
     logout();
-    toast.success('Đăng xuất thành công!');
+   // toast.success('Đăng xuất thành công!');
     navigate('/login');
   };
 
-
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark custom-navbar">
+    <nav ref={navbarRef} className="navbar navbar-expand-lg navbar-dark custom-navbar">
       <div className="container">
         <Link className="navbar-brand" to="/">Document Sharing</Link>
         <button
@@ -72,34 +84,65 @@ function Navbar() {
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ms-auto">
             <li className="nav-item">
-              <Link className="nav-link" to="/">Home</Link>
+              <Link
+                className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}
+                to="/"
+              >
+                Home
+              </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/posts">Diễn đàn</Link>
+              <Link
+                className={`nav-link ${location.pathname === '/posts' ? 'active' : ''}`}
+                to="/posts"
+              >
+                Diễn đàn
+              </Link>
             </li>
             {user && (
               <>
-                {/* Menu cho admin */}
                 {user.isAdmin ? (
                   <>
                     <li className="nav-item">
-                      <Link className="nav-link" to="/profile">Hồ sơ</Link>
+                      <Link
+                        className={`nav-link ${location.pathname === '/profile' ? 'active' : ''}`}
+                        to="/profile"
+                      >
+                        Hồ sơ
+                      </Link>
                     </li>
                     <li className="nav-item">
-                      <Link className="nav-link" to="/admin">Quản trị</Link>
+                      <Link
+                        className={`nav-link ${location.pathname === '/admin' ? 'active' : ''}`}
+                        to="/admin"
+                      >
+                        Quản trị
+                      </Link>
                     </li>
                   </>
                 ) : (
-                  /* Menu cho người dùng thông thường */
                   <>
                     <li className="nav-item">
-                      <Link className="nav-link" to="/upload">Tải lên tài liệu</Link>
+                      <Link
+                        className={`nav-link ${location.pathname === '/upload' ? 'active' : ''}`}
+                        to="/upload"
+                      >
+                        Tải lên tài liệu
+                      </Link>
                     </li>
                     <li className="nav-item">
-                      <Link className="nav-link" to="/profile">Hồ sơ</Link>
+                      <Link
+                        className={`nav-link ${location.pathname === '/profile' ? 'active' : ''}`}
+                        to="/profile"
+                      >
+                        Hồ sơ
+                      </Link>
                     </li>
                     <li className="nav-item" style={{ position: 'relative' }}>
-                      <Link className="nav-link" to="/notifications">
+                      <Link
+                        className={`nav-link ${location.pathname === '/notifications' ? 'active' : ''}`}
+                        to="/notifications"
+                      >
                         Thông báo
                         {unreadCount > 0 && (
                           <span
@@ -118,7 +161,12 @@ function Navbar() {
                       </Link>
                     </li>
                     <li className="nav-item">
-                      <Link className="nav-link" to="/follow">Theo dõi</Link>
+                      <Link
+                        className={`nav-link ${location.pathname === '/follow' ? 'active' : ''}`}
+                        to="/follow"
+                      >
+                        Theo dõi
+                      </Link>
                     </li>
                   </>
                 )}
@@ -132,16 +180,26 @@ function Navbar() {
             {!user && (
               <>
                 <li className="nav-item">
-                  <Link className="nav-link" to="/login">Đăng nhập</Link>
+                  <Link
+                    className={`nav-link ${location.pathname === '/login' ? 'active' : ''}`}
+                    to="/login"
+                  >
+                    Đăng nhập
+                  </Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link" to="/register">Đăng ký</Link>
+                  <Link
+                    className={`nav-link ${location.pathname === '/register' ? 'active' : ''}`}
+                    to="/register"
+                  >
+                    Đăng ký
+                  </Link>
                 </li>
               </>
             )}
           </ul>
-        </div>
-      </div>
+    </div>
+    </div>
     </nav>
   );
 }
