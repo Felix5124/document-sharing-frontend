@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import { getUser, updateUser, getUploadCount, uploadAvatar, deleteDocument, getDownloads } from '../services/api';
+import { getUser, updateUser, getUploadCount, uploadAvatar, deleteDocument, getDownloads, getSchools } from '../services/api';
 import { toast } from 'react-toastify';
 import Achievements from '../components/Achievements';
 
@@ -12,42 +12,45 @@ function Profile() {
   const { user } = useContext(AuthContext);
   const [userData, setUserData] = useState(null);
   const [uploads, setUploads] = useState([]);
-  const [downloads, setDownloads] = useState([]); // Thêm state cho downloads
+  const [downloads, setDownloads] = useState([]);
   const [uploadCount, setUploadCount] = useState(0);
-  const [downloadCount, setDownloadCount] = useState(0); // Thêm state cho số lượng downloads
+  const [downloadCount, setDownloadCount] = useState(0);
   const [avatarFile, setAvatarFile] = useState(null);
+  const [schools, setSchools] = useState([]); // State lưu danh sách trường
   const { register, handleSubmit, formState: { errors } } = useForm();
 
   useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const [userResponse, uploadResponse, downloadResponse] = await Promise.all([
-        getUser(user.userId),
-        getUploadCount(user.userId),
-        getDownloads(user.userId) // Gửi userId trực tiếp
-      ]);
-      setUserData(userResponse.data);
-      setUploads(uploadResponse.data.uploads);
-      setUploadCount(uploadResponse.data.uploadCount);
-      setDownloads(downloadResponse.data);
-      setDownloadCount(downloadResponse.data.length);
-    } catch (error) {
-      console.error('Fetch error:', error.response?.data || error.message);
-      if (error.response?.status === 401) {
-        toast.error('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.', { toastId: 'auth-error' });
-        navigate('/login');
-      } else {
-        toast.error('Không thể tải dữ liệu.', { toastId: 'data-error' });
+    const fetchData = async () => {
+      try {
+        const [userResponse, uploadResponse, downloadResponse, schoolsResponse] = await Promise.all([
+          getUser(user.userId),
+          getUploadCount(user.userId),
+          getDownloads(user.userId),
+          getSchools() // Fetch danh sách trường
+        ]);
+        setUserData(userResponse.data);
+        setUploads(uploadResponse.data.uploads);
+        setUploadCount(uploadResponse.data.uploadCount);
+        setDownloads(downloadResponse.data);
+        setDownloadCount(downloadResponse.data.length);
+        setSchools(schoolsResponse.data); // Lưu danh sách trường
+      } catch (error) {
+        console.error('Fetch error:', error.response?.data || error.message);
+        if (error.response?.status === 401) {
+          toast.error('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.', { toastId: 'auth-error' });
+          navigate('/login');
+        } else {
+          toast.error('Không thể tải dữ liệu.', { toastId: 'data-error' });
+        }
       }
+    };
+    if (user?.userId) {
+      fetchData();
+    } else {
+      console.warn('No userId found, redirecting to login');
+      navigate('/login');
     }
-  };
-  if (user?.userId) { // Kiểm tra userId trước khi fetch
-    fetchData();
-  } else {
-    console.warn('No userId found, redirecting to login');
-    navigate('/login');
-  }
-}, [user, navigate]);
+  }, [user, navigate]);
 
   const onSubmit = async (data) => {
     try {
@@ -61,7 +64,7 @@ function Profile() {
 
       const updateData = {
         FullName: data.FullName,
-        School: data.School
+        SchoolId: parseInt(data.SchoolId) // Gửi SchoolId thay vì School
       };
       await updateUser(user.userId, updateData);
 
@@ -164,13 +167,23 @@ function Profile() {
                 <label className="form-label">Trường học</label>
                 <div className="input-wrapper">
                   <i className="bi bi-building input-icon"></i>
-                  <input
-                    type="text"
+                  <select
                     className="form-input"
-                    defaultValue={userData.school}
-                    {...register('School')}
-                  />
+                    defaultValue={userData.schoolId || 0}
+                    {...register('SchoolId', {
+                      required: 'Vui lòng chọn trường học',
+                      validate: (value) => parseInt(value) !== 0 || 'Vui lòng chọn trường học',
+                    })}
+                  >
+                    <option value="0">Chọn trường học</option>
+                    {schools.map(school => (
+                      <option key={school.schoolId} value={school.schoolId}>
+                        {school.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
+                {errors.SchoolId && <p className="error-text">{errors.SchoolId.message}</p>}
               </div>
               <div className="form-group">
                 <label className="form-label">Điểm tích lũy</label>
@@ -243,23 +256,23 @@ function Profile() {
         </div>
         <hr className="profile-divider" />
         <div className="profile-stats">
-  <h4 className="stats-title">
-    <i className="bi bi-cloud-download me-2"></i> Tài liệu đã tải xuống ({downloadCount})
-  </h4>
-  <ul className="stats-list">
-    {downloads.length > 0 ? (
-      downloads.map((download) => (
-        <li key={download.documentId} className="stats-item" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ flex: 1 }}>
-            {download.title} - Tải xuống: {new Date(download.addedAt).toLocaleString()}
-          </span>
-        </li>
-      ))
-    ) : (
-      <p className="stats-empty">Chưa có tài liệu nào.</p>
-    )}
-  </ul>
-</div>
+          <h4 className="stats-title">
+            <i className="bi bi-cloud-download me-2"></i> Tài liệu đã tải xuống ({downloadCount})
+          </h4>
+          <ul className="stats-list">
+            {downloads.length > 0 ? (
+              downloads.map((download) => (
+                <li key={download.documentId} className="stats-item" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ flex: 1 }}>
+                    {download.title} - Tải xuống: {new Date(download.addedAt).toLocaleString()}
+                  </span>
+                </li>
+              ))
+            ) : (
+              <p className="stats-empty">Chưa có tài liệu nào.</p>
+            )}
+          </ul>
+        </div>
         <hr className="profile-divider" />
         <div className="profile-achievements">
           <Achievements />

@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useContext } from 'react';
 import { getPendingDocuments, approveDocument } from '../services/api';
 import { toast } from 'react-toastify';
 import { AuthContext } from '../context/AuthContext';
+import useOnScreen from '../hooks/useOnScreen';
 
 function DocumentApproval() {
   const { user } = useContext(AuthContext);
@@ -41,6 +42,27 @@ function DocumentApproval() {
     }
   };
 
+  // Component cho Table Row với hiệu ứng fade-in
+  const DocumentRow = ({ doc }) => {
+    const rowRef = useRef(null);
+    const isVisible = useOnScreen(rowRef);
+
+    return (
+      <tr ref={rowRef} className={`fade-in ${isVisible ? 'visible' : ''}`}>
+        <td>{doc.title}</td>
+        <td>{doc.description}</td>
+        <td>
+          <button
+            className="action-button approve-button"
+            onClick={() => handleApprove(doc.documentId)}
+          >
+            <i className="bi bi-check-circle me-2"></i> Duyệt
+          </button>
+        </td>
+      </tr>
+    );
+  };
+
   if (!user || !user.isAdmin) {
     return null;
   }
@@ -62,18 +84,7 @@ function DocumentApproval() {
             </thead>
             <tbody>
               {pendingDocs.map((doc) => (
-                <tr key={doc.documentId}>
-                  <td>{doc.title}</td>
-                  <td>{doc.description}</td>
-                  <td>
-                    <button
-                      className="action-button approve-button"
-                      onClick={() => handleApprove(doc.documentId)}
-                    >
-                      <i className="bi bi-check-circle me-2"></i> Duyệt
-                    </button>
-                  </td>
-                </tr>
+                <DocumentRow key={doc.documentId} doc={doc} />
               ))}
             </tbody>
           </table>

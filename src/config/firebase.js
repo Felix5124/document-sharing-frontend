@@ -13,8 +13,8 @@ const firebaseConfig = {
 };
 
 // In ra để kiểm tra (xóa sau khi xác nhận hoạt động)
-console.log("Firebase API Key from Vite env:", import.meta.env.VITE_FIREBASE_API_KEY);
-console.log("Firebase Auth Domain from Vite env:", import.meta.env.VITE_FIREBASE_AUTH_DOMAIN);
+//console.log("Firebase API Key from Vite env:", import.meta.env.VITE_FIREBASE_API_KEY);
+//console.log("Firebase Auth Domain from Vite env:", import.meta.env.VITE_FIREBASE_AUTH_DOMAIN);
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);

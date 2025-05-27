@@ -7,19 +7,22 @@ import DocumentApproval from '../components/DocumentApproval';
 import AccountManagement from '../components/AccountManagement';
 import CategoryManagement from '../components/CategoryManagement';
 import DocumentManagement from '../components/DocumentManagement';
-import AdminStatistics from '../components/AdminStatistics'; // Import AdminStatistics
+import AdminStatistics from '../components/AdminStatistics';
+import SchoolManagement from '../components/SchoolManagement';
 
 function AdminDashboard() {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState('document-approval');
 
-console.log("%c[AdminDashboard] Component Rendered/Mounting. User from context:", "color: purple; font-weight: bold;",
+  console.log(
+    '%c[AdminDashboard] Component Rendered/Mounting. User from context:',
+    'color: purple; font-weight: bold;',
     user ? { userId: user.userId, isAdmin: user.isAdmin, email: user.email } : null
   );
+
   const handleLogout = () => {
     logout();
-    //toast.success('Đăng xuất thành công!');
     navigate('/login');
   };
 
@@ -35,16 +38,20 @@ console.log("%c[AdminDashboard] Component Rendered/Mounting. User from context:"
         return 'Quản Lý Tài Liệu';
       case 'statistics':
         return 'Thống Kê Hệ Thống';
+      case 'school-management':
+        return 'Quản Lý Trường Học';
       default:
         return '';
     }
   };
 
   if (!user || !user.isAdmin) {
-    console.warn("AdminDashboard: User is not admin or user is null, rendering null. This shouldn't happen if PrivateRoute is working.");
+    console.warn(
+      "AdminDashboard: User is not admin or user is null, rendering null. This shouldn't happen if PrivateRoute is working."
+    );
     return null;
   }
-  console.log("[AdminDashboard] User is admin. Rendering dashboard content.");
+  console.log('[AdminDashboard] User is admin. Rendering dashboard content.');
 
   return (
     <div className="admin-container">
@@ -54,7 +61,6 @@ console.log("%c[AdminDashboard] Component Rendered/Mounting. User from context:"
         </h2>
       </div>
 
-      {/* Menu điều hướng */}
       <div className="admin-nav mb-4">
         <button
           className={`nav-button ${activeSection === 'document-approval' ? 'active' : ''}`}
@@ -86,9 +92,14 @@ console.log("%c[AdminDashboard] Component Rendered/Mounting. User from context:"
         >
           <i className="bi bi-bar-chart-line me-2"></i> Thống kê
         </button>
+        <button
+          className={`nav-button ${activeSection === 'school-management' ? 'active' : ''}`}
+          onClick={() => setActiveSection('school-management')}
+        >
+          <i className="bi bi-building me-2"></i> Quản lý trường học
+        </button>
       </div>
 
-      {/* Hiển thị nội dung tương ứng với phần được chọn */}
       <div className="admin-content">
         <div className="section-header">
           <h3 className="section-action-title">{getSectionTitle()}</h3>
@@ -99,6 +110,7 @@ console.log("%c[AdminDashboard] Component Rendered/Mounting. User from context:"
           {activeSection === 'category-management' && <CategoryManagement />}
           {activeSection === 'document-management' && <DocumentManagement />}
           {activeSection === 'statistics' && <AdminStatistics />}
+          {activeSection === 'school-management' && <SchoolManagement />}
         </div>
       </div>
     </div>

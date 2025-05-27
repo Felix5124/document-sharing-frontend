@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useContext } from 'react';
 import { getAllUsers, lockUser } from '../services/api';
 import { toast } from 'react-toastify';
 import { AuthContext } from '../context/AuthContext';
+import useOnScreen from '../hooks/useOnScreen';
 
 function AccountManagement() {
   const { user } = useContext(AuthContext);
@@ -44,6 +45,33 @@ function AccountManagement() {
     }
   };
 
+  // Component cho Table Row với hiệu ứng fade-in
+  const UserRow = ({ user }) => {
+    const rowRef = useRef(null);
+    const isVisible = useOnScreen(rowRef);
+
+    return (
+      <tr ref={rowRef} className={`fade-in ${isVisible ? 'visible' : ''}`}>
+        <td>{user.fullName}</td>
+        <td>{user.email}</td>
+        <td>
+          <span className={`status-badge ${user.isLocked ? 'locked' : 'active'}`}>
+            {user.isLocked ? 'Đã khóa' : 'Hoạt động'}
+          </span>
+        </td>
+        <td>
+          <button
+            className={`action-button ${user.isLocked ? 'unlock-button' : 'lock-button'}`}
+            onClick={() => handleLockUnlock(user.userId, user.isLocked)}
+          >
+            <i className={`bi ${user.isLocked ? 'bi-unlock' : 'bi-lock'} me-2`}></i>
+            {user.isLocked ? 'Mở khóa' : 'Khóa'}
+          </button>
+        </td>
+      </tr>
+    );
+  };
+
   if (!user || !user.isAdmin) {
     return null;
   }
@@ -66,20 +94,7 @@ function AccountManagement() {
             </thead>
             <tbody>
               {users.map((user) => (
-                <tr key={user.userId}>
-                  <td>{user.fullName}</td>
-                  <td>{user.email}</td>
-                  <td>{user.isLocked ? 'Đã khóa' : 'Hoạt động'}</td>
-                  <td>
-                    <button
-                      className={`action-button ${user.isLocked ? 'unlock-button' : 'lock-button'}`}
-                      onClick={() => handleLockUnlock(user.userId, user.isLocked)}
-                    >
-                      <i className={`bi ${user.isLocked ? 'bi-unlock' : 'bi-lock'} me-2`}></i>
-                      {user.isLocked ? 'Mở khóa' : 'Khóa'}
-                    </button>
-                  </td>
-                </tr>
+                <UserRow key={user.userId} user={user} />
               ))}
             </tbody>
           </table>
