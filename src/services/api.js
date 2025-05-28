@@ -138,6 +138,9 @@ export const getUserBadges = (userId) => apiClient.get('/userbadges', { params: 
 export const getTopCommenter = () => apiClient.get('/users/top-commenter');
 export const getTopPointsUser = () => apiClient.get('/users/top-points');
 export const getTopDownloadedDocument = () => apiClient.get('/documents/top-downloaded');
+export const getTopDownloadedDocumentsList = (limit = 5) => {
+  return apiClient.get(`/documents/rankings/top-downloads?limit=${limit}`);
+};
 
 // --- API cho trường học ---
 export const getSchools = () => apiClient.get('/schools');

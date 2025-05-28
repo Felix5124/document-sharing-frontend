@@ -1,5 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
-import { searchDocuments, getCategories, getTopCommenter, getTopPointsUser, getTopDownloadedDocument, getSchools } from '../services/api';
+import {
+  searchDocuments,
+  getCategories,
+  getTopCommenter,
+  getTopPointsUser,
+  getTopDownloadedDocument,
+  getTopDownloadedDocumentsList,
+  getSchools
+} from '../services/api';
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
 import bannerImage from '../assets/images/anhbg.jpg';
@@ -17,12 +25,13 @@ function Home() {
   const [schools, setSchools] = useState([]);
   const documentsPerPage = 6;
 
-  // State cho Bảng xếp hạng
   const [topCommenter, setTopCommenter] = useState(null);
   const [topPointsUser, setTopPointsUser] = useState(null);
   const [topDownloadedDoc, setTopDownloadedDoc] = useState(null);
 
-  // Ref cho banner để thêm hiệu ứng parallax
+  const [topInterestDocuments, setTopInterestDocuments] = useState([]);
+  const [loadingTopInterest, setLoadingTopInterest] = useState(false);
+
   const bannerRef = useRef(null);
 
   const fetchSchools = async () => {
@@ -30,7 +39,9 @@ function Home() {
       const response = await getSchools();
       let data = response.data || [];
       if (Array.isArray(data)) {
-        setSchools(data.slice(0, 4)); // Giới hạn 4 trường
+        setSchools(data.slice(0, 4));
+      } else if (data && Array.isArray(data.$values)) {
+        setSchools(data.$values.slice(0, 4));
       } else {
         setSchools([]);
       }
@@ -44,7 +55,13 @@ function Home() {
     try {
       const response = await getCategories();
       let data = response.data || [];
-      setCategories(Array.isArray(data) ? data : []);
+      if (Array.isArray(data)) {
+        setCategories(data);
+      } else if (data && Array.isArray(data.$values)) {
+        setCategories(data.$values);
+      } else {
+        setCategories([]);
+      }
     } catch (error) {
       toast.error('Không thể tải danh mục.');
       setCategories([]);
@@ -61,9 +78,12 @@ function Home() {
         PageSize: documentsPerPage,
       };
       const response = await searchDocuments(params);
-      const { documents, total } = response.data;
-      if (Array.isArray(documents)) {
-        const approvedDocuments = documents.filter((doc) => doc.isApproved === true && doc.isLock === false);
+      const responseData = response.data.$values ? response.data.$values[0] : response.data;
+      const docs = responseData.documents || (responseData.$values ? responseData.$values[0]?.documents : []);
+      const total = responseData.total || (responseData.$values ? responseData.$values[0]?.total : 0);
+
+      if (Array.isArray(docs)) {
+        const approvedDocuments = docs.filter((doc) => doc.isApproved === true && doc.isLock === false);
         setDocuments(approvedDocuments);
         setTotalPages(Math.ceil(total / documentsPerPage));
       } else {
@@ -79,7 +99,8 @@ function Home() {
     }
   };
 
-  const fetchTopContributors = async () => {
+  const fetchHomePageData = async () => {
+    setLoadingTopInterest(true);
     try {
       const commenterResponse = await getTopCommenter();
       let commenterData = commenterResponse.data;
@@ -99,34 +120,47 @@ function Home() {
       }
       setTopPointsUser(pointsData);
 
-      const docResponse = await getTopDownloadedDocument();
-      let docData = docResponse.data;
-      if (docData && Array.isArray(docData.$values) && docData.$values) {
-        docData = docData.$values.length > 0 ? docData.$values[0] : null;
-      } else if (docData && Object.prototype.hasOwnProperty.call(docData, '$value')) {
-        docData = docData.$value;
+      const topDocResponse = await getTopDownloadedDocument();
+      let topDocData = topDocResponse.data;
+      if (topDocData && Array.isArray(topDocData.$values) && topDocData.$values) {
+        topDocData = topDocData.$values.length > 0 ? topDocData.$values[0] : null;
+      } else if (topDocData && Object.prototype.hasOwnProperty.call(topDocData, '$value')) {
+        topDocData = topDocData.$value;
       }
-      setTopDownloadedDoc(docData);
+      setTopDownloadedDoc(topDocData);
+
+      const topInterestDocsResponse = await getTopDownloadedDocumentsList(5);
+      let topInterestData = topInterestDocsResponse.data;
+      if (topInterestData && Array.isArray(topInterestData.$values)) {
+        setTopInterestDocuments(topInterestData.$values);
+      } else if (Array.isArray(topInterestData)) {
+        setTopInterestDocuments(topInterestData);
+      } else {
+        setTopInterestDocuments([]);
+      }
     } catch (error) {
-      if (error.config.url.includes('top-commenter')) toast.error('Không thể tải top người bình luận.');
-      else if (error.config.url.includes('top-points')) toast.error('Không thể tải top người dùng điểm cao.');
-      else if (error.config.url.includes('top-downloaded')) toast.error('Không thể tải tài liệu tải nhiều nhất.');
-      else toast.error('Không thể tải dữ liệu bảng xếp hạng.');
+      console.error("Error fetching home page data:", error);
+      if (error.config?.url.includes('top-commenter')) toast.error('Không thể tải top người bình luận.');
+      else if (error.config?.url.includes('top-points')) toast.error('Không thể tải top người dùng điểm cao.');
+      else if (error.config?.url.includes('top-downloaded') && error.config?.params?.limit === 5) {
+        toast.error('Không thể tải danh sách tài liệu được quan tâm nhiều.');
+      } else if (error.config?.url.includes('top-downloaded')) {
+        toast.error('Không thể tải tài liệu nổi bật nhất (cho BXH).');
+      } else {
+        toast.error('Không thể tải một số dữ liệu bảng xếp hạng.');
+      }
+      setTopInterestDocuments([]);
+    } finally {
+      setLoadingTopInterest(false);
     }
   };
 
-  // Hiệu ứng parallax cho banner
   useEffect(() => {
     const handleScroll = () => {
       if (bannerRef.current) {
-        if (window.scrollY > 100) {
-          bannerRef.current.classList.add('scrolled');
-        } else {
-          bannerRef.current.classList.remove('scrolled');
-        }
+        bannerRef.current.classList.toggle('scrolled', window.scrollY > 100);
       }
     };
-
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -138,26 +172,20 @@ function Home() {
   useEffect(() => {
     fetchCategories();
     fetchSchools();
-    fetchTopContributors();
+    fetchHomePageData();
   }, []);
 
   const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
   };
 
   const handlePrevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
   };
 
-  // Component cho Document Card
   const DocumentCard = ({ doc }) => {
     const cardRef = useRef(null);
     const isVisible = useOnScreen(cardRef);
-
     return (
       <div ref={cardRef} className={`col fade-in ${isVisible ? 'visible' : ''}`}>
         <div className="document-card card h-100 shadow-sm">
@@ -166,73 +194,47 @@ function Home() {
               src={getFullImageUrl(doc.coverImageUrl)}
               alt={doc.title || 'Cover'}
               className="card-img-top"
-              style={{ height: '250px', objectFit: 'cover' }}
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = getFullImageUrl(null);
-              }}
+              style={{ height: '230px', objectFit: 'cover' }} // Reduced height slightly
+              onError={(e) => { e.target.onerror = null; e.target.src = getFullImageUrl(null); }}
             />
             {doc.school?.logoUrl && (
               <img
-                src={`https://localhost:7013/${doc.school.logoUrl}`}
+                src={getFullImageUrl(doc.school.logoUrl)}
                 alt={doc.school.name || 'School Logo'}
                 className="school-logo"
                 style={{
-                  position: 'absolute',
-                  top: '10px',
-                  right: '10px',
-                  width: '80px',
-                  height: '80px',
-                  borderRadius: '50%',
-                  objectFit: 'cover',
-                  border: '2px solid white',
-                  backgroundColor: 'white',
+                  position: 'absolute', top: '10px', right: '10px',
+                  width: '50px', height: '50px', borderRadius: '50%', // Smaller logo
+                  objectFit: 'cover', border: '2px solid white', backgroundColor: 'white',
                 }}
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = '/default-school-logo.png';
-                }}
+                onError={(e) => { e.target.onerror = null; e.target.src = '/default-school-logo.png'; }}
               />
             )}
           </div>
-          <div className="card-body d-flex flex-column">
-            <div className="d-flex justify-content-between align-items-center mb-2">
-              <h5 className="card-title text-truncate mb-0" style={{ flex: '1' }}>
+          <div className="card-body d-flex flex-column p-3"> {/* Adjusted padding */}
+            <div className="d-flex justify-content-between align-items-start mb-2">
+              <h5 className="card-title mb-0 me-2" title={doc.title} style={{ flex: '1', fontSize: '1rem', fontWeight: '500', maxHeight: '2.8em', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
                 {doc.title}
               </h5>
-              <small className="text-muted" style={{ fontSize: '0.8rem' }}>
+              <small className="text-muted" style={{ fontSize: '0.75rem', whiteSpace: 'nowrap' }}>
                 <i className="bi bi-download me-1"></i>
-                Lượt tải: {doc.downloadCount}
+                {doc.downloadCount}
               </small>
             </div>
-            <p
-              className="card-text flex-grow-1"
-              style={{
-                fontSize: '0.9rem',
-                minHeight: '40px',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                display: '-webkit-box',
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: 'vertical',
-              }}
-            >
+            <p className="card-text flex-grow-1" style={{ fontSize: '0.85rem', minHeight: '36px', maxHeight: '3.2em', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', marginBottom: '0.5rem' }}>
               {doc.description ? doc.description : "Không có mô tả."}
             </p>
-            <div className="card-meta mt-auto text-muted" style={{ fontSize: '0.8rem' }}>
-              <small
-                className="d-block mb-2"
-                style={{ overflow: 'visible', whiteSpace: 'normal', width: '100%' }}
-              >
+            <div className="card-meta mt-auto text-muted" style={{ fontSize: '0.75rem' }}>
+              <small className="d-block mb-1 text-truncate" title={doc.email ? `Người đăng: ${doc.email}` : 'Người đăng: Không xác định'}>
                 <i className="bi bi-person me-1"></i>
-                Người đăng: {doc.email || 'Không xác định'}
+                {doc.email || 'Không xác định'}
               </small>
               <small className="d-block">
                 <i className="bi bi-calendar me-1"></i>
-                Tải lên: {new Date(doc.uploadedAt).toLocaleDateString()}
+                {new Date(doc.uploadedAt).toLocaleDateString()}
               </small>
             </div>
-            <Link to={`/document/${doc.documentId}`} className="btn btn-primary btn-sm mt-3">
+            <Link to={`/document/${doc.documentId}`} className="btn btn-primary btn-sm mt-2 py-1 px-2" style={{ fontSize: '0.8rem' }}>
               Xem chi tiết
             </Link>
           </div>
@@ -241,11 +243,9 @@ function Home() {
     );
   };
 
-  // Component cho Contributor Column
   const ContributorColumn = ({ title, data, icon, statLabel, statValue, linkTo }) => {
     const columnRef = useRef(null);
     const isVisible = useOnScreen(columnRef);
-
     return (
       <div ref={columnRef} className={`contributor-column fade-in ${isVisible ? 'visible' : ''}`}>
         <h4 className="column-title">{title}</h4>
@@ -254,287 +254,153 @@ function Home() {
             {icon && <i className={`bi ${icon} contributor-icon`}></i>}
             {linkTo ? (
               <>
-                <img
-                  src={getFullImageUrl(data.coverImageUrl)}
-                  alt={data.title || 'Document cover'}
-                  style={{
-                    width: '100%',
-                    height: '180px',
-                    objectFit: 'cover',
-                    borderRadius: '8px',
-                    marginBottom: '1rem',
-                  }}
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = getFullImageUrl(null);
-                  }}
-                />
-                <h5
-                  className="contributor-name mt-2"
-                  style={{
-                    fontSize: '1.1rem',
-                    fontWeight: 'bold',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }}
-                >
-                  {data.title}
-                </h5>
-                <p className="contributor-stat mb-2">
-                  <i className="bi bi-download me-1"></i>
-                  {statLabel}: {statValue}
-                </p>
-                <Link to={linkTo} className="btn btn-sm btn-outline-primary w-100">
-                  Xem chi tiết
-                </Link>
+                <img src={getFullImageUrl(data.coverImageUrl)} alt={data.title || 'Document cover'} style={{ width: '100%', height: '180px', objectFit: 'cover', borderRadius: '8px', marginBottom: '1rem' }} onError={(e) => { e.target.onerror = null; e.target.src = getFullImageUrl(null); }} />
+                <h5 className="contributor-name mt-2" title={data.title} style={{ fontSize: '1.1rem', fontWeight: 'bold', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{data.title}</h5>
+                <p className="contributor-stat mb-2"><i className="bi bi-download me-1"></i>{statLabel}: {statValue}</p>
+                <Link to={linkTo} className="btn btn-sm btn-outline-primary w-100">Xem chi tiết</Link>
               </>
             ) : (
               <>
-                <p className="contributor-name">{data.email}</p>
+                <p className="contributor-name" title={data.email}>{data.email}</p>
                 <p className="contributor-stat">{statLabel}: {statValue}</p>
               </>
             )}
           </div>
-        ) : (
-          <p>Không có dữ liệu</p>
-        )}
+        ) : (<p>Không có dữ liệu</p>)}
       </div>
     );
   };
 
-  // Component cho trường học
   const SchoolCard = ({ school }) => {
     const cardRef = useRef(null);
     const isVisible = useOnScreen(cardRef);
-
     return (
       <div ref={cardRef} className={`col fade-in ${isVisible ? 'visible' : ''}`}>
         <div className="school-card card h-100 shadow-sm">
-          <img
-            src={`https://localhost:7013/${school.logoUrl}`}
-            alt={school.name || 'School Logo'}
-            className="card-img-top"
-            style={{ height: '200px', objectFit: 'contain', padding: '20px', backgroundColor: '#f8f9fa' }}
-            onError={(e) => {
-              e.target.onerror = null;
-              e.target.src = '/default-school-logo.png';
-            }}
-          />
+          <img src={getFullImageUrl(school.logoUrl)} alt={school.name || 'School Logo'} className="card-img-top" style={{ height: '200px', objectFit: 'contain', padding: '20px', backgroundColor: '#f8f9fa' }} onError={(e) => { e.target.onerror = null; e.target.src = '/default-school-logo.png'; }} />
           <div className="card-body d-flex flex-column">
-            <h5 className="card-title text-truncate">{school.name}</h5>
-            <p
-              className="card-text flex-grow-1"
-              style={{
-                fontSize: '0.9rem',
-                minHeight: '60px',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                display: '-webkit-box',
-                WebkitLineClamp: 3,
-                WebkitBoxOrient: 'vertical',
-              }}
-            >
-              <span className="text-muted">
-                <i className="bi bi-people me-1"></i> Sinh viên: {school.userCount || 0}
-              </span>
-              <br />
-              <span className="text-muted">
-                <i className="bi bi-file-earmark-text me-1"></i> Bài đăng: {school.documentCount || 0}
-              </span>
+            <h5 className="card-title text-truncate" title={school.name}>{school.name}</h5>
+            <p className="card-text flex-grow-1" style={{ fontSize: '0.9rem', minHeight: '60px', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical' }}>
+              <span className="text-muted d-block"><i className="bi bi-people me-1"></i> Sinh viên: {school.userCount || 0}</span>
+              <span className="text-muted d-block"><i className="bi bi-file-earmark-text me-1"></i> Bài đăng: {school.documentCount || 0}</span>
             </p>
-            <a
-              href={school.externalUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-primary btn-sm mt-2"
-            >
-              Xem trang web
-            </a>
+            <a href={school.externalUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-sm mt-2">Xem trang web</a>
           </div>
         </div>
+      </div>
+    );
+  };
+
+  const TopInterestDocumentItem = ({ doc, rank }) => {
+    return (
+      <li className={`list-group-item top-interest-item d-flex align-items-start py-2 px-0`}>
+        <span className="fw-bold me-3 ms-2" style={{ fontSize: '1rem', minWidth: '20px', textAlign: 'center' }}>#{rank}</span>
+        <Link to={`/document/${doc.documentId}`} className="text-decoration-none text-dark d-flex align-items-start flex-grow-1" style={{ minWidth: 0 }}>
+          <img src={getFullImageUrl(doc.coverImageUrl)} alt={doc.title || 'Cover'} style={{ width: '50px', height: '65px', objectFit: 'cover', borderRadius: '4px', marginRight: '12px', flexShrink: 0 }} onError={(e) => { e.target.onerror = null; e.target.src = getFullImageUrl(null); }} />
+          <div className="flex-grow-1" style={{ minWidth: 0 }}>
+            <h6 className="mb-1 text-truncate" title={doc.title} style={{ fontSize: '0.9rem', fontWeight: 500 }}>{doc.title}</h6>
+            <small className="text-muted d-block"><i className="bi bi-download me-1"></i> {doc.downloadCount} lượt tải</small>
+            {doc.uploadedByUser?.fullName && (<small className="text-muted d-block text-truncate" style={{ fontSize: '0.75rem' }} title={`Người đăng: ${doc.uploadedByUser.fullName}`}><i className="bi bi-person me-1"></i>{doc.uploadedByUser.fullName}</small>)}
+          </div>
+        </Link>
+      </li>
+    );
+  };
+
+  const TopInterestDocumentsList = ({ documents, isLoading }) => {
+    const renderContent = () => {
+      if (isLoading) return <div className="text-center py-5"><div className="spinner-border spinner-border-sm text-primary" role="status"><span className="visually-hidden">Loading...</span></div><p className="mb-0 mt-2 text-muted small">Đang tải...</p></div>;
+      if (!documents || documents.length === 0) return <p className="text-muted text-center py-4 px-2 small">Chưa có tài liệu nổi bật nào.</p>;
+      return <ul className="list-group list-group-flush">{documents.map((doc, index) => (<TopInterestDocumentItem key={doc.documentId || index} doc={doc} rank={index + 1} />))}</ul>;
+    };
+    return (
+      <div className="card shadow-sm top-interest-documents-card">
+        <div className="card-header bg-light py-2"><h5 className="mb-0" style={{ fontSize: '1.05rem', fontWeight: 600 }}><i className="bi bi-graph-up-arrow me-2 text-primary"></i>Tài liệu được quan tâm nhiều</h5></div>
+        <div className="card-body p-2" style={{ maxHeight: 'calc(100vh - 250px)', overflowY: 'auto' }}>{renderContent()}</div> {/* Adjusted maxHeight */}
       </div>
     );
   };
 
   return (
     <div>
-      <div
-        ref={bannerRef}
-        className="banner-section"
-        style={{
-          width: '100%',
-          height: '500px',
-          backgroundImage: `url(${bannerImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          marginTop: 0,
-          padding: 0,
-          borderRadius: 0,
-          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-        }}
-      >
-        <div
-          className="banner-content"
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '100%',
-            backgroundColor: 'rgba(0, 0, 0, 0.3)',
-            color: 'white',
-            textAlign: 'center',
-            padding: '30px',
-          }}
-        >
-          <h1 style={{ fontSize: '3rem', marginBottom: '15px' }}>
-            Chào mừng đến với Thư viện Tài liệu Học tập
-          </h1>
-          <p style={{ fontSize: '1.5rem' }}>
-            Tìm kiếm và khám phá tài liệu học tập dễ dàng!
-          </p>
+      <div ref={bannerRef} className="banner-section" style={{ width: '100%', height: '450px', backgroundImage: `url(${bannerImage})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: 0, padding: 0, borderRadius: 0, boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', }}>
+        <div className="banner-content" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100%', backgroundColor: 'rgba(0, 0, 0, 0.35)', color: 'white', textAlign: 'center', padding: '30px', }}>
+          <h1 style={{ fontSize: '2.8rem', marginBottom: '15px' }}>Chào mừng đến với Thư viện Tài liệu Học tập</h1>
+          <p style={{ fontSize: '1.3rem' }}>Tìm kiếm và khám phá tài liệu học tập dễ dàng!</p>
         </div>
       </div>
 
-      <div className="home-container">
+      <div className="home-container py-4">
         <div className="container">
-          <div className="header-section">
+          <div className="header-section mb-3">
             <div className="title-group">
               <h2 className="main-title">Tài liệu học tập</h2>
-              <h4 className="sub-title">Danh sách tài liệu</h4>
+              <h4 className="sub-title">Khám phá & chia sẻ tri thức</h4>
             </div>
-            <div className="d-flex align-items-center">
-              <div className="search-wrapper me-3">
+            <div className="d-flex align-items-center ms-auto search-filter-group">
+              <div className="search-wrapper me-2 me-md-3">
                 <div className="search-group">
                   <i className="bi bi-search search-icon"></i>
-                  <input
-                    type="text"
-                    className="search-input"
-                    placeholder="Tìm kiếm tài liệu..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
+                  <input type="text" className="search-input" placeholder="Tìm kiếm tài liệu..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
                 </div>
               </div>
               <div className="category-wrapper">
-                <select
-                  className="form-select"
-                  value={selectedCategory}
-                  onChange={(e) => {
-                    setSelectedCategory(e.target.value);
-                    setCurrentPage(1);
-                  }}
-                >
+                <select className="form-select form-select-sm" value={selectedCategory} onChange={(e) => { setSelectedCategory(e.target.value); setCurrentPage(1); }}>
                   <option value="">Tất cả danh mục</option>
-                  {categories.length > 0 ? (
-                    categories.map((category) => (
-                      <option key={category.categoryId} value={category.categoryId}>
-                        {category.name}
-                      </option>
-                    ))
-                  ) : (
-                    <option disabled>Không có danh mục</option>
-                  )}
+                  {categories.length > 0 ? (categories.map((category) => (<option key={category.categoryId} value={category.categoryId}>{category.name}</option>))) : (<option disabled>Không có danh mục</option>)}
                 </select>
               </div>
             </div>
           </div>
 
-          {loading ? (
-            <div className="loading-container">
-              <div className="spinner"></div>
-              <p className="loading-text">Đang tải tài liệu...</p>
-            </div>
-          ) : documents.length > 0 ? (
-            <>
-              <div className="documents-grid row row-cols-1 row-cols-md-2 row-cols-lg-1 g-4">
-                {documents.map((doc) => (
-                  <DocumentCard key={doc.documentId} doc={doc} />
-                ))}
-              </div>
-              {totalPages > 1 && (
-                <div className="pagination-section">
-                  <button
-                    className="prev-button"
-                    onClick={handlePrevPage}
-                    disabled={currentPage === 1}
-                  >
-                    <i className="bi bi-arrow-left me-2"></i> Trang trước
-                  </button>
-                  <button
-                    className="next-button"
-                    onClick={handleNextPage}
-                    disabled={currentPage === totalPages}
-                  >
-                    <i className="bi bi-arrow-right me-2"></i> Xem tiếp
-                  </button>
-                </div>
+          <div className="row mt-2">
+            <div className="col-lg-9 col-md-8 order-md-1">
+              {loading ? (
+                <div className="loading-container py-5 text-center"><div className="spinner-border text-primary" style={{ width: '3rem', height: '3rem' }}></div><p className="loading-text mt-2">Đang tải tài liệu...</p></div>
+              ) : documents.length > 0 ? (
+                <>
+                  <div className="documents-grid row row-cols-1 g-3">
+                    {documents.map((doc) => (<DocumentCard key={doc.documentId} doc={doc} />))}
+                  </div>
+                  {totalPages > 1 && (
+                    <div className="pagination-section mt-4 d-flex justify-content-center">
+                      <button className="prev-button btn btn-outline-primary btn-sm me-2" onClick={handlePrevPage} disabled={currentPage === 1}><i className="bi bi-arrow-left me-1"></i> Trang trước</button>
+                      <button className="next-button btn btn-outline-primary btn-sm" onClick={handleNextPage} disabled={currentPage === totalPages}>Trang tiếp <i className="bi bi-arrow-right ms-1"></i></button>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="empty-state py-5 text-center"><i className="bi bi-folder-x empty-icon fs-1 text-muted"></i><p className="mt-2">Không có tài liệu nào để hiển thị.</p></div>
               )}
-            </>
-          ) : (
-            <div className="empty-state">
-              <i className="bi bi-folder-x empty-icon"></i>
-              <p>Không có tài liệu nào để hiển thị.</p>
             </div>
-          )}
 
-          <div className="custom-divider">
-            <span className="divider-text">✨ Người sử dụng ✨</span>
+            {/* MODIFIED: Sidebar column */}
+            <div className="col-lg-3 col-md-4 order-md-2 mt-4 mt-md-0">
+              <TopInterestDocumentsList documents={topInterestDocuments} isLoading={loadingTopInterest} />
+            </div>
           </div>
 
-          <div className="title-group">
-            <h2 className="main-title">Các sinh viên trường đại học</h2>
-            <h4 className="sub-title">Khám phá các trường đại học với số lượng sinh viên tham gia</h4>
+          <div className="custom-divider my-4"><span className="divider-text">✨ Cộng đồng ✨</span></div>
+          <div className="title-group text-center mb-4">
+            <h2 className="main-title">Các trường đại học tiêu biểu</h2>
           </div>
-
           {schools.length > 0 ? (
-            <div className="schools-grid row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
-              {schools.map((school) => (
-                <SchoolCard key={school.schoolId} school={school} />
-              ))}
+            <div className="schools-grid row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4">
+              {schools.map((school) => (<SchoolCard key={school.schoolId} school={school} />))}
             </div>
           ) : (
-            <div className="empty-state">
-              <i className="bi bi-building empty-icon"></i>
-              <p>Không có trường đại học nào để hiển thị.</p>
-            </div>
+            <div className="empty-state py-4 text-center"><i className="bi bi-building empty-icon fs-2 text-muted"></i><p className="mt-2">Không có trường đại học nào để hiển thị.</p></div>
           )}
 
-          <div className="custom-divider">
-            <span className="divider-text">✨ Khám phá thêm ✨</span>
+          <div className="custom-divider my-4"><span className="divider-text">✨ Bảng Vinh Danh ✨</span></div>
+          <div className="title-group text-center mb-4"><h2 className="main-title">Bảng xếp hạng nổi bật</h2></div>
+          <div className="top-contributors-section row g-4 justify-content-center">
+            <div className="col-md-6 col-lg-4 d-flex"> <ContributorColumn title="Người bình luận nhiều nhất" data={topCommenter} icon="bi-chat-left-text-fill" statLabel="Số bình luận" statValue={topCommenter?.commentCount} /> </div>
+            <div className="col-md-6 col-lg-4 d-flex"> <ContributorColumn title="Người điểm cao nhất" data={topPointsUser} icon="bi-star-fill" statLabel="Điểm" statValue={topPointsUser?.points} /> </div>
+            <div className="col-md-6 col-lg-4 d-flex"> <ContributorColumn title="Tài liệu tải nhiều nhất" data={topDownloadedDoc} statLabel="Lượt tải" statValue={topDownloadedDoc?.downloadCount} linkTo={topDownloadedDoc ? `/document/${topDownloadedDoc.documentId}` : null} /> </div>
           </div>
-
-          <div className="title-group">
-            <h2 className="main-title">Bảng xếp hạng</h2>
-          </div>
-          <div className="top-contributors-section">
-            <ContributorColumn
-              title="Người đóng góp nhiều nhất"
-              data={topCommenter}
-              icon="bi-chat-left-text"
-              statLabel="Số bình luận"
-              statValue={topCommenter?.commentCount}
-            />
-            <ContributorColumn
-              title="Người có nhiều điểm nhất"
-              data={topPointsUser}
-              icon="bi-star"
-              statLabel="Điểm"
-              statValue={topPointsUser?.points}
-            />
-            <ContributorColumn
-              title="Bài viết tải nhiều nhất"
-              data={topDownloadedDoc}
-              statLabel="Lượt tải"
-              statValue={topDownloadedDoc?.downloadCount}
-              linkTo={topDownloadedDoc ? `/document/${topDownloadedDoc.documentId}` : null}
-            />
-          </div>
-          <div className="text-center mt-0 mb-5">
-            <Link to="/rankings" className="btn btn-primary btn-lg shadow">
-              <i className="bi bi-bar-chart-steps me-2"></i> Xem Tất Cả Bảng Xếp Hạng
-            </Link>
+          <div className="text-center mt-4 mb-5">
+            <Link to="/rankings" className="btn btn-primary btn-lg shadow-sm"><i className="bi bi-bar-chart-steps me-2"></i> Xem Tất Cả Bảng Xếp Hạng</Link>
           </div>
         </div>
       </div>
