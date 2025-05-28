@@ -143,12 +143,12 @@ body {
   font-size: 1.1rem;
 }
 
-/* Grid tài liệu */
+/* Grid tài liệu
 .documents-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 28px;
-}
+} */
 
 /* Card tài liệu */
 .document-card {
