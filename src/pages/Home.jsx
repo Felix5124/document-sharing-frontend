@@ -194,7 +194,7 @@ function Home() {
               src={getFullImageUrl(doc.coverImageUrl)}
               alt={doc.title || 'Cover'}
               className="card-img-top"
-              style={{ height: '230px', objectFit: 'cover' }} // Reduced height slightly
+              style={{ height: '180px', objectFit: 'cover' }} // Reduced height slightly
               onError={(e) => { e.target.onerror = null; e.target.src = getFullImageUrl(null); }}
             />
             {doc.school?.logoUrl && (
@@ -211,8 +211,8 @@ function Home() {
               />
             )}
           </div>
-          <div className="card-body d-flex flex-column p-3"> {/* Adjusted padding */}
-            <div className="d-flex justify-content-between align-items-start mb-2">
+          <div className="card-body d-flex flex-column p-2"> {/* Adjusted padding */}
+            <div className="d-flex justify-content-between align-items-start mb-1">
               <h5 className="card-title mb-0 me-2" title={doc.title} style={{ flex: '1', fontSize: '1rem', fontWeight: '500', maxHeight: '2.8em', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
                 {doc.title}
               </h5>
@@ -359,7 +359,7 @@ function Home() {
                 <div className="loading-container py-5 text-center"><div className="spinner-border text-primary" style={{ width: '3rem', height: '3rem' }}></div><p className="loading-text mt-2">Đang tải tài liệu...</p></div>
               ) : documents.length > 0 ? (
                 <>
-                  <div className="documents-grid row row-cols-1 g-3">
+                  <div className="documents-grid row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
                     {documents.map((doc) => (<DocumentCard key={doc.documentId} doc={doc} />))}
                   </div>
                   {totalPages > 1 && (
