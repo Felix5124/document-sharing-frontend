@@ -1,147 +1,107 @@
-
-.header-section {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap; /* Allow wrapping on smaller screens */
-  gap: 1rem; /* Space between title group and search/filter */
+.top-interest-documents-card {
+    border-radius: 0.5rem; /* Slightly rounded corners */
+    border: 1px solid #e0e0e0; /* Subtle border */
+    overflow: hidden; /* Ensures content within rounds properly */
 }
 
-.search-filter-group {
-  display: flex;
-  align-items: center;
-  flex-wrap: nowrap; /* Try to keep search and filter on one line if possible */
-  gap: 0.5rem;
-}
-
-.search-filter-group .search-wrapper {
-  min-width: 180px; /* Minimum width for search input */
-}
-.search-filter-group .category-wrapper {
-  min-width: 150px; /* Minimum width for category select */
-}
-
-
-@media (max-width: 767.98px) { /* Adjustments for medium screens and below */
-  .header-section {
-    flex-direction: column;
-    align-items: stretch; /* Title group and search/filter take full width */
-  }
-  .search-filter-group {
-    width: 100%;
-    justify-content: space-between; /* Distribute space if they wrap */
-    flex-wrap: wrap;
-  }
-   .search-filter-group .search-wrapper,
-   .search-filter-group .category-wrapper {
-    flex-basis: calc(50% - 0.25rem); /* Roughly half width when wrapped */
-    flex-grow: 1;
-  }
-}
-
-/* Styling for "Tài liệu được quan tâm nhiều" list */
 .top-interest-documents-card .card-header {
-  border-bottom: 1px solid #dee2e6; /* Match Bootstrap card header */
+    background-color: #f8f9fa; /* Light background for the header */
+    border-bottom: 1px solid #e0e0e0; /* Separator for the header */
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem; /* Adjust padding as needed */
 }
 
-.top-interest-documents-card .list-group-item {
-  border-left: 0;
-  border-right: 0;
-  border-top: 0; /* Handled by list-group-flush and card-body padding */
-  /* padding: 0.8rem 0; */ /* Custom padding applied in JSX */
-}
-.top-interest-documents-card .list-group-item:last-child {
-  border-bottom: 0;
+.top-interest-documents-card .card-header h5 {
+    color: #343a40; /* Darker text for the header */
+    margin-bottom: 0;
+    display: flex;
+    align-items: center;
 }
 
-.top-interest-item img {
-  transition: transform 0.15s ease-in-out;
+.top-interest-documents-card .card-header i {
+    color: #007bff; /* Primary color for icon */
+    margin-right: 0.5rem;
 }
-.top-interest-item:hover img {
-  transform: scale(1.03);
+
+/* Styling for individual list items */
+.top-interest-item {
+    padding: 0.75rem 1rem !important; /* Consistent padding for list items, override Bootstrap */
+    border-bottom: 1px solid #f0f0f0; /* Light border between items */
+    transition: background-color 0.2s ease-in-out; /* Smooth hover effect */
 }
+
+.top-interest-item:last-child {
+    border-bottom: none; /* No border for the last item */
+}
+
+.top-interest-item:hover {
+    background-color: #f0f8ff; /* Light blue on hover */
+}
+
+.top-interest-item .rank-number {
+    font-size: 1.1rem; /* Slightly larger rank number */
+    color: #6c757d; /* Muted color for rank */
+    min-width: 30px; /* Ensure consistent width for rank number */
+    text-align: center;
+}
+
+.top-interest-img {
+    width: 60px; /* Slightly larger image */
+    height: 75px; /* Maintain aspect ratio */
+    object-fit: cover;
+    border-radius: 6px; /* Slightly more rounded corners for image */
+    flex-shrink: 0; /* Prevent image from shrinking */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Subtle shadow for images */
+}
+
+.top-interest-item .text-decoration-none {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    min-width: 0; /* Important for truncate to work */
+}
+
 .top-interest-item h6 {
-  color: #212529;
-  transition: color 0.15s ease;
-}
-.top-interest-item:hover h6 {
-  color: #0d6efd; /* Bootstrap primary color */
-}
-
-/* General Card Enhancements */
-.document-card .school-logo, .contributor-card img {
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    line-height: 1.3; /* Adjust line height for title */
+    margin-bottom: 0.25rem !important; /* Reduce margin below title */
+    color: #212529; /* Darker title text */
+    /* text-overflow: ellipsis; */
+    /* overflow: hidden; */
+    /* white-space: nowrap; */
+    /* Already handled by Bootstrap text-truncate */
 }
 
-.contributor-column {
-  background-color: #fff;
-  border-radius: 0.375rem; /* Bootstrap card border-radius */
-  padding: 1.25rem;
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); /* Bootstrap shadow-sm */
-  width: 100%; /* Fill the col for d-flex */
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* Center content */
-  text-align: center;
-}
-.contributor-column .column-title {
-  font-size: 1.1rem;
-  margin-bottom: 1rem;
-  color: #343a40;
-}
-.contributor-column .contributor-card {
-   width: 100%;
-}
-.contributor-column .contributor-card .contributor-icon {
-  font-size: 2rem;
-  color: #0d6efd;
-  margin-bottom: 0.5rem;
-}
-.contributor-column .contributor-card .contributor-name {
-  font-weight: 500;
-  margin-bottom: 0.25rem;
-  font-size: 0.95rem;
-}
-.contributor-column .contributor-card .contributor-stat {
-  font-size: 0.85rem;
-  color: #6c757d;
+.top-interest-item small {
+    font-size: 0.8rem; /* Slightly larger text for details */
+    color: #6c757d; /* Muted color for small text */
 }
 
-
-/* Custom Divider */
-.custom-divider {
-  display: flex;
-  align-items: center;
-  text-align: center;
-  margin-top: 2.5rem;
-  margin-bottom: 2rem;
-}
-.custom-divider::before,
-.custom-divider::after {
-  content: '';
-  flex: 1;
-  border-bottom: 1px solid #dee2e6; /* Light border */
-}
-.custom-divider .divider-text {
-  padding: 0 1rem;
-  font-size: 1.2rem;
-  font-weight: 500;
-  color: #495057; /* Darker gray */
+.top-interest-item small i {
+    margin-right: 0.25rem; /* Smaller margin for icons */
 }
 
-/* Parallax scroll effect class */
-.banner-section.scrolled {
-  /* Example: slightly change background position or add overlay */
-  /* This depends on your desired parallax effect */
+/* Scrollbar styling for the list (optional, for better aesthetics) */
+.top-interest-documents-card .card-body::-webkit-scrollbar {
+    width: 8px;
 }
 
-/* Fade-in effect (already in your code) */
-.fade-in {
-  opacity: 0;
-  transform: translateY(15px);
-  transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+.top-interest-documents-card .card-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
 }
-.fade-in.visible {
-  opacity: 1;
-  transform: translateY(0);
+
+.top-interest-documents-card .card-body::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.top-interest-documents-card .card-body::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Empty state styling */
+.top-interest-documents-card .empty-state {
+    padding: 2rem 1rem;
+    color: #6c757d;
 }

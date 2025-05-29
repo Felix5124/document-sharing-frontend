@@ -25,6 +25,7 @@
     "react-hook-form": "^7.56.1",
     "react-pdf": "^9.2.1",
     "react-router-dom": "^7.6.0",
+    "react-tag-autocomplete": "^7.5.0",
     "react-toastify": "^11.0.5"
   },
   "devDependencies": {

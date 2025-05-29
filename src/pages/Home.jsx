@@ -333,8 +333,8 @@ function Home() {
     };
     return (
       <div className="card shadow-sm top-interest-documents-card">
-        <div className="card-header bg-light py-2"><h5 className="mb-0" style={{ fontSize: '1.05rem', fontWeight: 600 }}><i className="bi bi-graph-up-arrow me-2 text-primary"></i>Tài liệu được quan tâm nhiều</h5></div>
-        <div className="card-body p-2" style={{ maxHeight: 'calc(100vh - 250px)', overflowY: 'auto' }}>{renderContent()}</div> {/* Adjusted maxHeight */}
+        <div className="card-header bg-light py-2"><h5 className="mb-0" style={{ fontSize: '0.9rem', fontWeight: 500 }}><i className="bi bi-graph-up-arrow me-2 text-primary"></i>Tài liệu được quan tâm nhiều</h5></div>
+        <div className="card-body p-2" style={{ maxHeight: 'calc(500vh - 150px)', overflowY: 'auto' }}>{renderContent()}</div> {/* Adjusted maxHeight */}
       </div>
     );
   };
