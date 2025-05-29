@@ -103,16 +103,7 @@ function App() {
           <Route path="/notifications" element={<PrivateRoute><Notifications /></PrivateRoute>} />
           <Route path="/notifications/:notificationId" element={<PrivateRoute><NotificationDetail /></PrivateRoute>} />
           <Route path="/follow" element={<PrivateRoute><Follow /></PrivateRoute>} />
-<<<<<<< HEAD
           <Route path="/search" element={<SearchResultsPage />} />
-
-
-          {/* Xóa route cho SchoolDocuments */}
-          {/* <Route path="/schools/:schoolId" element={<ErrorBoundary><SchoolDocuments /></ErrorBoundary>} /> */}
-
-          {/* Thêm route cho các trang tĩnh trong footer */}
-=======
->>>>>>> 24279eed52de9476b5f1e1d7fc2d719d7dd543ad
           <Route path="/about" element={<ErrorBoundary><div>Giới thiệu</div></ErrorBoundary>} />
           <Route path="/contact" element={<ErrorBoundary><div>Liên hệ</div></ErrorBoundary>} />
           <Route path="/privacy" element={<ErrorBoundary><div>Bảo mật</div></ErrorBoundary>} />
