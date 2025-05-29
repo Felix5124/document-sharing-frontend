@@ -250,13 +250,32 @@ function Home() {
       <div ref={columnRef} className={`contributor-column fade-in ${isVisible ? 'visible' : ''}`}>
         <h4 className="column-title">{title}</h4>
         {data ? (
-          <div className="contributor-card">
+          <div className="contributor-card h-100">
             {icon && <i className={`bi ${icon} contributor-icon`}></i>}
             {linkTo ? (
               <>
-                <img src={getFullImageUrl(data.coverImageUrl)} alt={data.title || 'Document cover'} style={{ width: '100%', height: '180px', objectFit: 'cover', borderRadius: '8px', marginBottom: '1rem' }} onError={(e) => { e.target.onerror = null; e.target.src = getFullImageUrl(null); }} />
-                <h5 className="contributor-name mt-2" title={data.title} style={{ fontSize: '1.1rem', fontWeight: 'bold', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{data.title}</h5>
-                <p className="contributor-stat mb-2"><i className="bi bi-download me-1"></i>{statLabel}: {statValue}</p>
+                <img
+                  src={getFullImageUrl(data.coverImageUrl)}
+                  alt={data.title || 'Document cover'}
+                  style={{ width: '100%', height: '180px', objectFit: 'cover', borderRadius: '8px', marginBottom: '1rem' }}
+                  onError={(e) => { e.target.onerror = null; e.target.src = getFullImageUrl(null); }}
+                />
+                <h5
+                  className="contributor-name mt-2"
+                  title={data.title}
+                  style={{
+                    fontSize: '1.1rem',
+                    fontWeight: 'bold',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}
+                >
+                  {data.title}
+                </h5>
+                <p className="contributor-stat mb-2">
+                  <i className="bi bi-download me-1"></i>{statLabel}: {statValue}
+                </p>
                 <Link to={linkTo} className="btn btn-sm btn-outline-primary w-100">Xem chi tiết</Link>
               </>
             ) : (
@@ -270,7 +289,6 @@ function Home() {
       </div>
     );
   };
-
   const SchoolCard = ({ school }) => {
     const cardRef = useRef(null);
     const isVisible = useOnScreen(cardRef);
@@ -393,15 +411,41 @@ function Home() {
           )}
 
           <div className="custom-divider my-4"><span className="divider-text">✨ Bảng Vinh Danh ✨</span></div>
-          <div className="title-group text-center mb-4"><h2 className="main-title">Bảng xếp hạng nổi bật</h2></div>
-          <div className="top-contributors-section row g-4 justify-content-center">
-            <div className="col-md-6 col-lg-4 d-flex"> <ContributorColumn title="Người bình luận nhiều nhất" data={topCommenter} icon="bi-chat-left-text-fill" statLabel="Số bình luận" statValue={topCommenter?.commentCount} /> </div>
-            <div className="col-md-6 col-lg-4 d-flex"> <ContributorColumn title="Người điểm cao nhất" data={topPointsUser} icon="bi-star-fill" statLabel="Điểm" statValue={topPointsUser?.points} /> </div>
-            <div className="col-md-6 col-lg-4 d-flex"> <ContributorColumn title="Tài liệu tải nhiều nhất" data={topDownloadedDoc} statLabel="Lượt tải" statValue={topDownloadedDoc?.downloadCount} linkTo={topDownloadedDoc ? `/document/${topDownloadedDoc.documentId}` : null} /> </div>
-          </div>
-          <div className="text-center mt-4 mb-5">
-            <Link to="/rankings" className="btn btn-primary btn-lg shadow-sm"><i className="bi bi-bar-chart-steps me-2"></i> Xem Tất Cả Bảng Xếp Hạng</Link>
-          </div>
+      <div className="title-group text-center mb-4"><h2 className="main-title">Bảng xếp hạng nổi bật</h2></div>
+      <div className="top-contributors-section d-flex flex-row justify-content-center gap-4">
+        <div className="contributor-wrapper">
+          <ContributorColumn
+            title="Người bình luận nhiều nhất"
+            data={topCommenter}
+            icon="bi-chat-left-text-fill"
+            statLabel="Số bình luận"
+            statValue={topCommenter?.commentCount}
+          />
+        </div>
+        <div className="contributor-wrapper">
+          <ContributorColumn
+            title="Người điểm cao nhất"
+            data={topPointsUser}
+            icon="bi-star-fill"
+            statLabel="Điểm"
+            statValue={topPointsUser?.points}
+          />
+        </div>
+        <div className="contributor-wrapper">
+          <ContributorColumn
+            title="Tài liệu tải nhiều nhất"
+            data={topDownloadedDoc}
+            statLabel="Lượt tải"
+            statValue={topDownloadedDoc?.downloadCount}
+            linkTo={topDownloadedDoc ? `/document/${topDownloadedDoc.documentId}` : null}
+          />
+        </div>
+      </div>
+      <div className="text-center mt-4 mb-5">
+        <Link to="/rankings" className="btn btn-primary btn-lg shadow-sm">
+          <i className="bi bi-bar-chart-steps me-2"></i> Xem Tất Cả Bảng Xếp Hạng
+        </Link>
+      </div>
         </div>
       </div>
     </div>

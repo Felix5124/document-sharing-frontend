@@ -59,7 +59,6 @@ function Login() {
     try {
       const result = await signInWithPopup(auth, provider);
       console.log("Google popup login successful:", result.user.uid);
-      // AuthContext sẽ xử lý tiếp (gọi /api/users/by-uid và /api/users/authprovider-register nếu cần)
     } catch (error) {
       console.error("Lỗi đăng nhập Google:", error);
       if (error.code === 'auth/popup-closed-by-user' || error.code === 'auth/cancelled-popup-request') {
@@ -114,33 +113,39 @@ function Login() {
             </div>
             {errors.Password && <p className="error-message">{errors.Password.message}</p>}
           </div>
-          <button
-            type="submit"
-            className="submit-button"
-            disabled={emailPassLoading || googleLoading || isAuthContextLoading}
-          >
-            {emailPassLoading || (isAuthContextLoading && !googleLoading) ? (
-              <><i className="bi bi-arrow-clockwise spinning me-2"></i> Đang xử lý...</>
-            ) : (
-              <><i className="bi bi-box-arrow-in-right me-2"></i> Đăng nhập</>
-            )}
-          </button>
+          <div className="button-group">
+            <div className="button-row">
+              <button
+                type="submit"
+                className="submit-button auth-button"
+                disabled={emailPassLoading || googleLoading || isAuthContextLoading}
+              >
+                {emailPassLoading || (isAuthContextLoading && !googleLoading) ? (
+                  <><i className="bi bi-arrow-clockwise spinning me-2"></i> Đang xử lý...</>
+                ) : (
+                  <><i className="bi bi-box-arrow-in-right me-2"></i> Đăng nhập</>
+                )}
+              </button>
+            </div>
+            <div className="button-row divider-row">
+              <span className="divider-text">Hoặc</span>
+            </div>
+            <div className="button-row">
+              <button
+                type="button"
+                className="submit-button google-button auth-button"
+                onClick={handleGoogleLogin}
+                disabled={emailPassLoading || googleLoading || isAuthContextLoading}
+              >
+                {googleLoading || (isAuthContextLoading && !emailPassLoading) ? (
+                  <><i className="bi bi-arrow-clockwise spinning me-2"></i> Đang xử lý...</>
+                ) : (
+                  <><i className="bi bi-google me-2"></i> Đăng nhập với Google</>
+                )}
+              </button>
+            </div>
+          </div>
         </form>
-
-        <div style={{ marginTop: '15px', marginBottom: '15px', textAlign: 'center' }}>Hoặc</div>
-        <button
-          type="button"
-          className="submit-button google-button"
-          onClick={handleGoogleLogin}
-          disabled={emailPassLoading || googleLoading || isAuthContextLoading}
-          style={{ backgroundColor: '#4285F4', color: 'white' }}
-        >
-          {googleLoading || (isAuthContextLoading && !emailPassLoading) ? (
-            <><i className="bi bi-arrow-clockwise spinning me-2"></i> Đang xử lý...</>
-          ) : (
-            <><i className="bi bi-google me-2"></i> Đăng nhập với Google</>
-          )}
-        </button>
 
         <p className="auth-link">
           Chưa có tài khoản?{' '}
