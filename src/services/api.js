@@ -57,7 +57,6 @@ export const uploadAvatar = (userId, file) => {
 };
 
 // --- API cho tài liệu ---
-// (Giữ nguyên các API tài liệu)
 export const getDocuments = (params) => apiClient.get('/documents', { params });
 export const getDocumentById = (id) => apiClient.get(`/documents/${id}`);
 export const uploadDocument = (data) =>
@@ -68,6 +67,17 @@ export const updateDocument = (id, data) =>
   apiClient.put(`/documents/${id}`, data, {
     headers: { 'Content-Type': 'multipart/form-data' },
   });
+
+  export const getRelatedDocumentsByTags = (tagNames, excludeDocumentId, limit = 5) => {
+  return apiClient.get('/documents/related-by-tags', {
+    params: {
+      tagNames: tagNames, 
+      excludeDocumentId,
+      limit,
+    },
+  });
+};
+
 export const deleteDocument = (id) => apiClient.delete(`/documents/${id}`);
 export const searchDocuments = (params) => {
   const filteredParams = Object.entries(params).reduce((acc, [key, value]) => {

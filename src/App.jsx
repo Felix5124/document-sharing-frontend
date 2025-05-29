@@ -22,6 +22,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import { AuthContext, AuthProvider } from './context/AuthContext';
 import UploadDocument from './components/UploadDocument';
 import UpdateDocument from './components/UpdateDocument';
+import SearchResultsPage from './pages/SearchResultsPage';
 
 // Component PrivateRoute để bảo vệ các route
 function PrivateRoute({ children, requireAdmin = false, allowNonAdmin = false }) {
@@ -90,6 +91,8 @@ function App() {
           <Route path="/notifications" element={<PrivateRoute><Notifications /></PrivateRoute>} />
           <Route path="/notifications/:notificationId" element={<PrivateRoute><NotificationDetail /></PrivateRoute>} />
           <Route path="/follow" element={<PrivateRoute><Follow /></PrivateRoute>} />
+          <Route path="/search" element={<SearchResultsPage />} />
+
 
           {/* Xóa route cho SchoolDocuments */}
           {/* <Route path="/schools/:schoolId" element={<ErrorBoundary><SchoolDocuments /></ErrorBoundary>} /> */}

@@ -1,0 +1,123 @@
+.react-tags {
+  padding: 6px 0 0 6px;
+  border: 1px solid #ced4da;
+  border-radius: .25rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  cursor: text;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.react-tags.is-active {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 .2rem rgba(0,123,255,.25);
+}
+
+.react-tags__list {
+  display: contents;
+}
+
+.react-tags__list-item {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+.react-tags__tag { 
+  display: inline-block; 
+  box-sizing: border-box;
+  margin: 0 6px 6px 0;
+  padding: 5px 8px;
+  border: 1px solid #007bff;
+  border-radius: .2rem;
+  background: #007bff;
+  font-size: 0.875em;
+  line-height: inherit;
+  color: white;
+  cursor: pointer;
+  text-align: left;
+  position: relative;
+}
+
+.react-tags__tag-name {
+  margin-right: 5px;
+}
+
+.react-tags__tag::after {
+  content: "×";
+  color: #fff;
+  margin-left: 8px;
+  font-weight: bold;
+  font-size: 1.1em;
+  line-height: 1;
+}
+
+.react-tags__combobox-input {
+  width: 100%;
+  margin: 0;
+  padding: 7px 2px;
+  border: 0;
+  outline: none;
+  font-size: 1rem;
+  line-height: inherit;
+  background: none;
+  margin-bottom: 6px;
+  flex-grow: 1;
+  min-width: 100px;
+  box-sizing: border-box;
+}
+
+.react-tags__combobox-input::-ms-clear {
+  display: none;
+}
+
+.react-tags__listbox {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  z-index: 1050;
+  margin-top: 1px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: white;
+  border: 1px solid rgba(0,0,0,.15);
+  border-radius: .25rem;
+  box-shadow: 0 .5rem 1rem rgba(0,0,0,.175);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.react-tags__listbox-option {
+  border-bottom: 1px solid #eee;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.react-tags__listbox-option:last-child {
+  border-bottom: none;
+}
+
+.react-tags__listbox-option .react-tags__listbox-option-highlight {
+  text-decoration: underline;
+  background: none;
+  font-weight: 600;
+  color: #007bff;
+}
+
+.react-tags__listbox-option:hover {
+  background: #f8f9fa;
+}
+
+.react-tags__listbox-option.is-active {
+  background: #007bff;
+  color: white;
+}
+
+.react-tags__listbox-option[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: auto;
+}
