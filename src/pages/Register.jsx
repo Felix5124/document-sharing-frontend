@@ -97,23 +97,29 @@ function Register() {
             </div>
             {errors.ConfirmPassword && <p className="error-message">{errors.ConfirmPassword.message}</p>}
           </div>
-          <button type="submit" className="submit-button" disabled={loading}>
-            {loading ? (
-              <>
-                <i className="bi bi-arrow-clockwise spinning me-2"></i> Đang xử lý...
-              </>
-            ) : (
-              <>
-                <i className="bi bi-person-plus me-2"></i> Đăng ký
-              </>
-            )}
-          </button>
-          <p className="auth-link">
-            Đã có tài khoản?{' '}
-            <span onClick={() => navigate('/login')} className="link-text">
-              Đăng nhập ngay
-            </span>
-          </p>
+          <div className="button-group">
+            <div className="button-row">
+              <button type="submit" className="submit-button auth-button" disabled={loading}>
+                {loading ? (
+                  <>
+                    <i className="bi bi-arrow-clockwise spinning me-2"></i> Đang xử lý...
+                  </>
+                ) : (
+                  <>
+                    <i className="bi bi-person-plus me-2"></i> Đăng ký
+                  </>
+                )}
+              </button>
+            </div>
+            <div className="button-row">
+              <p className="auth-link">
+                Đã có tài khoản?{' '}
+                <span onClick={() => navigate('/login')} className="link-text">
+                  Đăng nhập ngay
+                </span>
+              </p>
+            </div>
+          </div>
         </form>
       </div>
     </div>
