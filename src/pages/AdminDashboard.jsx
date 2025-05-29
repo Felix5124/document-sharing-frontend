@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useContext } from 'react';
-import { toast } from 'react-toastify';
 import { AuthContext } from '../context/AuthContext';
 import DocumentApproval from '../components/DocumentApproval';
 import AccountManagement from '../components/AccountManagement';
@@ -11,7 +10,7 @@ import AdminStatistics from '../components/AdminStatistics';
 import SchoolManagement from '../components/SchoolManagement';
 
 function AdminDashboard() {
-  const { user, logout } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState('document-approval');
 
@@ -20,11 +19,6 @@ function AdminDashboard() {
     'color: purple; font-weight: bold;',
     user ? { userId: user.userId, isAdmin: user.isAdmin, email: user.email } : null
   );
-
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
 
   const getSectionTitle = () => {
     switch (activeSection) {
@@ -61,7 +55,7 @@ function AdminDashboard() {
         </h2>
       </div>
 
-      <div className="admin-nav mb-4">
+      <div className="admin-nav">
         <button
           className={`nav-button ${activeSection === 'document-approval' ? 'active' : ''}`}
           onClick={() => setActiveSection('document-approval')}
@@ -100,7 +94,7 @@ function AdminDashboard() {
         </button>
       </div>
 
-      <div className="admin-content">
+      <div className="admin-content fade-in">
         <div className="section-header">
           <h3 className="section-action-title">{getSectionTitle()}</h3>
         </div>
