@@ -17,7 +17,6 @@ function Register() {
         Email: data.Email,
         Password: data.Password,
         FullName: data.FullName
-        // Không gửi SchoolId
       };
       const response = await register(payload);
       toast.success('Đăng ký thành công! Vui lòng kiểm tra email để xác minh.');
@@ -43,7 +42,7 @@ function Register() {
               <i className="bi bi-person input-icon"></i>
               <input
                 type="text"
-                className="form-input"
+                className="form-control"
                 {...formRegister('FullName', { required: 'Vui lòng nhập họ tên' })}
               />
             </div>
@@ -55,7 +54,7 @@ function Register() {
               <i className="bi bi-envelope input-icon"></i>
               <input
                 type="email"
-                className="form-input"
+                className="form-control"
                 {...formRegister('Email', {
                   required: 'Vui lòng nhập email',
                   pattern: {
@@ -73,7 +72,7 @@ function Register() {
               <i className="bi bi-lock input-icon"></i>
               <input
                 type="password"
-                className="form-input"
+                className="form-control"
                 {...formRegister('Password', {
                   required: 'Vui lòng nhập mật khẩu',
                   minLength: { value: 6, message: 'Mật khẩu tối thiểu 6 ký tự' },
@@ -88,7 +87,7 @@ function Register() {
               <i className="bi bi-lock input-icon"></i>
               <input
                 type="password"
-                className="form-input"
+                className="form-control"
                 {...formRegister('ConfirmPassword', {
                   required: 'Vui lòng xác nhận mật khẩu',
                   validate: (value) => value === password || 'Mật khẩu không khớp',

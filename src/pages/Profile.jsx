@@ -16,7 +16,7 @@ function Profile() {
   const [uploadCount, setUploadCount] = useState(0);
   const [downloadCount, setDownloadCount] = useState(0);
   const [avatarFile, setAvatarFile] = useState(null);
-  const [schools, setSchools] = useState([]); // State lưu danh sách trường
+  const [schools, setSchools] = useState([]);
   const { register, handleSubmit, formState: { errors } } = useForm();
 
   useEffect(() => {
@@ -26,14 +26,14 @@ function Profile() {
           getUser(user.userId),
           getUploadCount(user.userId),
           getDownloads(user.userId),
-          getSchools() // Fetch danh sách trường
+          getSchools()
         ]);
         setUserData(userResponse.data);
         setUploads(uploadResponse.data.uploads);
         setUploadCount(uploadResponse.data.uploadCount);
         setDownloads(downloadResponse.data);
         setDownloadCount(downloadResponse.data.length);
-        setSchools(schoolsResponse.data); // Lưu danh sách trường
+        setSchools(schoolsResponse.data);
       } catch (error) {
         console.error('Fetch error:', error.response?.data || error.message);
         if (error.response?.status === 401) {
@@ -64,7 +64,7 @@ function Profile() {
 
       const updateData = {
         FullName: data.FullName,
-        SchoolId: parseInt(data.SchoolId) // Gửi SchoolId thay vì School
+        SchoolId: parseInt(data.SchoolId)
       };
       await updateUser(user.userId, updateData);
 
@@ -116,24 +116,22 @@ function Profile() {
           <div className="avatar-section" style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
             <div className="avatar-wrapper" style={{ position: 'relative', width: '200px', height: '200px' }}>
               <img
-                src={userData.avatarUrl ? `https://localhost:7013${userData.avatarUrl}` : '../src/assets/images/anh.png'}
+                src={avatarFile ? URL.createObjectURL(avatarFile) : (userData.avatarUrl ? `https://localhost:7013${userData.avatarUrl}` : '../src/assets/images/anh.png')}
                 alt="Avatar"
                 className="avatar-img"
                 style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
                 onError={(e) => (e.target.src = '/default-avatar.png')}
               />
-              {!userData.avatarUrl && (
-                <div className="avatar-upload" style={{ position: 'absolute', bottom: '10px', right: '10px', backgroundColor: 'rgba(0, 0, 0, 0.5)', borderRadius: '50%', padding: '8px' }}>
-                  <i className="bi bi-camera-fill" style={{ color: 'white', fontSize: '1.5rem' }}></i>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="avatar-input"
-                    onChange={handleAvatarChange}
-                    style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer' }}
-                  />
-                </div>
-              )}
+              <div className="avatar-upload" style={{ position: 'absolute', bottom: '10px', right: '10px', backgroundColor: 'rgba(0, 0, 0, 0.5)', borderRadius: '50%', padding: '8px' }}>
+                <i className="bi bi-camera-fill" style={{ color: 'white', fontSize: '1.5rem' }}></i>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="avatar-input"
+                  onChange={handleAvatarChange}
+                  style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer' }}
+                />
+              </div>
             </div>
           </div>
           <div className="profile-form">

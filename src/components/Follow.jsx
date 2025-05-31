@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useContext } from 'react';
-import { useNavigate } from 'react-router-dom'; // Thêm import này
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { AuthContext } from '../context/AuthContext';
 import { getUserFollowing, getUserFollows, unfollow } from '../services/api';
@@ -77,23 +77,23 @@ function Follow() {
 
   const handleUnfollow = async (followId) => {
     try {
-      await unfollow(followId);
-      toast.success('Bỏ theo dõi thành công!');
-      fetchFollowing();
-      if (showFollowers) {
-        fetchFollowers();
-      }
-      fetchFollowerCount();
+        await unfollow(followId); // Truyền followId
+        toast.success('Bỏ theo dõi thành công!');
+        fetchFollowing();
+        if (showFollowers) {
+            fetchFollowers();
+        }
+        fetchFollowerCount();
     } catch (error) {
-      if (error.response?.status === 401) {
-        toast.error('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.', { toastId: 'auth-error' });
-        navigate('/login');
-      } else {
-        toast.error('Không thể bỏ theo dõi.');
-        console.error('Unfollow error:', error);
-      }
+        if (error.response?.status === 401) {
+            toast.error('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.', { toastId: 'auth-error' });
+            navigate('/login');
+        } else {
+            toast.error('Không thể bỏ theo dõi.');
+            console.error('Unfollow error:', error);
+        }
     }
-  };
+};
 
   const toggleFollowers = () => {
     setShowFollowers(!showFollowers);
@@ -136,7 +136,7 @@ function Follow() {
                 </div>
                 <button
                   className="action-button unfollow-button"
-                  onClick={() => handleUnfollow(follow.followId)}
+                  onClick={() => handleUnfollow(follow.followId)} // Pass followedUserId
                 >
                   <i className="bi bi-person-dash me-1"></i> Bỏ theo dõi
                 </button>

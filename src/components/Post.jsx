@@ -189,18 +189,34 @@ const Post = () => {
               {comments[post.postId] && (
                 <div className="mt-4">
                   {comments[post.postId].map((comment) => (
-                    <div
-                      key={comment.postCommentId}
-                      className="comment-item border-top border-gray-200 pt-3 mt-3 px-3 py-2"
-                    >
-                      <p className="text-gray-700">{comment.content}</p>
-                      <p className="small text-gray-400 mt-1">
-                        {comment.userEmail || 'Ẩn danh'} -{' '}
-                        {new Date(comment.createdAt).toLocaleString('vi-VN')}
-                      </p>
-                    </div>
-                  ))}
-
+  <div
+    key={comment.postCommentId}
+    className="comment-item border-top border-gray-200 pt-3 mt-3 px-3 py-2"
+  >
+    <div className="d-flex align-items-center mb-2">
+      <img
+        src={
+          comment.user?.avatarUrl
+            ? `https://localhost:7013${comment.user.avatarUrl}`
+            : '/assets/images/default-avatar.png'
+        }
+        alt="Avatar"
+        className="rounded-circle me-3 comment-avatar"
+        style={{ width: '40px', height: '40px' }} // Avatar nhỏ hơn so với bài viết
+        onError={(e) => (e.target.src = '/assets/images/default-avatar.png')}
+      />
+      <div>
+        <p className="text-gray-600 fw-semibold text-truncate mb-0">
+          {comment.user?.email || 'Ẩn danh'}
+        </p>
+        <p className="small text-gray-400 mt-0">
+          {new Date(comment.createdAt).toLocaleString('vi-VN')}
+        </p>
+      </div>
+    </div>
+    <p className="text-gray-700 comment-content">{comment.content}</p>
+  </div>
+))}
                   {/* Form bình luận */}
                   {user ? (
                     <div className="mt-4 p-3 rounded-3">

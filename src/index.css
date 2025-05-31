@@ -417,14 +417,12 @@ body {
 }
 
 .input-wrapper {
-  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .input-icon {
-  position: absolute;
-  left: 14px;
-  top: 50%;
-  transform: translateY(-50%);
   color: #6B7280;
   font-size: 1.2rem;
   transition: color 0.2s ease;
@@ -432,7 +430,7 @@ body {
 
 .form-input {
   width: 100%;
-  padding: 12px 14px 12px 44px;
+  padding: 12px 14px 12px 40px;
   border: 1px solid #E5E7EB;
   border-radius: 10px;
   font-size: 1rem;
@@ -466,14 +464,11 @@ textarea.form-input {
 }
 
 .submit-button {
-  display: inline-flex;
-  align-items: center;
-  padding: 12px 24px;
   background: linear-gradient(90deg, #3B82F6 0%, #2563EB 100%);
   color: #FFFFFF;
+  padding: 12px 24px;
   border-radius: 8px;
   font-size: 1rem;
-  font-weight: 500;
   border: none;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -990,20 +985,24 @@ textarea.form-input {
 }
 
 .contributor-card {
+  padding: 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  flex-grow: 1;
-  gap: 1rem;
 }
 
 .contributor-icon {
-  font-size: 2.5rem;
+  font-size: 2rem;
   color: #3B82F6;
   margin-bottom: 0.5rem;
 }
-
+.contributor-column h4 {
+  text-align: center;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
 .contributor-name {
+  margin-bottom: 0.5rem;
   font-size: 1.1rem;
   font-weight: 500;
   color: #374151;
@@ -1284,15 +1283,6 @@ footer .btn-social:hover {
   background: linear-gradient(to right, transparent, #007bff, transparent);
 }
 
-.divider-text {
-  position: relative;
-  display: inline-block;
-  background-color: #fff;
-  padding: 0 15px;
-  font-size: 1.2rem;
-  font-weight: 500;
-  color: #007bff;
-}
 
 /* School Card */
 .school-card {
@@ -1487,4 +1477,142 @@ footer .btn-social:hover {
   font-weight: 700;
   color: #ffffff; /* Đổi màu số liệu thành trắng để nổi bật */
   text-align: center;
+}
+.button-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Căn giữa theo chiều ngang */
+  gap: 16px; /* Khoảng cách giữa các hàng */
+  margin-top: 24px;
+}
+
+.button-row {
+  width: 100%;
+  display: flex;
+  justify-content: center; /* Căn giữa nút trong hàng */
+}
+
+.divider-row {
+  position: relative;
+  width: 100%;
+  text-align: center;
+}
+
+.divider-text {
+  position: relative;
+  display: inline-block;
+  background-color: #fff;
+  padding: 0 15px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #6B7280;
+}
+.google-button {
+  background: linear-gradient(90deg, #4285F4 0%, #3267D6 100%);
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.google-button:hover {
+  background: linear-gradient(90deg, #3267D6 0%, #2A54B5 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
+}
+.auth-button {
+  width: 100%;
+  max-width: 300px; /* Giới hạn chiều rộng tối đa */
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Căn giữa nội dung trong nút */
+}
+/* Notifications Card */
+.notifications-card {
+  background: linear-gradient(180deg, #FFFFFF 0%, #F9FAFB 100%);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.notifications-card:hover {
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+/* Notification Detail Card */
+.notification-detail-card {
+  background: linear-gradient(180deg, #FFFFFF 0%, #F9FAFB 100%);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.notification-detail-card:hover {
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Notification Content trong Notification Detail */
+.notification-detail-card .notification-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.notification-detail-card .notification-sender,
+.notification-detail-card .notification-message,
+.notification-detail-card .notification-time {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #374151;
+  margin: 0;
+}
+
+.notification-detail-card .notification-sender strong,
+.notification-detail-card .notification-message strong,
+.notification-detail-card .notification-time strong {
+  color: #111827;
+  font-weight: 600;
+}
+
+.notification-detail-card .notification-message {
+  white-space: pre-wrap; /* Hỗ trợ xuống dòng trong nội dung dài */
+}
+
+/* Notification Actions trong Notification Detail */
+.notification-detail-card .notification-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.notification-detail-card .back-button {
+  background: linear-gradient(90deg, #6B7280 0%, #4B5563 100%);
+  color: #ffffff;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.notification-detail-card .back-button:hover {
+  background: linear-gradient(90deg, #4B5563 0%, #374151 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+}
+.fixed-buttons button {
+  transition: all 0.3s ease;
+}
+
+.fixed-buttons button:hover {
+  transform: scale(1.1);
+  background-color: #0056b3; /* Màu đậm hơn khi hover */
+}
+.fixed-buttons button:active {
+  transform: scale(0.95); /* Hiệu ứng nhấn */
 }
