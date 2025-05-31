@@ -54,32 +54,31 @@ function DocumentManagement() {
     return (
       <tr ref={rowRef} className={`fade-in ${isVisible ? 'visible' : ''}`}>
         <td>{doc.title}</td>
-        <td>{doc.description}</td>
         <td>{doc.email || 'Không xác định'}</td>
-        <td>{doc.downloadCount}</td>
+        <td className="download-count">{doc.downloadCount}</td>
         <td>
-          <span className={`status-badge ${doc.isApproved ? 'status-approved' : 'status-pending'}`}>
-            {doc.isApproved ? 'Đã duyệt' : 'Chưa duyệt'}
-          </span>
-          {' | '}
-          <span className={`status-badge ${doc.isLock ? 'status-locked' : 'status-unlocked'}`}>
-            {doc.isLock ? 'Đã khóa' : 'Đã mở khóa'}
-          </span>
+          <div className="status-container">
+            <span className={`status-badge ${doc.isApproved ? 'status-approved' : 'status-pending'}`}>
+              {doc.isApproved ? 'Đã duyệt' : 'Chưa duyệt'}
+            </span>
+          </div>
         </td>
         <td>
-          <button
-            className={`action-button ${doc.isLock ? 'unlock-button' : 'lock-button'} me-2`}
-            onClick={() => handleLockUnlock(doc.documentId, doc.isLock)}
-          >
-            <i className={`bi ${doc.isLock ? 'bi-unlock' : 'bi-lock'} me-1`}></i>
-            {doc.isLock ? 'Mở khóa' : 'Khóa'}
-          </button>
-          <button
-            className="action-button delete-button"
-            onClick={() => handleDelete(doc.documentId)}
-          >
-            <i className="bi bi-trash me-1"></i> Xóa
-          </button>
+          <div className="action-container">
+            <button
+              className={`action-button ${doc.isLock ? 'unlock-button' : 'lock-button'} me-2`}
+              onClick={() => handleLockUnlock(doc.documentId, doc.isLock)}
+            >
+              <i className={`bi ${doc.isLock ? 'bi-unlock' : 'bi-lock'} me-1`}></i>
+              {doc.isLock ? 'Mở khóa' : 'Khóa'}
+            </button>
+            <button
+              className="action-button delete-button"
+              onClick={() => handleDelete(doc.documentId)}
+            >
+              <i className="bi bi-trash me-1"></i> Xóa
+            </button>
+          </div>
         </td>
       </tr>
     );
@@ -105,7 +104,6 @@ function DocumentManagement() {
             <thead>
               <tr>
                 <th>Tiêu đề</th>
-                <th>Mô tả</th>
                 <th>Người đăng</th>
                 <th>Lượt tải</th>
                 <th>Trạng thái</th>

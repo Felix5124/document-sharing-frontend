@@ -138,8 +138,7 @@ export const deleteNotification = (notificationId) => apiClient.delete(`/notific
 export const getUserFollowing = (userId) => apiClient.get('/follows', { params: { userId } });
 export const getUserFollows = (followedUserId) => apiClient.get('/follows/followers', { params: { followedUserId } });
 export const follow = (data) => apiClient.post('/follows', data);
-export const unfollow = (followerId, followedUserId) => apiClient.delete(`/follows`, { params: { followerId, followedUserId } });
-
+export const unfollow = (followId) => apiClient.delete(`/follows/${followId}`);
 // --- API cho huy hiệu ---
 export const getAllBadges = () => apiClient.get('/badges');
 export const getUserBadges = (userId) => apiClient.get('/userbadges', { params: { userId } });

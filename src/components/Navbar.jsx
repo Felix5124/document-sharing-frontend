@@ -3,6 +3,7 @@ import { useContext, useEffect, useState, useRef } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 import { getUserNotifications } from '../services/api';
+import logo from '../assets/images/logoweb.png'; // Import ảnh logo
 
 function Navbar() {
   const navigate = useNavigate();
@@ -46,7 +47,7 @@ function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Lấy thông báo khi user thay đổi
+  // Lấy thông báo khi user hoặc đường dẫn thay đổi
   useEffect(() => {
     if (user && !user.isAdmin) {
       fetchUnreadNotifications();
@@ -57,19 +58,25 @@ function Navbar() {
     } else {
       setUnreadCount(0);
     }
-  }, [user]);
+  }, [user, location.pathname]);
 
   // Xử lý đăng xuất
   const handleLogout = () => {
     logout();
-   // toast.success('Đăng xuất thành công!');
     navigate('/login');
   };
 
   return (
     <nav ref={navbarRef} className="navbar navbar-expand-lg navbar-dark custom-navbar">
       <div className="container">
-        <Link className="navbar-brand" to="/">Document Sharing</Link>
+        <Link className="navbar-brand d-flex align-items-center" to="/">
+          <img
+            src={logo}
+            alt="Logo"
+            style={{ height: '60px', marginRight: '10px' }} // Kích thước và khoảng cách logo
+          />
+          Document Sharing
+        </Link>
         <button
           className="navbar-toggler"
           type="button"
@@ -198,8 +205,8 @@ function Navbar() {
               </>
             )}
           </ul>
-    </div>
-    </div>
+        </div>
+      </div>
     </nav>
   );
 }

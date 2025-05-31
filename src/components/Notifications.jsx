@@ -36,7 +36,7 @@ function Notifications() {
 
   useEffect(() => {
     fetchNotifications();
-  }, [user, location]);
+  }, [user, location.pathname]);
 
   const handleNotificationClick = (notificationId) => {
     navigate(`/notifications/${notificationId}`);
@@ -44,16 +44,16 @@ function Notifications() {
 
   return (
     <div className="notifications-container">
+      <div className="notifications-card">
       <h2 className="notifications-title">
         <i className="bi bi-bell me-2"></i> Thông báo
       </h2>
-      {loading ? (
-        <div className="loading-container">
-          <div className="spinner"></div>
-          <p className="loading-text">Đang tải thông báo...</p>
-        </div>
-      ) : notifications.length > 0 ? (
-        <div className="notifications-card"> {/* Thêm khung card */}
+        {loading ? (
+          <div className="loading-container">
+            <div className="spinner"></div>
+            <p className="loading-text">Đang tải thông báo...</p>
+          </div>
+        ) : notifications.length > 0 ? (
           <div className="notifications-list">
             {notifications.map((notification) => {
               const isUnread = !notification.isRead;
@@ -85,13 +85,13 @@ function Notifications() {
               );
             })}
           </div>
-        </div>
-      ) : (
-        <div className="empty-state">
-          <i className="bi bi-bell-slash empty-icon"></i>
-          <p>Không có thông báo nào để hiển thị.</p>
-        </div>
-      )}
+        ) : (
+          <div className="empty-state">
+            <i className="bi bi-bell-slash empty-icon"></i>
+            <p>Không có thông báo nào để hiển thị.</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

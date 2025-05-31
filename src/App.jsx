@@ -168,12 +168,6 @@ function App() {
           </div>
         </footer>
 
-        <div id="back-to-top">
-          <button type="button" className="btn btn-primary" onClick={scrollToTop}>
-            <i className="fas fa-arrow-up"></i>
-          </button>
-        </div>
-
         <ToastContainer />
       </BrowserRouter>
     </AuthProvider>
