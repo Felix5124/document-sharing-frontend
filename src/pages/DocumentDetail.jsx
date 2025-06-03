@@ -44,8 +44,31 @@ const StarRatingDisplay = ({ rating, totalReviews }) => {
       {[...Array(fullStars)].map((_, i) => <i key={`full-${i}`} className="bi bi-star-fill text-warning"></i>)}
       {halfStar && <i className="bi bi-star-half text-warning"></i>}
       {[...Array(emptyStars)].map((_, i) => <i key={`empty-${i}`} className="bi bi-star text-warning"></i>)}
-      {totalReviews > 0 && <span className="ms-2">{rating.toFixed(1)} / 5.0</span>}
+      {totalReviews > 0 && <span className="ms-2">{rating}/5</span>}
     </span>
+  );
+};
+
+const StarRatingInput = ({ rating, onChange }) => {
+  const [hoverRating, setHoverRating] = useState(0);
+
+  return (
+    <div className="star-rating-input">
+      {[...Array(5)].map((_, index) => {
+        const starValue = index + 1;
+        return (
+          <i
+            key={starValue}
+            className={`bi bi-star${(hoverRating || rating) >= starValue ? '-fill' : ''} text-warning`}
+            style={{ cursor: 'pointer', fontSize: '1.2rem', marginRight: '4px' }}
+            onClick={() => onChange(starValue)}
+            onMouseEnter={() => setHoverRating(starValue)}
+            onMouseLeave={() => setHoverRating(0)}
+          ></i>
+        );
+      })}
+      <span className="ms-2">{rating} sao</span>
+    </div>
   );
 };
 
@@ -648,21 +671,17 @@ function DocumentDetail() {
               />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label htmlFor="commentRating">Đánh giá (sao)</Form.Label>
-              <Form.Select
-                id="commentRating"
-                value={comment.Rating}
-                onChange={(e) => setComment({ ...comment, Rating: parseInt(e.target.value) })}
-                disabled={!user}
-              >
-                {[5, 4, 3, 2, 1].map((star) => (
-                  <option key={star} value={star}>{star} sao</option>
-                ))}
-              </Form.Select>
+              <Form.Label>Đánh giá (sao)</Form.Label>
+              <StarRatingInput
+                rating={comment.Rating}
+                onChange={(rating) => setComment({ ...comment, Rating: rating })}
+              />
             </Form.Group>
-            <Button type="submit" variant="primary" disabled={!user || !comment.Content.trim()}>
-              <i className="bi bi-send me-2"></i> Gửi bình luận
-            </Button>
+            <div className="comment-submit">
+              <Button type="submit" variant="primary" disabled={!user || !comment.Content.trim()}>
+                <i className="bi bi-send me-2"></i> Gửi bình luận
+              </Button>
+            </div>
           </Form>
 
           <div className="comments-list">

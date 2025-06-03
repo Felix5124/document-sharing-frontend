@@ -60,9 +60,15 @@ function NotificationDetail() {
     navigate('/notifications');
   };
 
+  const handleViewDocument = () => {
+    if (notification?.documentId) {
+      navigate(`/document/${notification.documentId}`);
+    }
+  };
+
   return (
-    <div className="notification-container">
-      <div className="notification-detail-card">
+    <div className="notifications-container">
+      <div className="notifications-card">
         <h2 className="notifications-title">
           <i className="bi bi-bell me-2"></i> Chi tiết thông báo
         </h2>
@@ -81,23 +87,33 @@ function NotificationDetail() {
                 <p className="notification-message">
                   <strong>Nội dung:</strong> {notification.message}
                 </p>
-                <span className="notification-time">
-                  <strong>Ngày gửi:</strong>{' '}
-                  {new Date(notification.sentAt).toLocaleString('vi-VN', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit',
-                  })}
-                </span>
-                <div className="notification-actions">
-                  <button className="action-button back-button" onClick={handleBack}>
-                    <i className="bi bi-arrow-left me-2"></i> Quay lại
+                <div className="d-flex justify-content-between align-items-center mb-2">
+                  <span className="notification-time">
+                    <strong>Ngày gửi:</strong>{' '}
+                    {new Date(notification.sentAt).toLocaleString('vi-VN', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      second: '2-digit',
+                    })}
+                  </span>
+                  {notification.documentId && (
+                    <button
+                      className="action-button view-document-button"
+                      onClick={handleViewDocument}
+                    >
+                      <i className="bi bi-file-earmark-text me-1"></i> Xem tài liệu
+                    </button>
+                  )}
+                </div>
+                <div className="notification-actions d-flex justify-content-end">
+                  <button className="action-button back-button me-2" onClick={handleBack}>
+                    <i className="bi bi-arrow-left me-1"></i> Quay lại
                   </button>
                   <button className="action-button delete-button" onClick={handleDelete}>
-                    <i className="bi bi-trash me-2"></i> Xóa
+                    <i className="bi bi-trash me-1"></i> Xóa
                   </button>
                 </div>
               </div>

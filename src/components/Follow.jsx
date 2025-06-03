@@ -5,6 +5,8 @@ import { toast } from 'react-toastify';
 import { AuthContext } from '../context/AuthContext';
 import { getUserFollowing, getUserFollows, unfollow } from '../services/api';
 
+const STATIC_BASE_URL = import.meta.env.VITE_STATIC_BASE_URL;
+
 function Follow() {
   const { user } = useContext(AuthContext);
   const [following, setFollowing] = useState([]);
@@ -77,29 +79,38 @@ function Follow() {
 
   const handleUnfollow = async (followId) => {
     try {
-        await unfollow(followId); // Truyền followId
-        toast.success('Bỏ theo dõi thành công!');
-        fetchFollowing();
-        if (showFollowers) {
-            fetchFollowers();
-        }
-        fetchFollowerCount();
+      await unfollow(followId);
+      toast.success('Bỏ theo dõi thành công!');
+      fetchFollowing();
+      if (showFollowers) {
+        fetchFollowers();
+      }
+      fetchFollowerCount();
     } catch (error) {
-        if (error.response?.status === 401) {
-            toast.error('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.', { toastId: 'auth-error' });
-            navigate('/login');
-        } else {
-            toast.error('Không thể bỏ theo dõi.');
-            console.error('Unfollow error:', error);
-        }
+      if (error.response?.status === 401) {
+        toast.error('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.', { toastId: 'auth-error' });
+        navigate('/login');
+      } else {
+        toast.error('Không thể bỏ theo dõi.');
+        console.error('Unfollow error:', error);
+      }
     }
-};
+  };
 
   const toggleFollowers = () => {
     setShowFollowers(!showFollowers);
     if (!showFollowers) {
       fetchFollowers();
     }
+  };
+
+  const getAvatarUrl = (avatarUrl, fullName) => {
+    if (avatarUrl && avatarUrl !== '/avatars/defaultavatar.png') {
+      const baseUrl = STATIC_BASE_URL || 'https://localhost:7013'; // Fallback nếu STATIC_BASE_URL undefined
+      const url = `${baseUrl}${avatarUrl}`;
+      return url;
+    }
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=1a73e8&color=fff`;
   };
 
   return (
@@ -123,9 +134,12 @@ function Follow() {
                 <div className="follow-card-content">
                   <div className="follow-avatar">
                     <img
-                      src={`https://ui-avatars.com/api/?name=${follow.followedUserFullName}&background=1a73e8&color=fff`}
+                      src={getAvatarUrl(follow.followedUserAvatarUrl, follow.followedUserFullName)}
                       alt={follow.followedUserFullName}
                       className="avatar-img"
+                      onError={(e) => {
+                        e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(follow.followedUserFullName)}&background=1a73e8&color=fff`;
+                      }}
                     />
                   </div>
                   <div className="follow-info">
@@ -136,7 +150,7 @@ function Follow() {
                 </div>
                 <button
                   className="action-button unfollow-button"
-                  onClick={() => handleUnfollow(follow.followId)} // Pass followedUserId
+                  onClick={() => handleUnfollow(follow.followId)}
                 >
                   <i className="bi bi-person-dash me-1"></i> Bỏ theo dõi
                 </button>
@@ -153,10 +167,7 @@ function Follow() {
 
       {/* Followers List */}
       <div className="follow-section">
-        <h4
-          className="section-title follow-toggle"
-          onClick={toggleFollowers}
-        >
+        <h4 className="section-title follow-toggle" onClick={toggleFollowers}>
           Người theo dõi ({followerCount})
           <i className={`bi bi-chevron-${showFollowers ? 'up' : 'down'} ms-2`}></i>
         </h4>
@@ -174,9 +185,12 @@ function Follow() {
                     <div className="follow-card-content">
                       <div className="follow-avatar">
                         <img
-                          src={`https://ui-avatars.com/api/?name=${follower.fullName}&background=1a73e8&color=fff`}
+                          src={getAvatarUrl(follower.avatarUrl, follower.fullName)}
                           alt={follower.fullName}
                           className="avatar-img"
+                          onError={(e) => {
+                            e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(follower.fullName)}&background=1a73e8&color=fff`;
+                          }}
                         />
                       </div>
                       <div className="follow-info">

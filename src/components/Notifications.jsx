@@ -3,7 +3,7 @@ import { useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { AuthContext } from '../context/AuthContext';
-import { getUserNotifications } from '../services/api';
+import { getUserNotifications, markNotificationAsRead } from '../services/api';
 
 function Notifications() {
   const { user } = useContext(AuthContext);
@@ -35,19 +35,35 @@ function Notifications() {
   };
 
   useEffect(() => {
-    fetchNotifications();
+    if (user && user.userId) {
+      fetchNotifications();
+    }
   }, [user, location.pathname]);
 
-  const handleNotificationClick = (notificationId) => {
-    navigate(`/notifications/${notificationId}`);
+  const handleNotificationClick = async (notification) => {
+    try {
+      // Đánh dấu thông báo là đã đọc nếu chưa đọc
+      if (!notification.isRead) {
+        await markNotificationAsRead(notification.notificationId);
+        setNotifications(notifications.map(n =>
+          n.notificationId === notification.notificationId ? { ...n, isRead: true } : n
+        ));
+      }
+
+      // Chuyển hướng đến trang chi tiết thông báo
+      navigate(`/notifications/${notification.notificationId}`);
+    } catch (error) {
+      console.error('Error handling notification click:', error);
+      toast.error('Đã xảy ra lỗi khi xử lý thông báo.');
+    }
   };
 
   return (
     <div className="notifications-container">
       <div className="notifications-card">
-      <h2 className="notifications-title">
-        <i className="bi bi-bell me-2"></i> Thông báo
-      </h2>
+        <h2 className="notifications-title">
+          <i className="bi bi-bell me-2"></i> Thông báo
+        </h2>
         {loading ? (
           <div className="loading-container">
             <div className="spinner"></div>
@@ -65,7 +81,7 @@ function Notifications() {
                 <div
                   key={notification.notificationId}
                   className={`notification-item ${isUnread ? 'unread' : 'read'}`}
-                  onClick={() => handleNotificationClick(notification.notificationId)}
+                  onClick={() => handleNotificationClick(notification)}
                 >
                   <div className="notification-content">
                     <p className={`notification-message ${isUnread ? 'unread' : ''}`}>

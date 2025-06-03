@@ -114,7 +114,7 @@ const Post = () => {
 
         {/* Form tạo bài viết */}
         {user && (
-          <form onSubmit={handleCreatePost} className="mb-5">
+          <form onSubmit={handleCreatePost} className="mb-5 post-form">
             <div className="form-group">
               <label className="form-label">Tiêu đề bài viết</label>
               <div className="input-wrapper">
@@ -157,29 +157,28 @@ const Post = () => {
           {posts.map((post) => (
             <div
               key={post.postId}
-              className="post-card p-4 p-md-5 mb-5 bg-white rounded-3 shadow-md border-3 border-gradient-to-r from-gray-400 to-gray-500"
+              className="post-card"
             >
-              <div className="d-flex align-items-center mb-4">
+              <div className="post-header">
                 <img
                   src={post.user?.avatarUrl ? `https://localhost:7013${post.user.avatarUrl}` : '/assets/images/default-avatar.png'}
                   alt="Avatar"
-                  className="rounded-circle me-3"
-                  style={{ width: '60px', height: '60px' }}
+                  className="post-avatar"
                   onError={(e) => (e.target.src = '/assets/images/default-avatar.png')}
                 />
-                <p className="text-gray-600 fw-semibold text-truncate">
-                  {post.user?.email || 'Ẩn danh'}
-                </p>
+                <div className="post-user-info">
+                  <p className="post-user-email">{post.user?.email || 'Ẩn danh'}</p>
+                  <p className="post-date">
+                    {new Date(post.createdAt).toLocaleString('vi-VN')}
+                  </p>
+                </div>
               </div>
-              <h2 className="post-title h5 fw-semibold mb-3">{post.title}</h2>
-              <p className="post-content text-gray-600 mb-4">{post.content}</p>
-              <p className="post-date small text-gray-500 mb-4 d-inline-block px-3 py-1 bg-gray-100 rounded-pill">
-                {new Date(post.createdAt).toLocaleString('vi-VN')}
-              </p>
+              <h3 className="post-title">{post.title}</h3>
+              <p className="post-content">{post.content}</p>
 
               {/* Nút xem bình luận */}
               <button
-                className="comment-toggle submit-button btn-sm px-3 py-1"
+                className="comment-toggle"
                 onClick={() => toggleComments(post.postId)}
               >
                 {comments[post.postId] ? 'Ẩn bình luận' : 'Xem bình luận'}
@@ -187,39 +186,36 @@ const Post = () => {
 
               {/* Hiển thị bình luận */}
               {comments[post.postId] && (
-                <div className="mt-4">
+                <div className="comment-section">
                   {comments[post.postId].map((comment) => (
-  <div
-    key={comment.postCommentId}
-    className="comment-item border-top border-gray-200 pt-3 mt-3 px-3 py-2"
-  >
-    <div className="d-flex align-items-center mb-2">
-      <img
-        src={
-          comment.user?.avatarUrl
-            ? `https://localhost:7013${comment.user.avatarUrl}`
-            : '/assets/images/default-avatar.png'
-        }
-        alt="Avatar"
-        className="rounded-circle me-3 comment-avatar"
-        style={{ width: '40px', height: '40px' }} // Avatar nhỏ hơn so với bài viết
-        onError={(e) => (e.target.src = '/assets/images/default-avatar.png')}
-      />
-      <div>
-        <p className="text-gray-600 fw-semibold text-truncate mb-0">
-          {comment.user?.email || 'Ẩn danh'}
-        </p>
-        <p className="small text-gray-400 mt-0">
-          {new Date(comment.createdAt).toLocaleString('vi-VN')}
-        </p>
-      </div>
-    </div>
-    <p className="text-gray-700 comment-content">{comment.content}</p>
-  </div>
-))}
+                    <div
+                      key={comment.postCommentId}
+                      className="comment-item"
+                    >
+                      <div className="comment-header">
+                        <img
+                          src={
+                            comment.user?.avatarUrl
+                              ? `https://localhost:7013${comment.user.avatarUrl}`
+                              : '/assets/images/default-avatar.png'
+                          }
+                          alt="Avatar"
+                          className="comment-avatar"
+                          onError={(e) => (e.target.src = '/assets/images/default-avatar.png')}
+                        />
+                        <div className="comment-user-info">
+                          <p className="comment-user-email">{comment.user?.email || 'Ẩn danh'}</p>
+                          <p className="comment-date">
+                            {new Date(comment.createdAt).toLocaleString('vi-VN')}
+                          </p>
+                        </div>
+                      </div>
+                      <p className="comment-content">{comment.content}</p>
+                    </div>
+                  ))}
                   {/* Form bình luận */}
                   {user ? (
-                    <div className="mt-4 p-3 rounded-3">
+                    <div className="comment-form">
                       <div className="form-group">
                         <label className="form-label">Bình luận của bạn</label>
                         <div className="input-wrapper">
@@ -237,15 +233,15 @@ const Post = () => {
                       </div>
                       <button
                         onClick={() => handleAddComment(post.postId)}
-                        className="submit-button py-2 px-4"
+                        className="submit-button"
                       >
                         Gửi bình luận
                       </button>
                     </div>
                   ) : (
-                    <p className="error-text mt-3">
+                    <p className="error-text">
                       Vui lòng{' '}
-                      <a href="/login" className="text-primary text-decoration-underline">
+                      <a href="/login" className="text-primary">
                         đăng nhập
                       </a>{' '}
                       để bình luận.
