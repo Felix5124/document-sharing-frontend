@@ -52,13 +52,11 @@ export const AuthProvider = ({ children }) => {
         let idToken;
         try {
           idToken = await firebaseUser.getIdToken(true);
-          console.log("AuthContext: Firebase user detected:", firebaseUser.uid, "Email:", firebaseUser.email);
-
+          
           const userDetailsResponse = await getUserByFirebaseUid(firebaseUser.uid);
           const backendUserData = userDetailsResponse.data;
 
           if (backendUserData && backendUserData.userId && !backendUserData.isLocked) {
-            console.log("Backend user found:", backendUserData);
             contextLogin(backendUserData, idToken);
           } else if (backendUserData && backendUserData.isLocked) {
             toast.error('Tài khoản của bạn đã bị khóa.');
@@ -69,7 +67,6 @@ export const AuthProvider = ({ children }) => {
           }
         } catch (error) {
           if (error.response?.status === 404) {
-            console.log("User not found in backend, attempting to create new user...");
             const providerId = firebaseUser.providerData[0]?.providerId;
 
             if (providerId === 'google.com') {
@@ -80,7 +77,6 @@ export const AuthProvider = ({ children }) => {
                   Email: firebaseUser.email,
                   FullName: firebaseUser.displayName || "Unknown"
                 };
-                console.log("Sending payload to authprovider-register:", payload);
                 const newUserProfile = await createBackendUserForAuthProvider(payload);
                 if (newUserProfile && newUserProfile.userId) {
                   const freshIdToken = await firebaseUser.getIdToken(true);
@@ -90,8 +86,6 @@ export const AuthProvider = ({ children }) => {
                   throw new Error('Dữ liệu trả về không hợp lệ từ API tạo user.');
                 }
               } catch (creationError) {
-                console.error("Error creating backend user:", creationError);
-                console.error("Error details:", creationError.response?.data);
                 const errorMsg = creationError.response?.data?.message || 'Lỗi khi tạo tài khoản mới. Vui lòng thử lại.';
                 toast.error(errorMsg);
                 await contextLogout(false);
@@ -101,7 +95,6 @@ export const AuthProvider = ({ children }) => {
               await contextLogout(false);
             }
           } else {
-            console.error("Error fetching user data:", error);
             toast.error('Lỗi đăng nhập. Vui lòng thử lại.');
             await contextLogout(false);
           }

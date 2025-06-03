@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import {
   searchDocuments,
   getCategories,
@@ -10,9 +10,79 @@ import {
 } from '../services/api';
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
-import bannerImage from '../assets/images/anhbg.jpg';
+import bannerImage1 from '../assets/images/anhbg.jpg';
+import bannerImage2 from '../assets/images/anhbg2.jpg';
+import bannerImage3 from '../assets/images/anhbg3.jpg';
 import { getFullImageUrl } from '../utils/imageUtils';
 import useOnScreen from '../hooks/useOnScreen';
+import { useRef } from 'react';
+
+// Component Banner riêng
+function Banner() {
+  const bannerRef = useRef(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const bannerImages = [bannerImage1, bannerImage2, bannerImage3];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) =>
+        prevIndex === bannerImages.length - 1 ? 0 : prevIndex + 1
+      );
+    }, 5000); // Chuyển mỗi 5 giây
+
+    return () => clearInterval(interval);
+  }, [bannerImages.length]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (bannerRef.current) {
+        bannerRef.current.classList.toggle('scrolled', window.scrollY > 100);
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  return (
+    <div
+      ref={bannerRef}
+      className="banner-section"
+      style={{
+        width: '100%',
+        height: '600px',
+        backgroundImage: `url(${bannerImages[currentImageIndex]})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        marginTop: 0,
+        padding: 0,
+        borderRadius: 0,
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+      }}
+    >
+      <div
+        className="banner-content"
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100%',
+          backgroundColor: 'rgba(0, 0, 0, 0.35)',
+          color: 'white',
+          textAlign: 'center',
+          padding: '30px',
+        }}
+      >
+        <h1 style={{ fontSize: '3.2rem', marginBottom: '15px' }}>
+          Chào mừng đến với Thư viện Tài liệu Học tập
+        </h1>
+        <p style={{ fontSize: '1.6rem' }}>
+          Tìm kiếm và khám phá tài liệu học tập dễ dàng!
+        </p>
+      </div>
+    </div>
+  );
+}
 
 function Home() {
   const [documents, setDocuments] = useState([]);
@@ -32,8 +102,6 @@ function Home() {
   const [topDownloadedDoc, setTopDownloadedDoc] = useState(null);
   const [topInterestDocuments, setTopInterestDocuments] = useState([]);
   const [loadingTopInterest, setLoadingTopInterest] = useState(false);
-
-  const bannerRef = useRef(null);
 
   const fetchSchools = async () => {
     try {
@@ -158,16 +226,6 @@ function Home() {
   };
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (bannerRef.current) {
-        bannerRef.current.classList.toggle('scrolled', window.scrollY > 100);
-      }
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  useEffect(() => {
     fetchDocuments();
   }, [searchTerm, selectedCategory, selectedSchool, tags, currentPage]);
 
@@ -246,78 +304,78 @@ function Home() {
   };
 
   const ContributorColumn = ({ title, data, icon, statLabel, statValue, linkTo }) => {
-  const columnRef = useRef(null);
-  const isVisible = useOnScreen(columnRef);
+    const columnRef = useRef(null);
+    const isVisible = useOnScreen(columnRef);
 
-  // Gỡ lỗi: In avatarUrl ra console
-  console.log(`${title} - AvatarUrl:`, data?.avatarUrl);
+    // Gỡ lỗi: In avatarUrl ra console
+    console.log(`${title} - AvatarUrl:`, data?.avatarUrl);
 
-  return (
-    <div ref={columnRef} className={`contributor-column fade-in ${isVisible ? 'visible' : ''}`}>
-      <h4 className="column-title">{title}</h4>
-      {data ? (
-        <div className="contributor-card h-100 text-center">
-          {icon && <i className={`bi ${icon} contributor-icon`}></i>}
-          {linkTo ? (
-            <>
-              <img
-                src={getFullImageUrl(data.coverImageUrl)}
-                alt={data.title || 'Document cover'}
-                style={{ width: '100%', height: '180px', objectFit: 'cover', borderRadius: '8px', marginBottom: '1rem' }}
-                onError={(e) => { e.target.src = getFullImageUrl(null); }}
-              />
-              <h5
-                className="contributor-name mt-2"
-                title={data.title}
-                style={{
-                  fontSize: '1.1rem',
-                  fontWeight: 'bold',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  maxWidth: '100%',
-                }}
-              >
-                {data.title.length > 30 ? `${data.title.substring(0, 27)}...` : data.title}
-              </h5>
-              <p className="contributor-stat mb-2">
-                <i className="bi bi-download me-1"></i>{statLabel}: {statValue}
-              </p>
-              <Link to={linkTo} className="btn btn-sm btn-outline-primary w-100">Xem chi tiết</Link>
-            </>
-          ) : (
-            <>
-              <img
-                src={getFullImageUrl(data.avatarUrl)} // Hiển thị avatar của người dùng
-                alt={data.fullName || 'User Avatar'}
-                style={{
-                  width: '80px',
-                  height: '80px',
-                  borderRadius: '50%',
-                  objectFit: 'cover',
-                  margin: '0 auto 1rem',
-                  border: '2px solid #e9ecef',
-                }}
-                onError={(e) => {
-                  console.error(`Failed to load avatar for ${title}:`, data.avatarUrl);
-                  e.target.src = '/avatars/defaultavatar.png';
-                }}
-              />
-              <p
-                className="contributor-name"
-                title={data.fullName || data.email}
-                style={{ fontSize: '1.1rem', fontWeight: 'bold' }}
-              >
-                {data.fullName || data.email}
-              </p>
-              <p className="contributor-stat">{statLabel}: {statValue}</p>
-            </>
-          )}
-        </div>
-      ) : (<p className="text-center">Không có dữ liệu</p>)}
-    </div>
-  );
-};
+    return (
+      <div ref={columnRef} className={`contributor-column fade-in ${isVisible ? 'visible' : ''}`}>
+        <h4 className="column-title">{title}</h4>
+        {data ? (
+          <div className="contributor-card h-100 text-center">
+            {icon && <i className={`bi ${icon} contributor-icon`}></i>}
+            {linkTo ? (
+              <>
+                <img
+                  src={getFullImageUrl(data.coverImageUrl)}
+                  alt={data.title || 'Document cover'}
+                  style={{ width: '100%', height: '180px', objectFit: 'cover', borderRadius: '8px', marginBottom: '1rem' }}
+                  onError={(e) => { e.target.src = getFullImageUrl(null); }}
+                />
+                <h5
+                  className="contributor-name mt-2"
+                  title={data.title}
+                  style={{
+                    fontSize: '1.1rem',
+                    fontWeight: 'bold',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    maxWidth: '100%',
+                  }}
+                >
+                  {data.title.length > 30 ? `${data.title.substring(0, 27)}...` : data.title}
+                </h5>
+                <p className="contributor-stat mb-2">
+                  <i className="bi bi-download me-1"></i>{statLabel}: {statValue}
+                </p>
+                <Link to={linkTo} className="btn btn-sm btn-outline-primary w-100">Xem chi tiết</Link>
+              </>
+            ) : (
+              <>
+                <img
+                  src={getFullImageUrl(data.avatarUrl)} // Hiển thị avatar của người dùng
+                  alt={data.fullName || 'User Avatar'}
+                  style={{
+                    width: '80px',
+                    height: '80px',
+                    borderRadius: '50%',
+                    objectFit: 'cover',
+                    margin: '0 auto 1rem',
+                    border: '2px solid #e9ecef',
+                  }}
+                  onError={(e) => {
+                    console.error(`Failed to load avatar for ${title}:`, data.avatarUrl);
+                    e.target.src = '/avatars/defaultavatar.png';
+                  }}
+                />
+                <p
+                  className="contributor-name"
+                  title={data.fullName || data.email}
+                  style={{ fontSize: '1.1rem', fontWeight: 'bold' }}
+                >
+                  {data.fullName || data.email}
+                </p>
+                <p className="contributor-stat">{statLabel}: {statValue}</p>
+              </>
+            )}
+          </div>
+        ) : (<p className="text-center">Không có dữ liệu</p>)}
+      </div>
+    );
+  };
 
   const SchoolCard = ({ school }) => {
     const cardRef = useRef(null);
@@ -375,13 +433,7 @@ function Home() {
 
   return (
     <div>
-      <div ref={bannerRef} className="banner-section" style={{ width: '100%', height: '450px', backgroundImage: `url(${bannerImage})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: 0, padding: 0, borderRadius: 0, boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
-        <div className="banner-content" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100%', backgroundColor: 'rgba(0, 0, 0, 0.35)', color: 'white', textAlign: 'center', padding: '30px' }}>
-          <h1 style={{ fontSize: '2.8rem', marginBottom: '15px' }}>Chào mừng đến với Thư viện Tài liệu Học tập</h1>
-          <p style={{ fontSize: '1.3rem' }}>Tìm kiếm và khám phá tài liệu học tập dễ dàng!</p>
-        </div>
-      </div>
-
+      <Banner />
       <div className="home-container py-4">
         <div className="container">
           <div className="header-section mb-3">
@@ -523,26 +575,6 @@ function Home() {
           </div>
         </div>
       </div>
-      <div className="fixed-buttons" style={{ position: 'fixed', bottom: '20px', right: '20px', zIndex: 1000 }}>
-  {/* Icon Chatbox */}
-  <button
-    className="btn btn-primary btn-sm shadow rounded-circle mb-2"
-    style={{ width: '50px', height: '50px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-    onClick={() => alert('Mở chatbox!')} // Thay bằng logic mở chatbox thực tế
-    title="Mở chatbox"
-  >
-    <i className="bi bi-chat-dots-fill" style={{ fontSize: '1.5rem' }}></i>
-  </button>
-  {/* Nút Back to Top */}
-  <button
-    className="btn btn-primary btn-sm shadow rounded-circle"
-    style={{ width: '50px', height: '50px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} // Cuộn mượt mà
-    title="Quay lại đầu trang"
-  >
-    <i className="bi bi-arrow-up" style={{ fontSize: '1.5rem' }}></i>
-  </button>
-</div>
     </div>
   );
 }

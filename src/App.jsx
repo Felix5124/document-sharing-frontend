@@ -29,12 +29,6 @@ function PrivateRoute({ children, requireAdmin = false, allowNonAdmin = false })
   const { user, isLoading } = useContext(AuthContext);
   const isAuthenticated = !!user;
 
-  console.log("[PrivateRoute] Status:", {
-    isLoading,
-    user: user ? { userId: user.userId, isAdmin: user.isAdmin, email: user.email } : null,
-    isAuthenticated,
-    requireAdmin,
-  });
 
   if (isLoading) {
     return <div>Đang kiểm tra đăng nhập...</div>;
@@ -109,7 +103,26 @@ function App() {
           <Route path="/privacy" element={<ErrorBoundary><div>Bảo mật</div></ErrorBoundary>} />
           <Route path="/help" element={<ErrorBoundary><div>Trợ giúp</div></ErrorBoundary>} />
         </Routes>
-
+<div className="fixed-buttons" style={{ position: 'fixed', bottom: '20px', right: '20px', zIndex: 1000 }}>
+        {/* Icon Chatbox */}
+        <button
+          className="btn btn-primary btn-sm shadow rounded-circle mb-2"
+          style={{ width: '50px', height: '50px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          onClick={() => alert('Mở chatbox!')} // Thay bằng logic mở chatbox thực tế
+          title="Mở chatbox"
+        >
+          <i className="bi bi-chat-dots-fill" style={{ fontSize: '1.5rem' }}></i>
+        </button>
+        {/* Nút Back to Top */}
+        <button
+          className="btn btn-primary btn-sm shadow rounded-circle"
+          style={{ width: '50px', height: '50px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} // Cuộn mượt mà
+          title="Quay lại đầu trang"
+        >
+          <i className="bi bi-arrow-up" style={{ fontSize: '1.5rem' }}></i>
+        </button>
+      </div>
         {/* Footer */}
         <footer className="bg-dark text-white text-center py-5 mt-5">
           <div className="container">
