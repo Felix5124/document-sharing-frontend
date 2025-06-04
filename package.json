@@ -23,6 +23,7 @@
     "react-bootstrap": "^2.10.10",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.56.1",
+    "react-markdown": "^10.1.0",
     "react-pdf": "^9.2.1",
     "react-router-dom": "^7.6.0",
     "react-tag-autocomplete": "^7.5.0",

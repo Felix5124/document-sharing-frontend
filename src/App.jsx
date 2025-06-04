@@ -23,6 +23,7 @@ import { AuthContext, AuthProvider } from './context/AuthContext';
 import UploadDocument from './components/UploadDocument';
 import UpdateDocument from './components/UpdateDocument';
 import SearchResultsPage from './pages/SearchResultsPage';
+import Chatbot from './components/Chatbot'
 
 // Component PrivateRoute để bảo vệ các route
 function PrivateRoute({ children, requireAdmin = false, allowNonAdmin = false }) {
@@ -103,16 +104,22 @@ function App() {
           <Route path="/privacy" element={<ErrorBoundary><div>Bảo mật</div></ErrorBoundary>} />
           <Route path="/help" element={<ErrorBoundary><div>Trợ giúp</div></ErrorBoundary>} />
         </Routes>
-<div className="fixed-buttons" style={{ position: 'fixed', bottom: '20px', right: '20px', zIndex: 1000 }}>
         {/* Icon Chatbox */}
-        <button
-          className="btn btn-primary btn-sm shadow rounded-circle mb-2"
-          style={{ width: '50px', height: '50px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-          onClick={() => alert('Mở chatbox!')} // Thay bằng logic mở chatbox thực tế
-          title="Mở chatbox"
+        <div 
+          className="fixed-buttons" 
+          style={{ 
+            position: 'fixed', 
+            bottom: '20px', 
+            right: '20px', 
+            zIndex: 1000, 
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: 'flex-end', // Căn các item con sang phải
+            gap: '10px' // Khoảng cách giữa các nút
+          }}
         >
-          <i className="bi bi-chat-dots-fill" style={{ fontSize: '1.5rem' }}></i>
-        </button>
+          {/* Chatbot Component sẽ render nút toggle của nó ở đây nếu đóng, hoặc cửa sổ chat nếu mở */}
+          <Chatbot /> 
         {/* Nút Back to Top */}
         <button
           className="btn btn-primary btn-sm shadow rounded-circle"
