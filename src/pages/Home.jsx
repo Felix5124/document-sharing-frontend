@@ -60,26 +60,25 @@ function Banner() {
       }}
     >
       <div
-        className="banner-content"
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '100%',
-          backgroundColor: 'rgba(0, 0, 0, 0.35)',
-          color: 'white',
-          textAlign: 'center',
-          padding: '30px',
-        }}
-      >
-        <h1 style={{ fontSize: '3.2rem', marginBottom: '15px' }}>
-          Chào mừng đến với Thư viện Tài liệu Học tập
-        </h1>
-        <p style={{ fontSize: '1.6rem' }}>
-          Tìm kiếm và khám phá tài liệu học tập dễ dàng!
-        </p>
-      </div>
+  className="banner-content"
+  style={{
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%',
+    color: 'white',
+    textAlign: 'center',
+    padding: '30px',
+  }}
+>
+  <h1 style={{ fontSize: '3.2rem', marginBottom: '15px' }}>
+    Chào mừng đến với Thư viện Tài liệu Học tập
+  </h1>
+  <p style={{ fontSize: '1.6rem' }}>
+    Tìm kiếm và khám phá tài liệu học tập dễ dàng!
+  </p>
+</div>
     </div>
   );
 }
@@ -400,7 +399,7 @@ function Home() {
   const TopInterestDocumentItem = ({ doc, rank }) => {
     return (
       <li className={`list-group-item top-interest-item d-flex align-items-start py-2 px-0`}>
-        <span className="fw-bold me-3 ms-2" style={{ fontSize: '1rem', minWidth: '20px', textAlign: 'center' }}>#{rank}</span>
+        <span className="fw-bold me-3 ms-2" style={{ fontSize: '1rem', minWidth: '20px', textAlign: 'center' }}>{rank}</span>
         <Link to={`/document/${doc.documentId}`} className="text-decoration-none text-dark d-flex align-items-start flex-grow-1" style={{ minWidth: 0 }}>
           <img src={getFullImageUrl(doc.coverImageUrl)} alt={doc.title || 'Cover'} style={{ width: '50px', height: '65px', objectFit: 'cover', borderRadius: '4px', marginRight: '12px', flexShrink: 0 }} onError={(e) => { e.target.src = getFullImageUrl(null); }} />
           <div className="flex-grow-1" style={{ minWidth: 0 }}>

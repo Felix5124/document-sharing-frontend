@@ -1209,7 +1209,8 @@ textarea.form-input {
   position: relative;
   overflow: hidden;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: background-image 0.5s ease-in-out; /* Hiệu ứng chuyển đổi ảnh */
+  transition: background-image 0.5s ease-in-out;
+  z-index: 0; /* Đặt z-index thấp hơn chatbot */
 }
 .banner-section::before {
   content: '';
@@ -1221,19 +1222,6 @@ textarea.form-input {
   background: inherit;
   transform: translateZ(-1px) scale(1.1);
   z-index: -1;
-}
-.banner-content {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.35);
-  color: white;
-  text-align: center;
-  padding: 30px;
-  position: relative;
-  z-index: 1;
 }
 /* Lớp phủ gradient động */
 .banner-content {
@@ -1353,29 +1341,6 @@ footer .btn-social:hover {
   transform: translateY(-2px);
 }
 
-/* Back to Top Button */
-#back-to-top {
-  position: fixed;
-  bottom: 40px;
-  right: 40px;
-  z-index: 1000;
-}
-
-#back-to-top .btn {
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-  border-radius: 50%;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-#back-to-top .btn:hover {
-  background-color: #2563eb;
-  transform: translateY(-2px);
-}
 
 /* Divider */
 .custom-divider {
@@ -1966,4 +1931,13 @@ footer .btn-social:hover {
 
 .view-document-button:hover {
   background-color: #218838;
+}
+.back-to-top {
+  opacity: 0;
+  pointer-events: none; /* Ngăn click khi ẩn */
+  transition: opacity 0.3s ease;
+}
+.back-to-top:hover {
+  background-color: #0056b3; /* Màu đậm hơn khi hover */
+  transform: scale(1.1); /* Phóng to nhẹ */
 }

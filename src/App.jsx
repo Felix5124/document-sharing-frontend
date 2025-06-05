@@ -106,30 +106,42 @@ function App() {
         </Routes>
         {/* Icon Chatbox */}
         <div 
-          className="fixed-buttons" 
-          style={{ 
-            position: 'fixed', 
-            bottom: '20px', 
-            right: '20px', 
-            zIndex: 1000, 
-            display: 'flex', 
-            flexDirection: 'column', 
-            alignItems: 'flex-end', // Căn các item con sang phải
-            gap: '10px' // Khoảng cách giữa các nút
-          }}
-        >
-          {/* Chatbot Component sẽ render nút toggle của nó ở đây nếu đóng, hoặc cửa sổ chat nếu mở */}
-          <Chatbot /> 
-        {/* Nút Back to Top */}
-        <button
-          className="btn btn-primary btn-sm shadow rounded-circle"
-          style={{ width: '50px', height: '50px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} // Cuộn mượt mà
-          title="Quay lại đầu trang"
-        >
-          <i className="bi bi-arrow-up" style={{ fontSize: '1.5rem' }}></i>
-        </button>
-      </div>
+  className="fixed-buttons" 
+  style={{ 
+    position: 'fixed', 
+    bottom: '20px', 
+    right: '20px', 
+    display: 'flex', 
+    flexDirection: 'column', // Chatbot trên, Back to Top dưới
+    alignItems: 'flex-end', 
+    gap: '15px' // Tăng gap để rõ ràng hơn
+  }}
+>
+  {/* Chatbot Component */}
+  <div style={{ zIndex: 1050 }}>
+    <Chatbot />
+  </div>
+  {/* Nút Back to Top */}
+<button
+  className="btn btn-primary btn-sm shadow rounded-circle"
+  style={{ 
+    width: '50px', 
+    height: '50px', 
+    display: 'flex', 
+    alignItems: 'center', 
+    justifyContent: 'center',
+    zIndex: 1040,
+    bottom: '90px', // thêm dòng này để đẩy nút lên trên chatbot
+    position: 'fixed', // thêm để đảm bảo vị trí
+    right: '20px' // cần lại để đồng bộ
+  }}
+  onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+  title="Quay lại đầu trang"
+>
+  <i className="bi bi-arrow-up" style={{ fontSize: '1.5rem' }}></i>
+</button>
+
+</div>
         {/* Footer */}
         <footer className="bg-dark text-white text-center py-5 mt-5">
           <div className="container">
