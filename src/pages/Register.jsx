@@ -19,7 +19,7 @@ function Register() {
         FullName: data.FullName
       };
       const response = await register(payload);
-      toast.success('Đăng ký thành công! Vui lòng kiểm tra email để xác minh.');
+      toast.success('Đăng ký thành công! Vui lòng đăng nhập.');
       navigate('/login');
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Tài khoản đã tồn tại. Vui lòng thử lại.';
