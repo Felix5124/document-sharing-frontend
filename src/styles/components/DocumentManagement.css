@@ -1,0 +1,604 @@
+/* DocumentManagement Component Styles */
+
+/* Admin Section - Specialized for Document Management */
+.admin-section {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  margin-bottom: 24px;
+  transition: box-shadow 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.admin-section:hover {
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+/* Utility classes để thay thế Bootstrap */
+.icon-margin-right {
+  margin-right: 0.5rem;
+}
+
+.icon-margin-right-sm {
+  margin-right: 0.25rem;
+}
+
+.margin-right-sm {
+  margin-right: 0.5rem;
+}
+
+/* Loading States */
+.loading-container {
+  text-align: center;
+  padding: 48px 24px;
+  background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin: 20px 0;
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid #e5e7eb;
+  border-top: 4px solid #dc2626;
+  border-radius: 50%;
+  animation: spin 1s ease-in-out infinite;
+  margin: 0 auto;
+}
+
+.loading-text {
+  margin-top: 20px;
+  color: #6b7280;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Admin Table Wrapper */
+.admin-table-wrapper {
+  overflow-x: auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+  margin-top: 24px;
+  position: relative;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Document Table */
+.document-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 0;
+}
+
+.document-table th,
+.document-table td {
+  padding: 16px 20px;
+  text-align: left;
+  font-size: 0.95rem;
+  border-bottom: 1px solid #e5e7eb;
+  transition: all 0.3s ease;
+}
+
+.document-table th {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  color: #ffffff;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  position: relative;
+}
+
+.document-table th:first-child {
+  border-top-left-radius: 12px;
+}
+
+.document-table th:last-child {
+  border-top-right-radius: 12px;
+}
+
+.document-table tr {
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.document-table tbody tr:hover {
+  background: linear-gradient(90deg, #fef2f2 0%, #fee2e2 100%);
+  transform: scale(1.005);
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.1);
+}
+
+.document-table tbody tr:last-child td:first-child {
+  border-bottom-left-radius: 12px;
+}
+
+.document-table tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 12px;
+}
+
+.document-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Download Count */
+.download-count {
+  font-weight: 600;
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.1);
+  border-radius: 20px;
+  padding: 4px 12px;
+  display: inline-block;
+  font-size: 0.85rem;
+}
+
+/* Status Container & Badge */
+.status-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+}
+
+.status-approved {
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.status-pending {
+  background: rgba(245, 158, 11, 0.1);
+  color: #d97706;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.status-badge:hover {
+  transform: scale(1.05);
+}
+
+/* Action Container & Buttons */
+.action-container {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.action-button {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  gap: 6px;
+  position: relative;
+  overflow: hidden;
+}
+
+.action-button:hover {
+  background-color: #5c636a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.action-button:hover::before {
+  left: 100%;
+}
+
+/* Lock Button */
+.lock-button {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+}
+
+.lock-button:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+}
+
+/* Unlock Button */
+.unlock-button {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.unlock-button:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+}
+
+/* Delete Button */
+.delete-button {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+}
+
+.delete-button:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+}
+
+.delete-button:active {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+}
+
+/* Loading states for buttons */
+.action-button.loading {
+  opacity: 0.7;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.action-button.loading::after {
+  content: "";
+  width: 12px;
+  height: 12px;
+  border: 2px solid #ffffff;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-left: 6px;
+}
+
+/* Fade-in Animation */
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Staggered animation for table rows */
+.document-table tbody tr:nth-child(1) .fade-in {
+  transition-delay: 0.1s;
+}
+
+.document-table tbody tr:nth-child(2) .fade-in {
+  transition-delay: 0.2s;
+}
+
+.document-table tbody tr:nth-child(3) .fade-in {
+  transition-delay: 0.3s;
+}
+
+.document-table tbody tr:nth-child(4) .fade-in {
+  transition-delay: 0.4s;
+}
+
+.document-table tbody tr:nth-child(5) .fade-in {
+  transition-delay: 0.5s;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 64px 24px;
+  background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+  border-radius: 12px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+  margin-top: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  color: #9ca3af;
+  margin-bottom: 20px;
+  display: block;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.empty-state p {
+  font-size: 1.2rem;
+  color: #6b7280;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Success Animation for Actions */
+.action-success {
+  animation: actionPulse 0.6s ease-out;
+}
+
+@keyframes actionPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Table Row Highlight on Action */
+.document-table tbody tr.action-highlight {
+  background: linear-gradient(90deg, #fee2e2 0%, #fecaca 100%);
+  animation: rowHighlight 1s ease-out;
+}
+
+@keyframes rowHighlight {
+  0% {
+    background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+  }
+  100% {
+    background: linear-gradient(90deg, #fee2e2 0%, #fecaca 100%);
+    color: inherit;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .admin-section {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .document-table th,
+  .document-table td {
+    padding: 12px 16px;
+    font-size: 0.9rem;
+  }
+
+  .action-button {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+
+  .action-container {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .empty-state {
+    padding: 48px 16px;
+  }
+
+  .empty-icon {
+    font-size: 3rem;
+  }
+
+  .empty-state p {
+    font-size: 1.1rem;
+  }
+
+  .loading-container {
+    padding: 32px 16px;
+  }
+}
+
+@media (max-width: 576px) {
+  .admin-section {
+    padding: 12px;
+  }
+
+  .document-table th,
+  .document-table td {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+
+  .action-button {
+    padding: 4px 8px;
+    font-size: 0.75rem;
+  }
+
+  .admin-table-wrapper {
+    border-radius: 8px;
+  }
+
+  .document-table {
+    border-radius: 8px;
+  }
+
+  .document-table th:first-child,
+  .document-table th:last-child {
+    border-radius: 8px 8px 0 0;
+  }
+
+  .download-count {
+    font-size: 0.75rem;
+    padding: 2px 8px;
+  }
+
+  .status-badge {
+    font-size: 0.7rem;
+    padding: 4px 8px;
+  }
+}
+
+/* Focus Styles for Accessibility */
+.action-button:focus {
+  outline: 2px solid #dc2626;
+  outline-offset: 2px;
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .admin-section {
+    border: 2px solid #000000;
+  }
+
+  .lock-button,
+  .delete-button {
+    background: #cc0000;
+    border: 2px solid #000000;
+  }
+
+  .unlock-button {
+    background: #008000;
+    border: 2px solid #000000;
+  }
+
+  .empty-state {
+    border: 2px solid #666666;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .admin-section {
+    background: #1f2937;
+    color: #f3f4f6;
+  }
+
+  .document-table {
+    background: #1f2937;
+  }
+
+  .document-table td {
+    color: #f3f4f6;
+    border-bottom-color: #374151;
+  }
+
+  .document-table tbody tr:hover {
+    background: linear-gradient(90deg, #7f1d1d 0%, #991b1b 100%);
+  }
+
+  .empty-state {
+    background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+    color: #d1d5db;
+  }
+
+  .loading-container {
+    background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+  }
+}
+
+/* Print Styles */
+@media print {
+  .admin-section {
+    box-shadow: none;
+    border: 1px solid #000000;
+    page-break-inside: avoid;
+  }
+
+  .action-button {
+    display: none;
+  }
+
+  .document-table {
+    box-shadow: none;
+  }
+
+  .empty-state {
+    display: none;
+  }
+
+  .loading-container {
+    display: none;
+  }
+}
+
+/* Custom Scrollbar for Table Wrapper */
+.admin-table-wrapper::-webkit-scrollbar {
+  height: 8px;
+}
+
+.admin-table-wrapper::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.admin-table-wrapper::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #dc2626 0%, #b91c1c 100%);
+  border-radius: 4px;
+}
+
+.admin-table-wrapper::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, #b91c1c 0%, #991b1b 100%);
+}
+
+/* Tooltip for Status Badge */
+.status-badge[title] {
+  cursor: help;
+}
+
+/* Action Button Groups */
+.action-container .action-button + .action-button {
+  margin-left: 4px;
+}
+
+/* Special States */
+.document-table tbody tr.locked-row {
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.document-table tbody tr.pending-row {
+  background: rgba(245, 158, 11, 0.05);
+}
+
+/* Enhanced Loading State */
+.loading-container.enhanced {
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+}
+
+.loading-container.enhanced .spinner {
+  border-top-color: #dc2626;
+  border-right-color: #dc2626;
+}

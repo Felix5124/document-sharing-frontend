@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { uploadDocument, getCategories } from '../services/api';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import '../styles/components/UploadDocument.css';
 
 function UploadDocument() {
   const { register, handleSubmit, formState: { errors }, reset, watch, setValue } = useForm({
@@ -152,7 +153,7 @@ function UploadDocument() {
     <div className="upload-container">
       <div className="upload-card">
         <h2 className="upload-title">
-          <i className="bi bi-upload me-2"></i> Tải lên tài liệu
+          <i className="bi bi-upload icon-margin-right"></i> Tải lên tài liệu
         </h2>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="form-group">
@@ -202,7 +203,7 @@ function UploadDocument() {
             {errors.CategoryId && <p className="error-text">{errors.CategoryId.message}</p>}
           </div>
 
-          <div className="form-group mb-3" style={{ marginTop: '10px' }}>
+          <div className="form-group margin-bottom" style={{ marginTop: '10px' }}>
             <label className="form-label" htmlFor="tag-input-upload">Tags</label>
             <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
               <input
@@ -222,8 +223,7 @@ function UploadDocument() {
               />
               <button
                 type="button"
-                className="btn btn-secondary"
-                style={{ padding: '10px 15px', backgroundColor: '#6c757d', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                className="tag-button"
                 onClick={handleAddTag}
               >
                 Thêm Tag
@@ -315,21 +315,21 @@ function UploadDocument() {
             {errors.File && <p className="error-text">{errors.File.message}</p>}
           </div>
 
-          <div className="form-group mb-3">
+          <div className="form-group margin-bottom">
             <label className="form-label">Ảnh bìa (JPG, PNG, GIF - tùy chọn)</label>
-            <div className="input-wrapper input-group">
-              <span className="input-group-text">
+            <div className="input-wrapper file-input-group">
+              <span className="file-input-icon">
                 <i className="bi bi-image"></i>
               </span>
               <input
                 type="file"
-                className="form-control"
+                className="form-input file-input"
                 accept="image/jpeg,image/png,image/gif"
                 {...register('CoverImage')}
               />
             </div>
             {previewCover && (
-              <div className="mt-2 text-center">
+              <div className="preview-container">
                 <p>Xem trước ảnh bìa:</p>
                 <img
                   src={previewCover}
@@ -346,7 +346,7 @@ function UploadDocument() {
           </div>
 
           <button type="submit" className="submit-button">
-            <i className="bi bi-cloud-upload me-2"></i> Tải lên
+            <i className="bi bi-cloud-upload icon-margin-right"></i> Tải lên
           </button>
         </form>
       </div>

@@ -1,0 +1,353 @@
+/* CategoryManagement Component Styles */
+
+/* Admin Section - Extended for CategoryManagement */
+.admin-section {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  margin-bottom: 24px;
+  transition: box-shadow 0.3s ease;
+}
+
+.admin-section:hover {
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+.icon-margin-right {
+  margin-right: 8px;
+}
+
+.margin-right {
+  margin-right: 0.5rem;
+}
+
+.margin-bottom {
+  margin-bottom: 1.5rem;
+}
+
+/* Category Form */
+.category-form {
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 24px;
+  border: 1px solid #e5e7eb;
+  transition: all 0.3s ease;
+}
+
+.category-form:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.category-form h5 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #1a3c7a; /* Màu xanh đậm cho tiêu đề */
+  margin-bottom: 20px;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+
+/* Buttons */
+
+.submit-button:active {
+  transform: translateY(0);
+}
+
+.action-button {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  gap: 6px;
+}
+
+.action-button:hover {
+  background-color: #5c636a;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.edit-button {
+  background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+}
+
+.edit-button:hover {
+  background: linear-gradient(90deg, #d97706 0%, #b45309 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.delete-button {
+  background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
+}
+
+.delete-button:hover {
+  background: linear-gradient(90deg, #dc2626 0%, #b91c1c 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.cancel-button {
+  background: linear-gradient(90deg, #6b7280 0%, #4b5563 100%);
+}
+
+.cancel-button:hover {
+  background: linear-gradient(90deg, #4b5563 0%, #374151 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+}
+
+/* Admin Table */
+.admin-table-wrapper {
+  overflow-x: auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+  margin-top: 24px;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 0;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 16px 20px;
+  text-align: left;
+  font-size: 0.95rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.admin-table th {
+  background: linear-gradient(90deg, #4b5eaa 0%, #2a3f8a 100%);
+  color: #ffffff;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+}
+
+.admin-table tr {
+  transition: all 0.3s ease;
+}
+
+.admin-table tbody tr:hover {
+  background: linear-gradient(90deg, #f8fafc 0%, #f1f5f9 100%);
+  transform: scale(1.005);
+}
+
+.admin-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Fade-in Animation */
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  background: linear-gradient(180deg, #f9fafb 0%, #f3f4f6 100%);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-top: 24px;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  color: #9ca3af;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.empty-state p {
+  font-size: 1.1rem;
+  color: #6b7280;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Form Validation States */
+
+
+/* Loading States */
+.submit-button.loading {
+  opacity: 0.7;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.submit-button.loading::after {
+  content: "";
+  width: 16px;
+  height: 16px;
+  border: 2px solid #ffffff;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-left: 8px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .admin-section {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .category-form {
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .category-form h5 {
+    font-size: 1.2rem;
+    margin-bottom: 16px;
+  }
+
+
+  .submit-button {
+    width: 100%;
+    justify-content: center;
+    padding: 14px 20px;
+  }
+
+  .action-button {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+  }
+
+  .admin-table th,
+  .admin-table td {
+    padding: 12px 16px;
+    font-size: 0.9rem;
+  }
+
+  .empty-state {
+    padding: 32px 16px;
+  }
+
+  .empty-icon {
+    font-size: 3rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .admin-section {
+    padding: 12px;
+  }
+
+  .category-form {
+    padding: 16px;
+  }
+
+  .category-form h5 {
+    font-size: 1.1rem;
+  }
+
+
+  .submit-button {
+    padding: 12px 16px;
+    font-size: 0.95rem;
+  }
+
+  .action-button {
+    padding: 4px 8px;
+    font-size: 0.8rem;
+  }
+
+  .admin-table th,
+  .admin-table td {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+
+  .admin-table-wrapper {
+    border-radius: 8px;
+  }
+
+  .admin-table {
+    border-radius: 8px;
+  }
+}
+
+/* Button Groups */
+.button-group {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.button-group .submit-button,
+.button-group .action-button {
+  flex-shrink: 0;
+}
+
+/* Focus Styles for Accessibility */
+.submit-button:focus,
+.action-button:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Dark Mode Support (if needed) */
+@media (prefers-color-scheme: dark) {
+  .admin-section {
+    background: #1f2937;
+    color: #f3f4f6;
+  }
+
+  .category-form {
+    background: #374151;
+    border-color: #4b5563;
+  }
+
+  .admin-table {
+    background: #1f2937;
+  }
+
+  .admin-table td {
+    color: #f3f4f6;
+  }
+}

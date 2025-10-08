@@ -5,7 +5,7 @@ import { getAllUsers, lockUser } from '../services/api';
 import { toast } from 'react-toastify';
 import { AuthContext } from '../context/AuthContext';
 import useOnScreen from '../hooks/useOnScreen';
-
+import '../styles/components/AccountManagement.css';
 function AccountManagement() {
   const { user } = useContext(AuthContext);
   const [users, setUsers] = useState([]);
@@ -64,7 +64,7 @@ function AccountManagement() {
             className={`action-button ${user.isLocked ? 'unlock-button' : 'lock-button'}`}
             onClick={() => handleLockUnlock(user.userId, user.isLocked)}
           >
-            <i className={`bi ${user.isLocked ? 'bi-unlock' : 'bi-lock'} me-2`}></i>
+            <i className={`bi ${user.isLocked ? 'bi-unlock' : 'bi-lock'} icon-margin-right`}></i>
             {user.isLocked ? 'Mở khóa' : 'Khóa'}
           </button>
         </td>
@@ -79,7 +79,7 @@ function AccountManagement() {
   return (
     <div className="admin-section">
       <h4 className="section-title">
-        <i className="bi bi-people me-2"></i> Danh sách người dùng
+        <i className="bi bi-people icon-margin-right"></i> Danh sách người dùng
       </h4>
       {users.length > 0 ? (
         <div className="admin-table-wrapper">

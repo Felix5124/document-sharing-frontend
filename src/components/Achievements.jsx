@@ -3,6 +3,7 @@ import { useContext } from 'react';
 import { toast } from 'react-toastify';
 import { AuthContext } from '../context/AuthContext';
 import { getAllBadges, getUserBadges, getUploadCount, getCommentCount } from '../services/api';
+import '../styles/components/Achievements.css';
 
 function Achievements() {
   const { user } = useContext(AuthContext);
@@ -89,7 +90,7 @@ function Achievements() {
   return (
     <div className="achievements-container">
       <h4 className="achievements-title">
-        <i className="bi bi-award me-2"></i> Thành tựu của bạn
+        <i className="bi bi-award icon-margin-right"></i> Thành tựu của bạn
       </h4>
       {loading ? (
         <div className="loading-container">

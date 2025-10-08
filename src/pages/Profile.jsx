@@ -7,6 +7,8 @@ import { getUser, updateUser, getUploadCount, uploadAvatar, deleteDocument, getD
 import { toast } from 'react-toastify';
 import Achievements from '../components/Achievements';
 
+import '../styles/pages/Profile.css';
+
 function Profile() {
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
@@ -110,7 +112,7 @@ function Profile() {
     <div className="profile-container">
       <div className="profile-card">
         <h2 className="profile-title">
-          <i className="bi bi-person-circle me-2"></i> Hồ sơ cá nhân
+          <span className="icon icon-person-circle"></span> Hồ sơ cá nhân
         </h2>
         <div className="profile-content">
           <div className="avatar-section" style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
@@ -123,7 +125,7 @@ function Profile() {
                 onError={(e) => (e.target.src = '/default-avatar.png')}
               />
               <div className="avatar-upload" style={{ position: 'absolute', bottom: '10px', right: '10px', backgroundColor: 'rgba(0, 0, 0, 0.5)', borderRadius: '50%', padding: '8px' }}>
-                <i className="bi bi-camera-fill" style={{ color: 'white', fontSize: '1.5rem' }}></i>
+                <span className="icon-camera-fill" style={{ color: 'white', fontSize: '1.5rem', display: 'inline-block', width: '1.5rem', height: '1.5rem' }}></span>
                 <input
                   type="file"
                   accept="image/*"
@@ -139,7 +141,7 @@ function Profile() {
               <div className="form-group">
                 <label className="form-label">Họ tên</label>
                 <div className="input-wrapper">
-                  <i className="bi bi-person input-icon"></i>
+                  <span className="icon-person input-icon"></span>
                   <input
                     type="text"
                     className="form-input"
@@ -152,7 +154,7 @@ function Profile() {
               <div className="form-group">
                 <label className="form-label">Email</label>
                 <div className="input-wrapper">
-                  <i className="bi bi-envelope input-icon"></i>
+                  <span className="icon-envelope input-icon"></span>
                   <input
                     type="email"
                     className="form-input"
@@ -164,7 +166,7 @@ function Profile() {
               <div className="form-group">
                 <label className="form-label">Trường học</label>
                 <div className="input-wrapper">
-                  <i className="bi bi-building input-icon"></i>
+                  <span className="icon-building input-icon"></span>
                   <select
                     className="form-input"
                     defaultValue={userData.schoolId || 0}
@@ -186,7 +188,7 @@ function Profile() {
               <div className="form-group">
                 <label className="form-label">Điểm tích lũy</label>
                 <div className="input-wrapper">
-                  <i className="bi bi-star input-icon"></i>
+                  <span className="icon-star input-icon"></span>
                   <input
                     type="text"
                     className="form-input"
@@ -198,7 +200,7 @@ function Profile() {
               <div className="form-group">
                 <label className="form-label">Cấp độ</label>
                 <div className="input-wrapper">
-                  <i className="bi bi-award input-icon"></i>
+                  <span className="icon-award input-icon"></span>
                   <input
                     type="text"
                     className="form-input"
@@ -208,7 +210,7 @@ function Profile() {
                 </div>
               </div>
               <button type="submit" className="submit-button">
-                <i className="bi bi-check-circle me-2"></i> Cập nhật
+                <span className="icon icon-check-circle"></span> Cập nhật
               </button>
             </form>
           </div>
@@ -216,7 +218,7 @@ function Profile() {
         <hr className="profile-divider" />
         <div className="profile-stats">
           <h4 className="stats-title">
-            <i className="bi bi-cloud-upload me-2"></i> Tài liệu đã tải lên ({uploadCount})
+            <span className="icon icon-cloud-upload"></span> Tài liệu đã tải lên ({uploadCount})
           </h4>
           <ul className="stats-list">
             {uploads.length > 0 ? (
@@ -243,7 +245,7 @@ function Profile() {
                       marginLeft: '10px'
                     }}
                   >
-                    <i className="bi bi-trash me-1"></i> Xóa
+                    <span className="icon icon-trash"></span> Xóa
                   </button>
                 </li>
               ))
@@ -255,7 +257,7 @@ function Profile() {
         <hr className="profile-divider" />
         <div className="profile-stats">
           <h4 className="stats-title">
-            <i className="bi bi-cloud-download me-2"></i> Tài liệu đã tải xuống ({downloadCount})
+            <span className="icon icon-cloud-download"></span> Tài liệu đã tải xuống ({downloadCount})
           </h4>
           <ul className="stats-list">
             {downloads.length > 0 ? (

@@ -23,18 +23,15 @@ apiClient.interceptors.request.use(
       const condition1 = config.url && config.url.startsWith(API_BASE_URL) && !config.headers.Authorization;
       const condition2 = (!config.url || !config.url.startsWith('http')) && config.baseURL === API_BASE_URL && !config.headers.Authorization; // Corrected this slightly from your original for relative paths
 
-      console.log("Condition 1 met?:", condition1);
-      console.log("Condition 2 met?:", condition2);
-
       if (condition1) {
         config.headers.Authorization = `Bearer ${token}`;
       } else if (condition2) {
         config.headers.Authorization = `Bearer ${token}`;
       } else {
-        console.warn("Interceptor: Token exists, but conditions to add header NOT MET.");
+        //console.warn("Interceptor: Token exists, but conditions to add header NOT MET.");
       }
     } else {
-      console.warn("Interceptor: No token found in localStorage.");
+      //console.warn("Interceptor: No token found in localStorage.");
     }
     return config;
   },

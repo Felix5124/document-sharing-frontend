@@ -5,6 +5,7 @@ import { getPendingDocuments, approveDocument } from '../services/api';
 import { toast } from 'react-toastify';
 import { AuthContext } from '../context/AuthContext';
 import useOnScreen from '../hooks/useOnScreen';
+import '../styles/components/DocumentApproval.css';
 
 function DocumentApproval() {
   const { user } = useContext(AuthContext);
@@ -56,7 +57,7 @@ function DocumentApproval() {
             className="action-button approve-button"
             onClick={() => handleApprove(doc.documentId)}
           >
-            <i className="bi bi-check-circle me-2"></i> Duyệt
+            <i className="bi bi-check-circle icon-margin-right"></i> Duyệt
           </button>
         </td>
       </tr>
@@ -70,7 +71,7 @@ function DocumentApproval() {
   return (
     <div className="admin-section">
       <h4 className="section-title">
-        <i className="bi bi-file-earmark-check me-2"></i> Tài liệu chờ duyệt
+        <i className="bi bi-file-earmark-check icon-margin-right"></i> Tài liệu chờ duyệt
       </h4>
       {pendingDocs.length > 0 ? (
         <div className="admin-table-wrapper">

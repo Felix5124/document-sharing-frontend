@@ -1,16 +1,6 @@
-.chatbot-toggle-button {
-  position: fixed;
-  bottom: 20px; /* Adjusted to not overlap with back-to-top */
-  right: 20px;
-  z-index: 1100; /* Higher than back-to-top if it exists */
-  width: 60px;
-  height: 60px;
-  font-size: 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
+/* ===============================
+   📌 Chatbot Container & Header
+================================== */
 .chatbot-container {
   position: fixed;
   bottom: 20px;
@@ -18,13 +8,14 @@
   width: 350px;
   max-height: 500px;
   background-color: white;
+  border: 1px solid #dee2e6;
   border-radius: 10px;
-  /* box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
   z-index: 1100;
   overflow: hidden;
-  border: 1px solid #dee2e6;
+  font-family: Arial, sans-serif;
 }
 
 .chatbot-header {
@@ -34,15 +25,25 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-top-left-radius: 9px;
-  border-top-right-radius: 9px;
 }
 
 .chatbot-header h5 {
-  margin-bottom: 0;
+  margin: 0;
   font-size: 1rem;
 }
 
+.chatbot-close-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.25rem;
+  color: white;
+  cursor: pointer;
+}
+
+
+/* ===============================
+   💬 Chat Messages
+================================== */
 .chatbot-messages {
   flex-grow: 1;
   overflow-y: auto;
@@ -50,25 +51,29 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  background-color: #f8f9fa;
 }
 
 .message {
   display: flex;
-  align-items: flex-end; /* Align icon with bottom of message bubble */
   max-width: 85%;
   word-wrap: break-word;
-}
-
-.message .message-text {
-  padding: 8px 12px;
-  border-radius: 15px;
   font-size: 0.9rem;
   line-height: 1.4;
 }
 
 .message.user {
   align-self: flex-end;
-  flex-direction: row-reverse; /* User icon on the right */
+  flex-direction: row-reverse;
+}
+
+.message.bot {
+  align-self: flex-start;
+}
+
+.message-text {
+  padding: 8px 12px;
+  border-radius: 15px;
 }
 
 .message.user .message-text {
@@ -77,46 +82,130 @@
   border-bottom-right-radius: 3px;
 }
 
-.message.bot {
-  align-self: flex-start;
-}
-
 .message.bot .message-text {
   background-color: #e9ecef;
   color: #212529;
   border-bottom-left-radius: 3px;
   white-space: pre-line;
 }
-.message.bot .message-text a { /* Styling for links from bot */
+
+.message.bot .message-text a {
   color: #0056b3;
   text-decoration: underline;
 }
+
 .message.bot .message-text a:hover {
   color: #003d80;
 }
 
 
+/* ===============================
+   🤖 Icon Style (replaces .bi)
+================================== */
+.icon {
+  margin: 0 0.5rem;
+  font-size: 1.25rem;
+  display: inline-flex;
+}
+
+
+/* ===============================
+   ⌨️ Input + Send Button
+================================== */
 .chatbot-input-form {
   display: flex;
+  align-items: center;
   padding: 10px;
-  border-top: 1px solid #dee2e6;
   background-color: #f8f9fa;
+  border-top: 1px solid #dee2e6;
 }
 
-.chatbot-input-form input {
+.chatbot-input {
   flex-grow: 1;
+  padding: 8px 16px;
   border-radius: 20px;
+  border: 1px solid #ced4da;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
 
-.chatbot-input-form button {
-  border-radius: 50%;
+.chatbot-input:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 4px rgba(13, 110, 253, 0.3);
+}
+
+.chatbot-send-button {
   width: 40px;
   height: 40px;
+  margin-left: 0.5rem;
+  border-radius: 50%;
+  border: none;
+  background-color: #0d6efd;
+  color: white;
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
+.chatbot-send-button:hover {
+  background-color: #0b5ed7;
+}
+
+.chatbot-send-button:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+
+/* ===============================
+   💡 Quick Replies
+================================== */
+.chatbot-quick-replies {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 5px 10px;
+  border-top: 1px solid #eee;
+  background-color: #f9f9f9;
+  gap: 5px;
+}
+
+.quick-reply-button {
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 15px;
+  padding: 6px 12px;
+  font-size: 0.9em;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.quick-reply-button:hover {
+  background-color: #e0e0e0;
+}
+
+.quick-reply-visibility-toggle {
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  margin-right: 0.5rem;
+  transition: background-color 0.2s;
+}
+
+.quick-reply-visibility-toggle:hover {
+  background-color: #e0e0e0;
+}
+
+
+/* ===============================
+   🔄 Typing Indicator (Loading)
+================================== */
 .typing-indicator span {
   height: 8px;
   width: 8px;
@@ -133,26 +222,33 @@
 @keyframes bounce {
   0%, 80%, 100% { transform: scale(0); }
   40% { transform: scale(1.0); }
-}      
+}
 
-.chatbot-quick-replies {
+
+/* ===============================
+   💬 Toggle Button (Floating)
+================================== */
+.chatbot-toggle-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  font-size: 1.5rem;
   display: flex;
-  flex-wrap: wrap; /* Cho phép các nút xuống dòng nếu không đủ chỗ */
-  padding: 5px 10px;
-  border-top: 1px solid #eee; /* Phân cách với phần tin nhắn */
-}
-
-.quick-reply-button {
-  background-color: #f0f0f0;
-  border: 1px solid #ccc;
-  border-radius: 15px; /* Bo tròn góc */
-  padding: 6px 12px;
-  margin: 5px;
-  font-size: 0.9em;
+  align-items: center;
+  justify-content: center;
+  background-color: #0d6efd;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1100;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: transform 0.2s ease-in-out;
 }
 
-.quick-reply-button:hover {
-  background-color: #e0e0e0;
+.chatbot-toggle-button:hover {
+  transform: scale(1.05);
+  background-color: #0b5ed7;
 }

@@ -1,0 +1,240 @@
+/* AdminStatistics Component Styles */
+
+/* Admin Section */
+.admin-section {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+
+/* Statistics Card */
+.stats-card {
+  background: #404946; /* Màu nền tối */
+  border-radius: 12px; /* Bo góc mềm mại */
+  padding: 24px; /* Padding rộng rãi */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.5s ease;
+  position: relative; /* Để thêm gradient overlay */
+  overflow: hidden; /* Ẩn phần gradient thừa */
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Gradient overlay cho từng thẻ stats */
+.stats-card:nth-child(1) {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(59, 130, 246, 0.1)), #404946; /* Gradient xanh dương nhạt */
+}
+
+.stats-card:nth-child(2) {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1)), #404946; /* Gradient xanh lá nhạt */
+}
+
+.stats-card:nth-child(3) {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(245, 158, 11, 0.1)), #404946; /* Gradient vàng nhạt */
+}
+
+.stats-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15); /* Tăng đổ bóng khi hover */
+}
+
+.stats-card .card-title {
+  font-size: 1.2rem; /* Kích thước chữ vừa phải */
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 16px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.stats-card .card-text {
+  font-size: 2.5rem; /* Kích thước số liệu lớn */
+  font-weight: 700;
+  color: #ffffff; /* Màu trắng để nổi bật */
+  text-align: center;
+  margin: 0;
+  line-height: 1;
+}
+
+/* Fade-in Animation */
+.fade-in {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Grid Layout styling */
+.stats-grid {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -12px;
+}
+
+.stats-grid > * {
+  padding: 0 12px;
+  margin-bottom: 24px;
+}
+
+.stats-column {
+  flex: 0 0 33.333333%;
+  max-width: 33.333333%;
+}
+
+/* Replace Bootstrap margin classes */
+.icon-margin {
+  margin-right: 0.5rem;
+}
+
+/* Loading State */
+.stats-card.loading {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Error State */
+.stats-card.error {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.1)), #404946;
+  border: 2px solid rgba(239, 68, 68, 0.3);
+}
+
+.stats-card.error .card-text {
+  color: #EF4444;
+}
+
+/* Icons in stats cards */
+.stats-card .card-title i {
+  font-size: 1.5rem;
+  opacity: 0.8;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .stats-column {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+  
+  .stats-card .card-text {
+    font-size: 2.2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-section {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  
+  .section-title {
+    font-size: 1.5rem;
+    margin-bottom: 16px;
+  }
+  
+  .stats-column {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+  
+  .stats-card {
+    padding: 20px;
+  }
+  
+  .stats-card .card-title {
+    font-size: 1.1rem;
+  }
+  
+  .stats-card .card-text {
+    font-size: 2rem;
+  }
+  
+  .stats-grid > * {
+    margin-bottom: 16px;
+  }
+}
+
+@media (max-width: 576px) {
+  .section-title {
+    font-size: 1.3rem;
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+  }
+  
+  .stats-card {
+    padding: 16px;
+  }
+  
+  .stats-card .card-title {
+    font-size: 1rem;
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .stats-card .card-text {
+    font-size: 1.8rem;
+  }
+}
+
+/* Animation delays for staggered effect */
+.stats-column:nth-child(1) .fade-in {
+  transition-delay: 0.1s;
+}
+
+.stats-column:nth-child(2) .fade-in {
+  transition-delay: 0.2s;
+}
+
+.stats-column:nth-child(3) .fade-in {
+  transition-delay: 0.3s;
+}
+
+/* Hover effects for better interactivity */
+.stats-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.stats-card:hover::before {
+  left: 100%;
+}
+
+/* Focus states for accessibility */
+.stats-card:focus {
+  outline: 2px solid #3B82F6;
+  outline-offset: 2px;
+}
+
+.stats-card:focus-visible {
+  outline: 2px solid #3B82F6;
+  outline-offset: 2px;
+}

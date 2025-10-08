@@ -1,0 +1,181 @@
+/* Navbar */
+.navbar {
+  background: linear-gradient(180deg, #121212 0%, #1e1e1e 100%);
+  padding: 16px 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  position: sticky;
+  top: 0;
+  height: 76px;
+  display: flex;
+  z-index: 1000;
+  align-items: center;
+}
+
+.navbar-container {
+  width: 100%;
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.navbar-logo-item {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--color-text-navbar);
+  transition: color 0.2s ease-in-out;
+}
+
+.navbar-logo-item:hover {
+  color: var(--color-hover);
+}
+
+.navbar-logo-image {
+  height: 60px;
+  margin-right: 10px;
+}
+
+.navbar-menu-item {
+  display: flex;
+  align-items: center;
+}
+
+.menu-toggle {
+  display: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+}
+
+.menu-icon {
+  display: block;
+  width: 25px;
+  height: 2px;
+  background-color: white;
+  position: relative;
+  transition: background-color 0.3s;
+}
+
+.menu-icon::before,
+.menu-icon::after {
+  content: '';
+  position: absolute;
+  width: 25px;
+  height: 2px;
+  background-color: white;
+  left: 0;
+  transition: transform 0.3s;
+}
+
+.menu-icon::before {
+  top: -8px;
+}
+
+.menu-icon::after {
+  bottom: -8px;
+}
+
+.menu-open .menu-icon {
+  background-color: transparent;
+}
+
+.menu-open .menu-icon::before {
+  transform: rotate(45deg);
+  top: 0;
+}
+
+.menu-open .menu-icon::after {
+  transform: rotate(-45deg);
+  bottom: 0;
+}
+
+.navbar-links {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 12px;
+}
+
+.navbar-item {
+  position: relative;
+}
+
+.navbar-link {
+  color: var(--color-text-navbar);
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 10px 18px;
+  position: relative;
+  text-decoration: none;
+  transition: color 0.2s ease-in-out, transform 0.2s ease;
+  display: block;
+}
+
+.navbar-link:hover {
+  color: var(--color-hover);
+  transform: translateY(-1px);
+}
+
+.navbar-link.active {
+  color: var(--color-text-navbar);
+  font-weight: 600;
+}
+
+.navbar-link::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #fff;
+  transition: width 0.3s ease, opacity 0.3s ease;
+  opacity: 0;
+}
+
+.navbar-link.active::after {
+  width: 60%;
+  opacity: 1;
+}
+
+/* Chuyển đổi gradient từ custom-navbar.scrolled */
+.navbar.scrolled {
+  background-color: #111827; 
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Logout button */
+.logout-button {
+  color: #ffffff;
+  border: 1.5px solid #fff;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.logout-button:hover {
+  border-color: #6f6161;
+  transform: translateY(-1px);
+}
+
+/* Notification Badge */
+.notification-badge {
+  position: absolute;
+  top: -2px;
+  right: 0px;
+  width: 12px;
+  height: 12px;
+  background-color: #dc3545;
+  border-radius: 50%;
+  border: 2px solid #1f2937;
+}

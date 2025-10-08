@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { getDocuments, deleteDocument, lockDocument } from '../services/api';
 import { toast } from 'react-toastify';
 import useOnScreen from '../hooks/useOnScreen';
+import '../styles/components/DocumentManagement.css';
 
 function DocumentManagement() {
   const [documents, setDocuments] = useState([]);
@@ -66,17 +67,17 @@ function DocumentManagement() {
         <td>
           <div className="action-container">
             <button
-              className={`action-button ${doc.isLock ? 'unlock-button' : 'lock-button'} me-2`}
+              className={`action-button ${doc.isLock ? 'unlock-button' : 'lock-button'} margin-right-sm`}
               onClick={() => handleLockUnlock(doc.documentId, doc.isLock)}
             >
-              <i className={`bi ${doc.isLock ? 'bi-unlock' : 'bi-lock'} me-1`}></i>
+              <i className={`bi ${doc.isLock ? 'bi-unlock' : 'bi-lock'} icon-margin-right-sm`}></i>
               {doc.isLock ? 'Mở khóa' : 'Khóa'}
             </button>
             <button
               className="action-button delete-button"
               onClick={() => handleDelete(doc.documentId)}
             >
-              <i className="bi bi-trash me-1"></i> Xóa
+              <i className="bi bi-trash icon-margin-right-sm"></i> Xóa
             </button>
           </div>
         </td>
@@ -91,7 +92,7 @@ function DocumentManagement() {
   return (
     <div className="admin-section">
       <h4 className="section-title">
-        <i className="bi bi-file-earmark-lock me-2"></i> Quản lý tài liệu
+        <i className="bi bi-file-earmark-lock icon-margin-right"></i> Quản lý tài liệu
       </h4>
       {loading ? (
         <div className="loading-container">

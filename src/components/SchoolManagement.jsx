@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { getSchools, createSchool, updateSchool, deleteSchool } from '../services/api';
+import '../styles/components/SchoolManagement.css';
 
 function SchoolManagement() {
   const [schools, setSchools] = useState([]);
@@ -91,49 +92,49 @@ function SchoolManagement() {
   return (
     <div className="school-management">
       <h4>{editingSchool ? 'Sửa trường học' : 'Thêm trường học'}</h4>
-      <form onSubmit={handleSubmit} className="mb-4">
-        <div className="mb-3">
+      <form onSubmit={handleSubmit} className="margin-bottom-md">
+        <div className="form-group">
           <label className="form-label">Tên trường</label>
           <input
             type="text"
             name="name"
             value={formData.name}
             onChange={handleInputChange}
-            className="form-control"
+            className="custom-input"
             placeholder="Nhập tên trường"
             required
           />
         </div>
-        <div className="mb-3">
+        <div className="form-group">
           <label className="form-label">Logo trường</label>
           <input
             type="file"
             name="logo"
             onChange={handleInputChange}
-            className="form-control"
+            className="custom-file-input"
             accept="image/*"
             required={!editingSchool}
           />
         </div>
-        <div className="mb-3">
+        <div className="form-group">
           <label className="form-label">URL bên ngoài</label>
           <input
             type="url"
             name="externalUrl"
             value={formData.externalUrl}
             onChange={handleInputChange}
-            className="form-control"
+            className="custom-input"
             placeholder="Nhập URL (http:// hoặc https://)"
             required
           />
         </div>
-        <button type="submit" className="btn btn-primary">
+        <button type="submit" className="custom-btn primary-btn">
           {editingSchool ? 'Cập nhật' : 'Thêm trường'}
         </button>
         {editingSchool && (
           <button
             type="button"
-            className="btn btn-secondary ms-2"
+            className="custom-btn secondary-btn margin-left-sm"
             onClick={() => {
               setEditingSchool(null);
               setFormData({ name: '', logo: null, externalUrl: '' });
@@ -146,7 +147,7 @@ function SchoolManagement() {
 
       <h4>Danh sách trường học</h4>
       {schools.length > 0 ? (
-        <table className="table table-bordered">
+        <table className="custom-table">
           <thead>
             <tr>
               <th>Tên trường</th>
@@ -176,13 +177,13 @@ function SchoolManagement() {
                 </td>
                 <td>
                   <button
-                    className="btn btn-sm btn-warning me-2"
+                    className="custom-btn small-btn warning-btn margin-right-sm"
                     onClick={() => handleEdit(school)}
                   >
                     Sửa
                   </button>
                   <button
-                    className="btn btn-sm btn-danger"
+                    className="custom-btn small-btn danger-btn"
                     onClick={() => handleDelete(school.schoolId)}
                   >
                     Xóa

@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { searchDocuments } from '../services/api';
 import { getFullImageUrl } from '../utils/imageUtils';
+import '../styles/pages/SearchResultsPage.css';
 
 const formatFileSize = (bytes) => {
   if (bytes === 0) return '0 Bytes';
@@ -80,76 +81,79 @@ function SearchResultsPage() {
   }, [queryTags, queryKeyword, queryCategory, queryFileType, querySortBy, queryPage, queryPageSize]);
 
   if (loading) {
-    return <div className="container mt-5 text-center"><div className="spinner-border text-primary" role="status"><span className="visually-hidden">Đang tải...</span></div><p className="mt-2">Đang tải kết quả...</p></div>;
+    return <div className="loading-container"><div className="loading-spinner" role="status"></div><p className="loading-text">Đang tải kết quả...</p></div>;
   }
 
   if (error) {
-    return <div className="container mt-3"><p className="alert alert-danger">Lỗi: {error}</p></div>;
+    return <div className="search-results-container"><div className="error-message">Lỗi: {error}</div></div>;
   }
 
   return (
-    <div className="container my-4">
-      <h2 className="mb-4">Kết quả tìm kiếm</h2>
-      <p className="text-muted mb-4">Tìm thấy {totalResults} tài liệu.</p>
+    <div className="search-results-container">
+      <div className="search-results-header">
+        <h2 className="search-results-title">Kết quả tìm kiếm</h2>
+        <p className="search-results-count">Tìm thấy {totalResults} tài liệu.</p>
+      </div>
       {documents.length > 0 ? (
-        <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+        <div className="documents-grid">
           {documents.map(doc => (
-            <div key={doc.documentId} className="col">
-              <div className="card h-100 shadow-sm document-card">
-                <Link to={`/document/${doc.documentId}`} className="text-decoration-none">
+            <div key={doc.documentId} className="document-card">
+              <div className="card-img-container">
+                <Link to={`/document/${doc.documentId}`}>
                   <img
                     src={getFullImageUrl(doc.coverImageUrl)}
                     className="card-img-top"
                     alt={doc.title}
-                    style={{ height: '200px', objectFit: 'cover', borderBottom: '1px solid #eee' }}
                     onError={(e) => {
                       e.target.onerror = null;
                       e.target.src = getFullImageUrl(null);
                     }}
                   />
                 </Link>
-                <div className="card-body d-flex flex-column">
-                  <h5 className="card-title h6">
-                    <Link to={`/document/${doc.documentId}`} className="text-decoration-none text-dark stretched-link" title={doc.title}>
-                      {doc.title.length > 55 ? doc.title.substring(0, 55) + '...' : doc.title}
-                    </Link>
-                  </h5>
-                  <p className="card-text text-muted small mb-1 flex-grow-1">
-                    {doc.description ? (doc.description.length > 70 ? doc.description.substring(0, 70) + '...' : doc.description) : 'Không có mô tả.'}
-                  </p>
-                  <div className="mt-auto">
-                    {doc.category?.name && (
-                      <p className="card-text text-muted small mb-1">
-                        <i className="bi bi-folder me-1"></i>{doc.category.name}
-                      </p>
-                    )}
-                    <p className="card-text text-muted small mb-1">
-                      <i className="bi bi-person me-1"></i>{doc.email || 'N/A'}
-                    </p>
-                    <div className="d-flex justify-content-between align-items-center text-muted small">
-                      <span><i className="bi bi-download me-1"></i>{doc.downloadCount || 0}</span>
-                      <span>{doc.fileType?.toUpperCase()}</span>
+              </div>
+              <div className="card-body">
+                <h5 className="card-title">
+                  <Link to={`/document/${doc.documentId}`} title={doc.title}>
+                    {doc.title.length > 55 ? doc.title.substring(0, 55) + '...' : doc.title}
+                  </Link>
+                </h5>
+                <p className="card-description">
+                  {doc.description ? (doc.description.length > 70 ? doc.description.substring(0, 70) + '...' : doc.description) : 'Không có mô tả.'}
+                </p>
+                <div className="card-meta">
+                  {doc.category?.name && (
+                    <div className="meta-item">
+                      <span className="icon folder-icon"></span>{doc.category.name}
                     </div>
+                  )}
+                  <div className="meta-item">
+                    <span className="icon person-icon"></span>{doc.email || 'N/A'}
+                  </div>
+                  <div className="meta-item">
+                    <span className="icon download-icon"></span>{doc.downloadCount || 0}
+                    <span className="file-type">{doc.fileType?.toUpperCase()}</span>
                   </div>
                 </div>
-                {doc.tags && doc.tags.length > 0 && (
-                  <div className="card-footer bg-transparent border-top-0 pt-0 pb-2 px-2">
+              </div>
+              {doc.tags && doc.tags.length > 0 && (
+                <div className="card-footer">
+                  <div className="tag-container">
                     {doc.tags.slice(0, 3).map(tag => (
-                      <Link key={tag.tagId || tag.name} to={`/search?tags=${encodeURIComponent(tag.name)}`} className="badge bg-light text-dark me-1 mb-1 text-decoration-none" style={{fontSize: '0.7em'}}>
+                      <Link key={tag.tagId || tag.name} to={`/search?tags=${encodeURIComponent(tag.name)}`} className="tag-badge">
                         #{tag.name}
                       </Link>
                     ))}
-                    {doc.tags.length > 3 && <span className="badge bg-light text-dark mb-1" style={{fontSize: '0.7em'}}>...</span>}
+                    {doc.tags.length > 3 && <span className="tag-badge">...</span>}
                   </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           ))}
         </div>
       ) : (
-        <div className="text-center py-5">
-            <i className="bi bi-search display-4 text-muted"></i>
-            <p className="mt-3">Không có tài liệu nào phù hợp với tìm kiếm của bạn.</p>
+        <div className="empty-state">
+            <span className="empty-icon search-icon"></span>
+            <p className="empty-message">Không có tài liệu nào phù hợp với tìm kiếm của bạn.</p>
         </div>
       )}
     </div>
