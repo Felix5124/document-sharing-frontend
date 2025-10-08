@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { getNotificationById, markNotificationAsRead, deleteNotification } from '../services/api';
+import '../styles//components/NotificationDetail.css';
 
 function NotificationDetail() {
   const { notificationId } = useParams();
@@ -70,7 +71,7 @@ function NotificationDetail() {
     <div className="notifications-container">
       <div className="notifications-card">
         <h2 className="notifications-title">
-          <i className="bi bi-bell me-2"></i> Chi tiết thông báo
+          <i className="bi bi-bell icon-margin-right"></i> Chi tiết thông báo
         </h2>
         {loading ? (
           <div className="loading-container">
@@ -87,7 +88,7 @@ function NotificationDetail() {
                 <p className="notification-message">
                   <strong>Nội dung:</strong> {notification.message}
                 </p>
-                <div className="d-flex justify-content-between align-items-center mb-2">
+                <div className="flex-container flex-justify-between flex-align-center margin-bottom-sm">
                   <span className="notification-time">
                     <strong>Ngày gửi:</strong>{' '}
                     {new Date(notification.sentAt).toLocaleString('vi-VN', {
@@ -104,16 +105,16 @@ function NotificationDetail() {
                       className="action-button view-document-button"
                       onClick={handleViewDocument}
                     >
-                      <i className="bi bi-file-earmark-text me-1"></i> Xem tài liệu
+                      <i className="bi bi-file-earmark-text icon-margin-right-sm"></i> Xem tài liệu
                     </button>
                   )}
                 </div>
-                <div className="notification-actions d-flex justify-content-end">
-                  <button className="action-button back-button me-2" onClick={handleBack}>
-                    <i className="bi bi-arrow-left me-1"></i> Quay lại
+                <div className="notification-actions flex-container flex-justify-end">
+                  <button className="action-button back-button margin-right-sm" onClick={handleBack}>
+                    <i className="bi bi-arrow-left icon-margin-right-sm"></i> Quay lại
                   </button>
                   <button className="action-button delete-button" onClick={handleDelete}>
-                    <i className="bi bi-trash me-1"></i> Xóa
+                    <i className="bi bi-trash icon-margin-right-sm"></i> Xóa
                   </button>
                 </div>
               </div>

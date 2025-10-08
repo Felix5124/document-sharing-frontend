@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Container, ListGroup, Card, Row, Col, Spinner, Alert } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { getFullImageUrl } from '../utils/imageUtils';
 import { toast } from 'react-toastify';
+import '../styles/pages/RankingsPage.css';
 
 function RankingsPage() {
   const [rankings, setRankings] = useState({
@@ -15,7 +15,7 @@ function RankingsPage() {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchAllRankings = async () => {
@@ -62,125 +62,117 @@ function RankingsPage() {
     };
 
     return (
-      <Card className="mb-4 shadow-sm">
-        <Card.Header as="h5" className="bg-light">
-          <i className={iconClass}></i>
+      <div className="ranking-card">
+        <div className="ranking-card-header">
+          <span className={iconClass.replace('bi bi-', 'icon icon-').replace(' me-2', '')}></span>
           {title}
-        </Card.Header>
+        </div>
         {data && data.length > 0 ? (
-          <ListGroup variant="flush">
+          <ul className="ranking-list">
             {data.map((item, index) => (
-              <ListGroup.Item
+              <li
                 key={itemType === "user" ? item.userId : item.documentId || index}
-                className="d-flex align-items-center"
-                action={itemType === "document"} // Make document items actionable
+                className={`ranking-item ${itemType === "document" ? 'ranking-item-clickable' : ''}`}
                 onClick={itemType === "document" ? () => handleItemClick(item) : undefined}
-                style={{ cursor: itemType === "document" ? 'pointer' : 'default' }}
               >
-                <span className="fw-bold me-2" style={{width: '30px'}}>#{index + 1}</span>
+                <span className="ranking-position">#{index + 1}</span>
                 <img
                   src={getFullImageUrl(itemType === "user" ? item.avatarUrl : item.coverImageUrl)}
                   alt={itemType === "user" ? item.fullName : item.title}
-                  style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: itemType === "user" ? '50%' : '4px', // Square for doc covers
-                    marginRight: 15,
-                    objectFit: 'cover'
-                  }}
+                  className={itemType === "user" ? "ranking-avatar" : "document-image"}
                   onError={(e) => { e.target.onerror = null; e.target.src = getFullImageUrl(null);}}
                 />
-                <div className="flex-grow-1">
-                  <div className="fw-bold">{itemType === "user" ? item.fullName : item.title}</div>
-                  {itemType === "user" && <small className="text-muted">{item.email}</small>}
+                <div className="ranking-info">
+                  <div className="ranking-name">{itemType === "user" ? item.fullName : item.title}</div>
+                  {itemType === "user" && <div className="ranking-detail">{item.email}</div>}
                   {itemType === "document" && item.uploadedByUser?.fullName && (
-                    <small className="text-muted">Người đăng: {item.uploadedByUser.fullName}</small>
+                    <div className="ranking-detail">Người đăng: {item.uploadedByUser.fullName}</div>
                   )}
                 </div>
-                <span className="badge bg-secondary rounded-pill fs-6">{item[valueKey]} {unit}</span>
-              </ListGroup.Item>
+                <span className="ranking-value">{item[valueKey]} {unit}</span>
+              </li>
             ))}
-          </ListGroup>
+          </ul>
         ) : (
-          <Card.Body className="text-center text-muted">Không có dữ liệu.</Card.Body>
+          <div className="ranking-empty">Không có dữ liệu.</div>
         )}
-      </Card>
+      </div>
     );
   };
 
   if (loading) {
     return (
-      <Container className="text-center mt-5">
-        <Spinner animation="border" variant="primary" style={{width: '3rem', height: '3rem'}} />
+      <div className="container text-center mt-5">
+        <div className="spinner-border" style={{width: '3rem', height: '3rem'}}></div>
         <p className="mt-3 fs-5">Đang tải bảng xếp hạng...</p>
-      </Container>
+      </div>
     );
   }
 
   if (error) {
     return (
-        <Container className="mt-5">
-            <Alert variant="danger">{error}</Alert>
-        </Container>
+      <div className="container mt-5">
+        <div className="alert alert-danger">{error}</div>
+      </div>
     );
   }
 
   return (
-    <Container className="my-5">
-      <h1 className="text-center mb-5 display-5 fw-bold">🏆 Bảng Xếp Hạng 🏆</h1>
-      <Row>
-        <Col md={6}>
+    <div className="container my-5">
+      <h1 className="rankings-title text-center mb-5">🏆 Bảng Xếp Hạng 🏆</h1>
+      <div className="row">
+        <div className="col-md-6">
           <RankingList
             title="TOP ĐIỂM SỐ"
             data={rankings.points}
             unit="điểm"
             itemType="user"
-            iconClass="bi bi-star-fill text-warning me-2"
+            iconClass="icon icon-star-fill text-warning"
           />
-        </Col>
-        <Col md={6}>
+        </div>
+        <div className="col-md-6">
           <RankingList
             title="TOP NGƯỜI DÙNG ĐĂNG TÀI LIỆU"
             data={rankings.uploads}
             unit="tài liệu"
             itemType="user"
-            iconClass="bi bi-cloud-upload-fill text-info me-2"
+            iconClass="icon icon-cloud-upload-fill text-info"
           />
-        </Col>
-      </Row>
-      <Row>
-        <Col md={6}>
+        </div>
+      </div>
+      <div className="row">
+        <div className="col-md-6">
           <RankingList
             title="TOP NGƯỜI DÙNG BÌNH LUẬN"
             data={rankings.comments}
             unit="bình luận"
             itemType="user"
-            iconClass="bi bi-chat-dots-fill text-primary me-2"
+            iconClass="icon icon-chat-dots-fill text-primary"
           />
-        </Col>
-        <Col md={6}>
+        </div>
+        <div className="col-md-6">
           <RankingList
             title="TOP NGƯỜI DÙNG TẢI TÀI LIỆU"
             data={rankings.docDownloads}
             unit="lượt tải về"
             itemType="user"
-            iconClass="bi bi-person-check-fill text-success me-2"
+            iconClass="icon icon-person-check-fill text-success"
           />
-        </Col>
-      </Row>
-      <Row>
-        <Col md={12}>
+        </div>
+      </div>
+      <div className="row">
+        <div className="col-md-12">
           <RankingList
             title="TOP TÀI LIỆU TẢI VỀ"
             data={rankings.topDownloadedDocs}
             valueKey="downloadCount" 
             unit="lượt tải"
             itemType="document" 
-            iconClass="bi bi-file-earmark-arrow-down-fill text-danger me-2" 
+            iconClass="icon icon-file-earmark-arrow-down-fill text-danger" 
           />
-        </Col>
-      </Row>
-    </Container>
+        </div>
+      </div>
+    </div>
   );
 }
 

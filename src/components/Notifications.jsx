@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { AuthContext } from '../context/AuthContext';
 import { getUserNotifications, markNotificationAsRead } from '../services/api';
+import '../styles/components/Notifications.css';
 
 function Notifications() {
   const { user } = useContext(AuthContext);
@@ -62,7 +63,7 @@ function Notifications() {
     <div className="notifications-container">
       <div className="notifications-card">
         <h2 className="notifications-title">
-          <i className="bi bi-bell me-2"></i> Thông báo
+          <i className="bi bi-bell icon-margin-right"></i> Thông báo
         </h2>
         {loading ? (
           <div className="loading-container">

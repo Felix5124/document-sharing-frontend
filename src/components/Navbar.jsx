@@ -1,9 +1,9 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useContext, useEffect, useState, useRef } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import { toast } from 'react-toastify';
+import '../styles/components/Navbar.css';
 import { getUserNotifications } from '../services/api';
-import logo from '../assets/images/logoweb.png'; // Import ảnh logo
+import logo from '../assets/images/logoweb.png';
 
 function Navbar() {
   const navigate = useNavigate();
@@ -11,6 +11,7 @@ function Navbar() {
   const { user, logout } = useContext(AuthContext);
   const [unreadCount, setUnreadCount] = useState(0);
   const navbarRef = useRef(null);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   // Hàm lấy số thông báo chưa đọc
   const fetchUnreadNotifications = async () => {
@@ -66,145 +67,138 @@ function Navbar() {
     navigate('/login');
   };
 
+  // Xử lý đóng/mở menu trên mobile
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
+
   return (
-    <nav ref={navbarRef} className="navbar navbar-expand-lg navbar-dark custom-navbar">
-      <div className="container">
-        <Link className="navbar-brand d-flex align-items-center" to="/">
-          <img
-            src={logo}
-            alt="Logo"
-            style={{ height: '60px', marginRight: '10px' }} // Kích thước và khoảng cách logo
-          />
-          Document Sharing
-        </Link>
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-          aria-controls="navbarNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span className="navbar-toggler-icon"></span>
-        </button>
-        <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav ms-auto">
-            <li className="nav-item">
-              <Link
-                className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}
-                to="/"
-              >
-                Home
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link
-                className={`nav-link ${location.pathname === '/posts' ? 'active' : ''}`}
-                to="/posts"
-              >
-                Diễn đàn
-              </Link>
-            </li>
-            {user && (
-              <>
-                {user.isAdmin ? (
-                  <>
-                    <li className="nav-item">
-                      <Link
-                        className={`nav-link ${location.pathname === '/profile' ? 'active' : ''}`}
-                        to="/profile"
-                      >
-                        Hồ sơ
-                      </Link>
-                    </li>
-                    <li className="nav-item">
-                      <Link
-                        className={`nav-link ${location.pathname === '/admin' ? 'active' : ''}`}
-                        to="/admin"
-                      >
-                        Quản trị
-                      </Link>
-                    </li>
-                  </>
-                ) : (
-                  <>
-                    <li className="nav-item">
-                      <Link
-                        className={`nav-link ${location.pathname === '/upload' ? 'active' : ''}`}
-                        to="/upload"
-                      >
-                        Tải lên tài liệu
-                      </Link>
-                    </li>
-                    <li className="nav-item">
-                      <Link
-                        className={`nav-link ${location.pathname === '/profile' ? 'active' : ''}`}
-                        to="/profile"
-                      >
-                        Hồ sơ
-                      </Link>
-                    </li>
-                    <li className="nav-item" style={{ position: 'relative' }}>
-                      <Link
-                        className={`nav-link ${location.pathname === '/notifications' ? 'active' : ''}`}
-                        to="/notifications"
-                      >
-                        Thông báo
-                        {unreadCount > 0 && (
-                          <span
-                            style={{
-                              position: 'absolute',
-                              top: '-2px',
-                              right: '0px',
-                              width: '12px',
-                              height: '12px',
-                              backgroundColor: '#dc3545',
-                              borderRadius: '50%',
-                              border: '2px solid #1f2937',
-                            }}
-                          />
-                        )}
-                      </Link>
-                    </li>
-                    <li className="nav-item">
-                      <Link
-                        className={`nav-link ${location.pathname === '/follow' ? 'active' : ''}`}
-                        to="/follow"
-                      >
-                        Theo dõi
-                      </Link>
-                    </li>
-                  </>
-                )}
-                <li className="nav-item">
-                  <button className="nav-link btn btn-logout" onClick={handleLogout}>
-                    Đăng xuất
-                  </button>
-                </li>
-              </>
-            )}
-            {!user && (
-              <>
-                <li className="nav-item">
-                  <Link
-                    className={`nav-link ${location.pathname === '/login' ? 'active' : ''}`}
-                    to="/login"
-                  >
-                    Đăng nhập
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link
-                    className={`nav-link ${location.pathname === '/register' ? 'active' : ''}`}
-                    to="/register"
-                  >
-                    Đăng ký
-                  </Link>
-                </li>
-              </>
-            )}
-          </ul>
+    <nav ref={navbarRef} className="navbar">
+      <div className="navbar-container">
+        <div className="navbar-logo">
+          <Link className="navbar-logo-item" to="/">
+            <img
+              src={logo}
+              alt="Logo"
+              className="navbar-logo-image"
+            />
+            Document Sharing
+          </Link>
+        </div>
+
+        <div className='navbar-menu'>
+          <button
+            className={`menu-toggle ${menuOpen ? 'menu-open' : ''}`}
+            onClick={toggleMenu}
+            aria-label="Toggle navigation"
+          >
+            <span className="menu-icon"></span>
+          </button>
+          <div className={`navbar-menu-item ${menuOpen ? 'open' : ''}`}>
+            <ul className="navbar-links">
+              <li className="navbar-item">
+                <Link
+                  className={`navbar-link ${location.pathname === '/' ? 'active' : ''}`}
+                  to="/"
+                >
+                  Home
+                </Link>
+              </li>
+              <li className="navbar-item">
+                <Link
+                  className={`navbar-link ${location.pathname === '/posts' ? 'active' : ''}`}
+                  to="/posts"
+                >
+                  Diễn đàn
+                </Link>
+              </li>
+              {user && (
+                <>
+                  {user.isAdmin ? (
+                    <>
+                      <li className="navbar-item">
+                        <Link
+                          className={`navbar-link ${location.pathname === '/profile' ? 'active' : ''}`}
+                          to="/profile"
+                        >
+                          Hồ sơ
+                        </Link>
+                      </li>
+                      <li className="navbar-item">
+                        <Link
+                          className={`navbar-link ${location.pathname === '/admin' ? 'active' : ''}`}
+                          to="/admin"
+                        >
+                          Quản trị
+                        </Link>
+                      </li>
+                    </>
+                  ) : (
+                    <>
+                      <li className="navbar-item">
+                        <Link
+                          className={`navbar-link ${location.pathname === '/upload' ? 'active' : ''}`}
+                          to="/upload"
+                        >
+                          Tải lên tài liệu
+                        </Link>
+                      </li>
+                      <li className="navbar-item">
+                        <Link
+                          className={`navbar-link ${location.pathname === '/profile' ? 'active' : ''}`}
+                          to="/profile"
+                        >
+                          Hồ sơ
+                        </Link>
+                      </li>
+                      <li className="navbar-item">
+                        <Link
+                          className={`navbar-link ${location.pathname === '/notifications' ? 'active' : ''}`}
+                          to="/notifications"
+                        >
+                          Thông báo
+                          {unreadCount > 0 && <span className="notification-badge" />}
+                        </Link>
+                      </li>
+                      <li className="navbar-item">
+                        <Link
+                          className={`navbar-link ${location.pathname === '/follow' ? 'active' : ''}`}
+                          to="/follow"
+                        >
+                          Theo dõi
+                        </Link>
+                      </li>
+                    </>
+                  )}
+                  <li className="navbar-item">
+                    <button className="navbar-link logout-button" onClick={handleLogout}>
+                      Đăng xuất
+                    </button>
+                  </li>
+                </>
+              )}
+              {!user && (
+                <>
+                  <li className="navbar-item">
+                    <Link
+                      className={`navbar-link ${location.pathname === '/login' ? 'active' : ''}`}
+                      to="/login"
+                    >
+                      Đăng nhập
+                    </Link>
+                  </li>
+                  <li className="navbar-item">
+                    <Link
+                      className={`navbar-link ${location.pathname === '/register' ? 'active' : ''}`}
+                      to="/register"
+                    >
+                      Đăng ký
+                    </Link>
+                  </li>
+                </>
+              )}
+            </ul>
+          </div>
         </div>
       </div>
     </nav>

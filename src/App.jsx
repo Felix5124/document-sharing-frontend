@@ -15,15 +15,15 @@ import Post from './components/Post';
 import RankingsPage from './pages/RankingsPage';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap-icons/font/bootstrap-icons.css';
-import '@fortawesome/fontawesome-free/css/all.min.css';
 import ErrorBoundary from './components/ErrorBoundary';
 import { AuthContext, AuthProvider } from './context/AuthContext';
 import UploadDocument from './components/UploadDocument';
 import UpdateDocument from './components/UpdateDocument';
 import SearchResultsPage from './pages/SearchResultsPage';
 import Chatbot from './components/Chatbot'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowUp, faComment } from '@fortawesome/free-solid-svg-icons';
+
 
 // Component PrivateRoute để bảo vệ các route
 function PrivateRoute({ children, requireAdmin = false, allowNonAdmin = false }) {
@@ -105,83 +105,54 @@ function App() {
           <Route path="/help" element={<ErrorBoundary><div>Trợ giúp</div></ErrorBoundary>} />
         </Routes>
         {/* Icon Chatbox */}
-        <div 
-  className="fixed-buttons" 
-  style={{ 
-    position: 'fixed', 
-    bottom: '20px', 
-    right: '20px', 
-    display: 'flex', 
-    flexDirection: 'column', // Chatbot trên, Back to Top dưới
-    alignItems: 'flex-end', 
-    gap: '15px' // Tăng gap để rõ ràng hơn
-  }}
->
-  {/* Chatbot Component */}
-  <div style={{ zIndex: 1050 }}>
-    <Chatbot />
-  </div>
-  {/* Nút Back to Top */}
-<button
-  className="btn btn-primary btn-sm shadow rounded-circle"
-  style={{ 
-    width: '50px', 
-    height: '50px', 
-    display: 'flex', 
-    alignItems: 'center', 
-    justifyContent: 'center',
-    zIndex: 1040,
-    bottom: '90px', // thêm dòng này để đẩy nút lên trên chatbot
-    position: 'fixed', // thêm để đảm bảo vị trí
-    right: '20px' // cần lại để đồng bộ
-  }}
-  onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-  title="Quay lại đầu trang"
->
-  <i className="bi bi-arrow-up" style={{ fontSize: '1.5rem' }}></i>
-</button>
+        <div
+          className="fixed-buttons"
+        >
 
-</div>
-        {/* Footer */}
-        <footer className="bg-dark text-white text-center py-5 mt-5">
-          <div className="container">
-            <div className="row g-5">
+          <Chatbot />
+          {/* Nút Back to Top */}
+          <button
+            className="back-to-top-btn"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            title="Quay lại đầu trang"
+          >
+            <FontAwesomeIcon icon={faArrowUp} />
+          </button>
+
+
+        </div>
+        <footer className="footer">
+          <div className="footer-container">
+            <div className="footer-row">
+
               {/* Cột Công ty */}
-              <div className="col-lg-4 col-md-6">
-                <h4 className="text-white mb-3">Công ty</h4>
-                <ul className="list-unstyled">
-                  <li><Link to="/about" className="text-white">Giới thiệu</Link></li>
-                  <li><Link to="/contact" className="text-white">Liên hệ</Link></li>
-                  <li><Link to="/privacy" className="text-white">Bảo mật</Link></li>
-                  <li><Link to="/help" className="text-white">Trợ giúp</Link></li>
+              <div className="footer-column">
+                <h4 className="footer-title">Công ty</h4>
+                <ul className="footer-links">
+                  <li><Link to="/about">Giới thiệu</Link></li>
+                  <li><Link to="/contact">Liên hệ</Link></li>
+                  <li><Link to="/privacy">Bảo mật</Link></li>
+                  <li><Link to="/help">Trợ giúp</Link></li>
                 </ul>
               </div>
 
               {/* Cột Liên hệ */}
-              <div className="col-lg-4 col-md-6">
-                <h4 className="text-white mb-3">Liên hệ</h4>
-                <p className="mb-2"><i className="fas fa-map-marker-alt me-3"></i>Trường Đại Học Hutech</p>
-                <p className="mb-2"><i className="fas fa-phone-alt me-3"></i>+012 345 67890</p>
-                <p className="mb-2"><i className="fas fa-envelope me-3"></i>hutech@example.com</p>
-                <div className="d-flex pt-2 justify-content-center">
-                  <a className="btn btn-outline-light btn-social" href="https://twitter.com" target="_blank" rel="noopener noreferrer">
-                    <i className="fab fa-twitter"></i>
-                  </a>
-                  <a className="btn btn-outline-light btn-social" href="https://facebook.com" target="_blank" rel="noopener noreferrer">
-                    <i className="fab fa-facebook-f"></i>
-                  </a>
-                  <a className="btn btn-outline-light btn-social" href="https://youtube.com" target="_blank" rel="noopener noreferrer">
-                    <i className="fab fa-youtube"></i>
-                  </a>
-                  <a className="btn btn-outline-light btn-social" href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
-                    <i className="fab fa-linkedin-in"></i>
-                  </a>
+              <div className="footer-column">
+                <h4 className="footer-title">Liên hệ</h4>
+                <p><i className="fas fa-map-marker-alt"></i> Trường Đại Học Hutech</p>
+                <p><i className="fas fa-phone-alt"></i> +012 345 67890</p>
+                <p><i className="fas fa-envelope"></i> hutech@example.com</p>
+                <div className="footer-socials">
+                  <a href="https://twitter.com" target="_blank" rel="noopener noreferrer"><i className="fab fa-twitter"></i></a>
+                  <a href="https://facebook.com" target="_blank" rel="noopener noreferrer"><i className="fab fa-facebook-f"></i></a>
+                  <a href="https://youtube.com" target="_blank" rel="noopener noreferrer"><i className="fab fa-youtube"></i></a>
+                  <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer"><i className="fab fa-linkedin-in"></i></a>
                 </div>
               </div>
 
-              {/* Cột Google Map */}
-              <div className="col-lg-4 col-md-6">
-                <h4 className="text-white mb-3">Bản đồ</h4>
+              {/* Cột Bản đồ */}
+              <div className="footer-column">
+                <h4 className="footer-title">Bản đồ</h4>
                 <iframe
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3918.6142029797343!2d106.80632377421058!3d10.840807489311873!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3175274f07046f89%3A0x3a9cb196c5e1a7de!2zSFVURUNIIC0gxJDhuqFpIGjhu41jIEPDtG5nIG5naOG7hyBUUC5IQ00!5e0!3m2!1svi!2s!4v1743307008388!5m2!1svi!2s"
                   width="100%"
@@ -192,13 +163,15 @@ function App() {
                   referrerPolicy="no-referrer-when-downgrade"
                 ></iframe>
               </div>
+
             </div>
 
-            <div className="mt-4">
+            <div className="footer-bottom">
               <p>© 2025 - DoAn_Web. Tất cả quyền lợi thuộc về DoAn_Web.</p>
             </div>
           </div>
         </footer>
+
 
         <ToastContainer />
       </BrowserRouter>

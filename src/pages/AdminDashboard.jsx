@@ -8,6 +8,7 @@ import CategoryManagement from '../components/CategoryManagement';
 import DocumentManagement from '../components/DocumentManagement';
 import AdminStatistics from '../components/AdminStatistics';
 import SchoolManagement from '../components/SchoolManagement';
+import '../styles/pages/AdminDashboard.css';
 
 function AdminDashboard() {
   const { user } = useContext(AuthContext);
@@ -51,7 +52,7 @@ function AdminDashboard() {
     <div className="admin-container">
       <div className="admin-header">
         <h2 className="admin-title">
-          <i className="bi bi-gear me-2"></i> Bảng điều khiển quản trị
+          <span className="admin-icon icon-gear"></span> Bảng điều khiển quản trị
         </h2>
       </div>
 
@@ -60,37 +61,37 @@ function AdminDashboard() {
           className={`nav-button ${activeSection === 'document-approval' ? 'active' : ''}`}
           onClick={() => setActiveSection('document-approval')}
         >
-          <i className="bi bi-file-earmark-check me-2"></i> Duyệt tài liệu
+          <span className="nav-icon icon-file-check"></span> Duyệt tài liệu
         </button>
         <button
           className={`nav-button ${activeSection === 'account-management' ? 'active' : ''}`}
           onClick={() => setActiveSection('account-management')}
         >
-          <i className="bi bi-people me-2"></i> Quản lý tài khoản
+          <span className="nav-icon icon-people"></span> Quản lý tài khoản
         </button>
         <button
           className={`nav-button ${activeSection === 'category-management' ? 'active' : ''}`}
           onClick={() => setActiveSection('category-management')}
         >
-          <i className="bi bi-tags me-2"></i> Quản lý thể loại
+          <span className="nav-icon icon-tags"></span> Quản lý thể loại
         </button>
         <button
           className={`nav-button ${activeSection === 'document-management' ? 'active' : ''}`}
           onClick={() => setActiveSection('document-management')}
         >
-          <i className="bi bi-file-earmark-lock me-2"></i> Quản lý tài liệu
+          <span className="nav-icon icon-file-lock"></span> Quản lý tài liệu
         </button>
         <button
           className={`nav-button ${activeSection === 'statistics' ? 'active' : ''}`}
           onClick={() => setActiveSection('statistics')}
         >
-          <i className="bi bi-bar-chart-line me-2"></i> Thống kê
+          <span className="nav-icon icon-chart"></span> Thống kê
         </button>
         <button
           className={`nav-button ${activeSection === 'school-management' ? 'active' : ''}`}
           onClick={() => setActiveSection('school-management')}
         >
-          <i className="bi bi-building me-2"></i> Quản lý trường học
+          <span className="nav-icon icon-building"></span> Quản lý trường học
         </button>
       </div>
 

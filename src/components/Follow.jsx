@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { AuthContext } from '../context/AuthContext';
 import { getUserFollowing, getUserFollows, unfollow } from '../services/api';
+import '../styles/components/Follow.css';
 
 const STATIC_BASE_URL = import.meta.env.VITE_STATIC_BASE_URL;
 
@@ -116,7 +117,7 @@ function Follow() {
   return (
     <div className="follow-container">
       <h2 className="follow-title">
-        <i className="bi bi-person-plus me-2"></i> Quản lý theo dõi
+        <i className="bi bi-person-plus icon-margin-right"></i> Quản lý theo dõi
       </h2>
 
       {/* Following List */}
@@ -152,7 +153,7 @@ function Follow() {
                   className="action-button unfollow-button"
                   onClick={() => handleUnfollow(follow.followId)}
                 >
-                  <i className="bi bi-person-dash me-1"></i> Bỏ theo dõi
+                  <i className="bi bi-person-dash icon-margin-right-sm"></i> Bỏ theo dõi
                 </button>
               </div>
             ))}
@@ -169,7 +170,7 @@ function Follow() {
       <div className="follow-section">
         <h4 className="section-title follow-toggle" onClick={toggleFollowers}>
           Người theo dõi ({followerCount})
-          <i className={`bi bi-chevron-${showFollowers ? 'up' : 'down'} ms-2`}></i>
+          <i className={`bi bi-chevron-${showFollowers ? 'up' : 'down'} icon-margin-left`}></i>
         </h4>
         {showFollowers && (
           <div className="follow-list">

@@ -12,10 +12,10 @@ import {
   getRelatedDocuments
 } from '../services/api';
 import { AuthContext } from '../context/AuthContext';
-import { Modal, Button, Form } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { useEffect, useState, useContext } from 'react';
 import { getFullImageUrl } from '../utils/imageUtils';
+import '../styles/pages/DocumentDetail.css';
 
 let workerUrl;
 try {
@@ -40,11 +40,11 @@ const StarRatingDisplay = ({ rating, totalReviews }) => {
   const emptyStars = Math.max(0, 5 - fullStars - (halfStar ? 1 : 0));
 
   return (
-    <span className="d-inline-flex align-items-center">
-      {[...Array(fullStars)].map((_, i) => <i key={`full-${i}`} className="bi bi-star-fill text-warning"></i>)}
-      {halfStar && <i className="bi bi-star-half text-warning"></i>}
-      {[...Array(emptyStars)].map((_, i) => <i key={`empty-${i}`} className="bi bi-star text-warning"></i>)}
-      {totalReviews > 0 && <span className="ms-2">{rating}/5</span>}
+    <span className="star-rating-display">
+      {[...Array(fullStars)].map((_, i) => <span key={`full-${i}`} className="star-icon star-filled"></span>)}
+      {halfStar && <span className="star-icon star-half"></span>}
+      {[...Array(emptyStars)].map((_, i) => <span key={`empty-${i}`} className="star-icon star-empty"></span>)}
+      {totalReviews > 0 && <span className="rating-value">{rating}/5</span>}
     </span>
   );
 };
@@ -57,18 +57,98 @@ const StarRatingInput = ({ rating, onChange }) => {
       {[...Array(5)].map((_, index) => {
         const starValue = index + 1;
         return (
-          <i
+          <span
             key={starValue}
-            className={`bi bi-star${(hoverRating || rating) >= starValue ? '-fill' : ''} text-warning`}
-            style={{ cursor: 'pointer', fontSize: '1.2rem', marginRight: '4px' }}
+            className={`star-icon ${(hoverRating || rating) >= starValue ? 'star-filled' : 'star-empty'}`}
             onClick={() => onChange(starValue)}
             onMouseEnter={() => setHoverRating(starValue)}
             onMouseLeave={() => setHoverRating(0)}
-          ></i>
+          ></span>
         );
       })}
-      <span className="ms-2">{rating} sao</span>
+      <span className="rating-text">{rating} sao</span>
     </div>
+  );
+};
+
+// Custom Modal Component
+const CustomModal = ({ show, onHide, title, children, footer }) => {
+  if (!show) return null;
+  
+  return (
+    <div className="custom-modal-overlay" onClick={onHide}>
+      <div className="custom-modal" onClick={e => e.stopPropagation()}>
+        <div className="custom-modal-header">
+          <h5 className="custom-modal-title">{title}</h5>
+          <button type="button" className="custom-modal-close" onClick={onHide}>&times;</button>
+        </div>
+        <div className="custom-modal-body">
+          {children}
+        </div>
+        {footer && (
+          <div className="custom-modal-footer">
+            {footer}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Custom Button Component
+const CustomButton = ({ variant = "primary", size, onClick, disabled, type, children, className = "" }) => {
+  const btnClass = `custom-btn btn-${variant}${size ? ` btn-${size}` : ""} ${className}`;
+  return (
+    <button 
+      className={btnClass} 
+      onClick={onClick} 
+      disabled={disabled} 
+      type={type || "button"}
+    >
+      {children}
+    </button>
+  );
+};
+
+// Custom Form Components
+const CustomForm = ({ onSubmit, className = "", children }) => {
+  return (
+    <form onSubmit={onSubmit} className={`custom-form ${className}`}>
+      {children}
+    </form>
+  );
+};
+
+const FormGroup = ({ className = "", children }) => {
+  return <div className={`form-group ${className}`}>{children}</div>;
+};
+
+const FormLabel = ({ htmlFor, children }) => {
+  return <label className="form-label" htmlFor={htmlFor}>{children}</label>;
+};
+
+const FormControl = ({ as, id, value, onChange, placeholder, rows }) => {
+  if (as === "textarea") {
+    return (
+      <textarea
+        className="form-control"
+        id={id}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        rows={rows || 3}
+      />
+    );
+  }
+  
+  return (
+    <input
+      className="form-control"
+      id={id}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+    />
   );
 };
 
@@ -388,7 +468,7 @@ function DocumentDetail() {
     setNumPages(loadedNumPages);
   };
 
-  if (!doc) return <div className="container text-center py-5"><h4>Đang tải...</h4><div className="spinner-border text-primary" role="status"><span className="visually-hidden">Loading...</span></div></div>;
+  if (!doc) return <div className="loading-container"><h4>Đang tải...</h4><div className="loading-spinner" role="status"></div></div>;
 
   const MAX_INITIAL_LINES = 3;
   const MAX_CHARS_WHEN_FEW_LINES = 220;
@@ -437,14 +517,14 @@ function DocumentDetail() {
               e.target.src = getFullImageUrl(null);
             }}
           />
-          <div className="d-grid gap-2">
-            <Button variant="primary" onClick={handlePreview} disabled={doc.fileType?.toLowerCase() !== 'pdf' && !pdfData}>
-              <i className="bi bi-eye me-2"></i> {pdfData ? "Đóng Xem Trước" : "Xem Online (PDF)"}
-            </Button>
-            <Button variant="outline-secondary" onClick={handleDownload}>
-              <i className="bi bi-download me-2"></i>
+          <div className="button-grid">
+            <CustomButton variant="primary" onClick={handlePreview} disabled={doc.fileType?.toLowerCase() !== 'pdf' && !pdfData}>
+              <span className="icon-eye"></span> {pdfData ? "Đóng Xem Trước" : "Xem Online (PDF)"}
+            </CustomButton>
+            <CustomButton variant="outline-secondary" onClick={handleDownload}>
+              <span className="icon-download"></span>
               {doc.fileType ? doc.fileType.toUpperCase() : 'Tải File'}, {formatFileSize(doc.fileSize || 0)}
-            </Button>
+            </CustomButton>
           </div>
         </div>
 
@@ -527,7 +607,7 @@ function DocumentDetail() {
                     style={{ cursor: 'pointer', fontSize: '0.85em' }}
                     title={`Tìm tài liệu với tag "${tag.name}"`}
                   >
-                    <i className="bi bi-tag-fill me-1"></i>{tag.name}
+                    <span className="icon-tag-fill"></span>{tag.name}
                   </Link>
                 ))}
               </div>
@@ -539,7 +619,7 @@ function DocumentDetail() {
               <div className="d-flex justify-content-between align-items-center mb-2">
                 <h5 className="mb-0">Xem trước tài liệu (2 trang đầu)</h5>
                 <Button variant="outline-danger" size="sm" onClick={handleClosePreview}>
-                  <i className="bi bi-x-lg"></i> Đóng
+                  <span className="icon-x-lg"></span> Đóng
                 </Button>
               </div>
               <div className="preview-content text-center bg-light p-2" style={{ maxHeight: '600px', overflowY: 'auto' }}>
@@ -559,9 +639,9 @@ function DocumentDetail() {
           {relatedDocsByTag && relatedDocsByTag.length > 0 && (
             <div className="related-documents-section mt-4 pt-3">
               <h4 className="mb-3">
-                <i className="bi bi-tags-fill me-2"></i> Các tài liệu liên quan
+                <span className="icon-tags-fill"></span> Các tài liệu liên quan
               </h4>
-              <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3"> 
+              <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
                 {relatedDocsByTag.map(relatedDoc => (
                   <div key={`tag-${relatedDoc.documentId}`} className="col">
                     <div className="card h-100 shadow-sm related-doc-card">
@@ -592,9 +672,9 @@ function DocumentDetail() {
                           </Link>
                         </h6>
                         {relatedDoc.uploaderFullName && (
-                           <p className="card-text text-muted small mb-0 mt-auto" style={{fontSize: '0.75rem'}}>
-                             <i className="bi bi-person me-1"></i>{relatedDoc.uploaderFullName}
-                           </p>
+                          <p className="card-text text-muted small mb-0 mt-auto" style={{ fontSize: '0.75rem' }}>
+                            <span className="icon-person"></span>{relatedDoc.uploaderFullName}
+                          </p>
                         )}
                       </div>
                     </div>
@@ -609,9 +689,9 @@ function DocumentDetail() {
             <div className="related-documents-section mt-4 pt-3">
               <hr />
               <h4 className="mb-3">
-                <i className="bi bi-files me-2"></i> Có thể quan tâm
+                <span className="icon-files"></span> Có thể quan tâm
               </h4>
-              <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3"> 
+              <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
                 {relatedDocsByCategory.map(relatedDoc => (
                   <div key={relatedDoc.documentId} className="col">
                     <div className="card h-100 shadow-sm related-doc-card">
@@ -641,10 +721,10 @@ function DocumentDetail() {
                             {relatedDoc.title.length > 40 ? relatedDoc.title.substring(0, 40) + '...' : relatedDoc.title}
                           </Link>
                         </h6>
-                         {relatedDoc.uploadedByEmail && (
-                           <p className="card-text text-muted small mb-0 mt-auto" style={{fontSize: '0.75rem'}}>
-                             <i className="bi bi-person me-1"></i>{relatedDoc.uploadedByEmail}
-                           </p>
+                        {relatedDoc.uploadedByEmail && (
+                          <p className="card-text text-muted small mb-0 mt-auto" style={{ fontSize: '0.75rem' }}>
+                            <span className="icon-person"></span>{relatedDoc.uploadedByEmail}
+                          </p>
                         )}
                       </div>
                     </div>
@@ -655,12 +735,12 @@ function DocumentDetail() {
           )}
           <hr className="my-4" />
           <h4 className="mb-3">
-            <i className="bi bi-chat-left-text me-2"></i> Bình luận ({comments.length})
+            <span className="icon-chat-left-text"></span> Bình luận ({comments.length})
           </h4>
-          <Form onSubmit={handleCommentSubmit} className="mb-4 p-3 border rounded bg-light">
-            <Form.Group className="mb-3">
-              <Form.Label htmlFor="commentContent">Viết bình luận của bạn</Form.Label>
-              <Form.Control
+          <CustomForm onSubmit={handleCommentSubmit} className="mb-4 p-3 border rounded bg-light">
+            <FormGroup className="mb-3">
+              <FormLabel htmlFor="commentContent">Viết bình luận của bạn</FormLabel>
+              <FormControl
                 as="textarea"
                 id="commentContent"
                 rows={3}
@@ -669,27 +749,27 @@ function DocumentDetail() {
                 placeholder={user ? "Chia sẻ ý kiến của bạn..." : "Vui lòng đăng nhập để bình luận"}
                 disabled={!user}
               />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Đánh giá (sao)</Form.Label>
+            </FormGroup>
+            <FormGroup className="mb-3">
+              <FormLabel>Đánh giá (sao)</FormLabel>
               <StarRatingInput
                 rating={comment.Rating}
                 onChange={(rating) => setComment({ ...comment, Rating: rating })}
               />
-            </Form.Group>
+            </FormGroup>
             <div className="comment-submit">
-              <Button type="submit" variant="primary" disabled={!user || !comment.Content.trim()}>
-                <i className="bi bi-send me-2"></i> Gửi bình luận
-              </Button>
+              <CustomButton type="submit" variant="primary" disabled={!user || !comment.Content.trim()}>
+                <span className="icon-send"></span> Gửi bình luận
+              </CustomButton>
             </div>
-          </Form>
+          </CustomForm>
 
           <div className="comments-list">
             {comments.length > 0 ? (
               comments.slice(0, pdfData ? 1 : 3).map((cmt) => (
                 <div key={cmt.CommentId || cmt.UserId + cmt.CreatedAt} className="comment-item mb-3 p-3 border rounded">
                   <div className="d-flex justify-content-between align-items-center mb-1">
-                    <strong className="text-primary"><i className="bi bi-person-circle me-2"></i>{cmt.UserEmail}</strong>
+                    <strong className="text-primary"><span className="icon-person-circle"></span>{cmt.UserEmail}</strong>
                     <small className="text-muted">{cmt.CreatedAt ? new Date(cmt.CreatedAt).toLocaleString() : 'N/A'}</small>
                   </div>
                   <p className="mb-1" style={{ whiteSpace: 'pre-line' }}>{cmt.Content}</p>
@@ -704,36 +784,34 @@ function DocumentDetail() {
               <p className="text-muted">Chưa có bình luận nào cho tài liệu này.</p>
             )}
             {comments.length > (pdfData ? 1 : 3) && (
-              <Button variant="outline-secondary" size="sm" onClick={() => navigate(`/postcommentdetail/${id}`)} className="mt-2">
-                <i className="bi bi-plus-circle me-2"></i> Xem tất cả {comments.length} bình luận
-              </Button>
+              <CustomButton variant="outline-secondary" size="sm" onClick={() => navigate(`/postcommentdetail/${id}`)} className="mt-2">
+                <span className="icon-plus-circle"></span> Xem tất cả {comments.length} bình luận
+              </CustomButton>
             )}
           </div>
         </div>
       </div>
 
-      <Modal show={showConfirmModal} onHide={handleCancelDownload} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Xác nhận tải tài liệu</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          Bạn có muốn dùng {doc?.pointsRequired || 0} điểm để tải tài liệu này không?
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCancelDownload}>Hủy</Button>
-          <Button variant="primary" onClick={handleConfirmDownload}>Xác nhận</Button>
-        </Modal.Footer>
-      </Modal>
+      <CustomModal 
+        show={showConfirmModal} 
+        onHide={handleCancelDownload} 
+        title="Xác nhận tải tài liệu"
+        footer={<>
+          <CustomButton variant="secondary" onClick={handleCancelDownload}>Hủy</CustomButton>
+          <CustomButton variant="primary" onClick={handleConfirmDownload}>Xác nhận</CustomButton>
+        </>}
+      >
+        Bạn có muốn dùng {doc?.pointsRequired || 0} điểm để tải tài liệu này không?
+      </CustomModal>
 
-      <Modal show={showErrorModal} onHide={handleCloseErrorModal} centered>
-        <Modal.Header closeButton>
-          <Modal.Title className="text-danger">Thông báo lỗi</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>{errorMessage}</Modal.Body>
-        <Modal.Footer>
-          <Button variant="primary" onClick={handleCloseErrorModal}>Đóng</Button>
-        </Modal.Footer>
-      </Modal>
+      <CustomModal 
+        show={showErrorModal} 
+        onHide={handleCloseErrorModal} 
+        title="Thông báo lỗi"
+        footer={<CustomButton variant="primary" onClick={handleCloseErrorModal}>Đóng</CustomButton>}
+      >
+        {errorMessage}
+      </CustomModal>
     </div>
   );
 }

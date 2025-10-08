@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { getCommentsByDocument, addComment, getDocumentById } from '../services/api';
 import { toast } from 'react-toastify';
 import { AuthContext } from '../context/AuthContext';
+import '../styles/pages/PostCommentDetail.css';
 
 function PostCommentDetail() {
   const { id } = useParams();
@@ -91,13 +92,13 @@ function PostCommentDetail() {
     <div className="post-comment-container">
       <div className="post-comment-card">
         <h2 className="post-comment-title">
-          <i className="bi bi-chat-left-text me-2"></i> Tất cả bình luận cho tài liệu {doc ? doc.title : 'Đang tải...'}
+          <span className="icon icon-chat-left-text"></span> Tất cả bình luận cho tài liệu {doc ? doc.title : 'Đang tải...'}
         </h2>
         <hr className="post-comment-divider" />
         <form onSubmit={handleCommentSubmit} className="comment-form">
           <div className="form-group">
             <div className="input-wrapper">
-              <i className="bi bi-pen input-icon"></i>
+              <span className="icon-pen input-icon"></span>
               <textarea
                 className="form-input"
                 value={comment.Content}
@@ -121,7 +122,7 @@ function PostCommentDetail() {
             </select>
           </div>
           <button type="submit" className="submit-button" disabled={!user}>
-            <i className="bi bi-send me-2"></i> Gửi bình luận
+            <span className="icon icon-send"></span> Gửi bình luận
           </button>
         </form>
         <div className="comments-list">
@@ -130,7 +131,7 @@ function PostCommentDetail() {
               <div key={`comment-${cmt.CommentId}-${index}`} className="comment-item">
                 <div className="comment-header">
                   <span className="comment-user">
-                    <i className="bi bi-person me-2"></i>
+                    <span className="icon icon-person"></span>
                     {cmt.UserEmail}
                   </span>
                 </div>
@@ -140,17 +141,17 @@ function PostCommentDetail() {
                 <div className="comment-footer">
                   <span className="comment-rating">
                     {[...Array(5)].map((_, i) => (
-                      <i
+                      <span
                         key={i}
-                        className={`bi ${i < cmt.Rating ? 'bi-star-fill' : 'bi-star'} me-1`}
-                      ></i>
+                        className={`icon ${i < cmt.Rating ? 'icon-star-fill' : 'icon-star'}`}
+                      ></span>
                     ))}
                     <span className="rating-text">
                       {cmt.Rating != null && !isNaN(cmt.Rating) ? `${cmt.Rating}/5` : 'Chưa có đánh giá'}
                     </span>
                   </span>
                   <span className="comment-meta">
-                    <i className="bi bi-clock me-2"></i>
+                    <span className="icon icon-clock"></span>
                     {cmt.CreatedAt ? (
                       new Date(cmt.CreatedAt).toLocaleString()
                     ) : (
@@ -162,7 +163,7 @@ function PostCommentDetail() {
             ))
           ) : (
             <p className="comments-empty">
-              <i className="bi bi-chat-left me-2"></i> Không có bình luận nào để hiển thị.
+              <span className="icon icon-chat-left"></span> Không có bình luận nào để hiển thị.
             </p>
           )}
         </div>

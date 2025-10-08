@@ -2,6 +2,9 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { useContext, useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEnvelope, faLock, faSpinner, faSignInAlt, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { AuthContext } from '../context/AuthContext';
 import { auth } from '../config/firebase';
 import {
@@ -9,6 +12,7 @@ import {
   signInWithPopup,
   signInWithEmailAndPassword
 } from "firebase/auth";
+import '../styles/pages/Login.css';
 
 function Login() {
   const { register: formRegister, handleSubmit, formState: { errors } } = useForm();
@@ -16,6 +20,7 @@ function Login() {
   const { user: authUser, isLoading: isAuthContextLoading } = useContext(AuthContext);
   const [emailPassLoading, setEmailPassLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   // Điều hướng sau khi đăng nhập
   useEffect(() => {
@@ -80,16 +85,17 @@ function Login() {
     <div className="auth-container">
       <div className="auth-card">
         <h2 className="auth-title">
-          <i className="bi bi-box-arrow-in-right me-2"></i> Đăng nhập
+          Đăng nhập
         </h2>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="form-group">
             <label className="form-label">Email</label>
             <div className="input-wrapper">
-              <i className="bi bi-envelope input-icon"></i>
+              <FontAwesomeIcon icon={faEnvelope} className="input-icon" />
               <input
                 type="email"
                 className="form-control"
+                placeholder='Nhập email của bạn'
                 {...formRegister('Email', {
                   required: 'Vui lòng nhập email',
                   pattern: {
@@ -104,13 +110,22 @@ function Login() {
           <div className="form-group">
             <label className="form-label">Mật khẩu</label>
             <div className="input-wrapper">
-              <i className="bi bi-lock input-icon"></i>
+              <FontAwesomeIcon icon={faLock} className="input-icon" />
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 className="form-control"
+                placeholder='Nhập mật khẩu của bạn'
                 {...formRegister('Password', { required: 'Vui lòng nhập mật khẩu' })}
               />
+              <span
+                className="toggle-password"
+                onClick={() => setShowPassword(prev => !prev)}
+              >
+                <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+              </span>
             </div>
+
+
             {errors.Password && <p className="error-message">{errors.Password.message}</p>}
           </div>
           <div className="button-group">
@@ -121,14 +136,14 @@ function Login() {
                 disabled={emailPassLoading || googleLoading || isAuthContextLoading}
               >
                 {emailPassLoading || (isAuthContextLoading && !googleLoading) ? (
-                  <><i className="bi bi-arrow-clockwise spinning me-2"></i> Đang xử lý...</>
+                  <><FontAwesomeIcon icon={faSpinner} spin /> Đang xử lý...</>
                 ) : (
-                  <><i className="bi bi-box-arrow-in-right me-2"></i> Đăng nhập</>
+                  <><FontAwesomeIcon icon={faSignInAlt} /> Đăng nhập</>
                 )}
               </button>
             </div>
             <div className="button-row divider-row">
-              <span className="divider-text">Hoặc</span>
+              <span className="divider-text-auth">Hoặc</span>
             </div>
             <div className="button-row">
               <button
@@ -138,9 +153,9 @@ function Login() {
                 disabled={emailPassLoading || googleLoading || isAuthContextLoading}
               >
                 {googleLoading || (isAuthContextLoading && !emailPassLoading) ? (
-                  <><i className="bi bi-arrow-clockwise spinning me-2"></i> Đang xử lý...</>
+                  <><FontAwesomeIcon icon={faSpinner} spin /> Đang xử lý...</>
                 ) : (
-                  <><i className="bi bi-google me-2"></i> Đăng nhập với Google</>
+                  <><FontAwesomeIcon icon={faGoogle} /> Đăng nhập với Google</>
                 )}
               </button>
             </div>

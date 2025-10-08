@@ -1,0 +1,811 @@
+/* SchoolManagement Component Styles */
+
+/* School Management Container */
+.school-management {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px;
+  background: linear-gradient(135deg, #F9FAFB 0%, #FFFFFF 100%);
+  border-radius: 16px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.school-management::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #8B5CF6 0%, #7C3AED 50%, #8B5CF6 100%);
+  background-size: 200% 100%;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Section Titles */
+.school-management h4 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding-bottom: 12px;
+}
+
+.school-management h4::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 80px;
+  height: 3px;
+  background: linear-gradient(90deg, #8B5CF6 0%, #7C3AED 100%);
+  border-radius: 2px;
+}
+
+.school-management h4:first-of-type::before {
+  content: '➕';
+  margin-right: 10px;
+  font-size: 1.5rem;
+}
+
+.school-management h4:last-of-type::before {
+  content: '📚';
+  margin-right: 10px;
+  font-size: 1.5rem;
+}
+
+/* Form Styling */
+.school-management form {
+  background: #FFFFFF;
+  padding: 28px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 32px;
+  border: 1px solid #E5E7EB;
+  transition: all 0.3s ease;
+}
+
+.school-management form:hover {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+
+/* Margin classes */
+.margin-bottom-sm {
+  margin-bottom: 0.5rem;
+}
+
+.margin-bottom-md {
+  margin-bottom: 1.5rem;
+}
+
+.margin-bottom-lg {
+  margin-bottom: 3rem;
+}
+
+.margin-left-sm {
+  margin-left: 0.5rem;
+}
+
+.margin-right-sm {
+  margin-right: 0.5rem;
+}
+
+/* Form Labels */
+.school-management .form-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+  display: block;
+  transition: color 0.2s ease;
+}
+
+.school-management .form-label::after {
+  content: '*';
+  color: #EF4444;
+  margin-left: 4px;
+  font-size: 0.9rem;
+}
+
+/* Form Controls */
+.custom-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #E5E7EB;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: #F9FAFB;
+  transition: all 0.3s ease;
+  font-family: 'Inter', sans-serif;
+}
+
+.custom-input:focus {
+  outline: none;
+  border-color: #8B5CF6;
+  background-color: #FFFFFF;
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+}
+
+.custom-input:hover {
+  border-color: #D1D5DB;
+  background-color: #FFFFFF;
+}
+
+.custom-input::placeholder {
+  color: #9CA3AF;
+  font-style: italic;
+}
+
+/* File Input Styling */
+.custom-file-input {
+  width: 100%;
+  padding: 10px 16px;
+  cursor: pointer;
+  background-color: #FFFFFF;
+  border: 2px solid #E5E7EB;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.custom-file-input::file-selector-button {
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  margin-right: 12px;
+  transition: all 0.3s ease;
+}
+
+.school-management input[type="file"].form-control::file-selector-button:hover {
+  background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(139, 92, 246, 0.3);
+}
+
+/* Buttons */
+.custom-btn {
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.custom-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.custom-btn:hover::before {
+  left: 100%;
+}
+
+/* Primary Button */
+.primary-btn {
+  background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+/* Secondary Button */
+.secondary-btn {
+  background: #6B7280;
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+}
+
+/* Warning Button */
+.warning-btn {
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  color: #FFFFFF;
+  box-shadow: 0 4px 8px rgba(245, 158, 11, 0.3);
+}
+
+/* Danger Button */
+.danger-btn {
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  color: #FFFFFF;
+  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+}
+
+/* Small Button */
+.small-btn {
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  border-radius: 6px;
+}
+
+/* Custom Table */
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 24px;
+}
+
+.custom-table th, 
+.custom-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border: 1px solid #E5E7EB;
+}
+
+.custom-table th {
+  background-color: #F3F4F6;
+  font-weight: 600;
+  color: #374151;
+}
+
+.custom-table tr:hover {
+  background-color: #F9FAFB;
+}
+
+.school-management .btn-primary:hover {
+  background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
+}
+
+.school-management .btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+}
+
+/* Secondary Button */
+.school-management .btn-secondary {
+  background: linear-gradient(135deg, #6B7280 0%, #4B5563 100%);
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+}
+
+.school-management .btn-secondary:hover {
+  background: linear-gradient(135deg, #4B5563 0%, #374151 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(107, 114, 128, 0.4);
+}
+
+/* Warning Button (Edit) */
+.school-management .btn-warning {
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  color: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+}
+
+.school-management .btn-warning:hover {
+  background: linear-gradient(135deg, #D97706 0%, #B45309 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+}
+
+/* Danger Button (Delete) */
+.school-management .btn-danger {
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  color: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+}
+
+.school-management .btn-danger:hover {
+  background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
+/* Small Buttons */
+.school-management .btn-sm {
+  padding: 8px 16px;
+  font-size: 0.875rem;
+}
+
+/* Margin Utilities */
+.school-management .mb-4 {
+  margin-bottom: 32px;
+}
+
+.school-management .me-2 {
+  margin-right: 12px;
+}
+
+.school-management .ms-2 {
+  margin-left: 12px;
+}
+
+/* Table Styling */
+.school-management .table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #FFFFFF;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-top: 24px;
+}
+
+.school-management .table-bordered {
+  border: 2px solid #E5E7EB;
+}
+
+/* Table Head */
+.school-management .table thead {
+  background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+}
+
+.school-management .table thead tr th {
+  padding: 16px 20px;
+  text-align: left;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #FFFFFF;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: none;
+}
+
+.school-management .table thead tr th:first-child {
+  border-top-left-radius: 12px;
+}
+
+.school-management .table thead tr th:last-child {
+  border-top-right-radius: 12px;
+}
+
+/* Table Body */
+.school-management .table tbody tr {
+  transition: all 0.3s ease;
+  border-bottom: 1px solid #E5E7EB;
+}
+
+.school-management .table tbody tr:hover {
+  background: linear-gradient(90deg, #F3E8FF 0%, #EDE9FE 100%);
+  transform: scale(1.005);
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.1);
+}
+
+.school-management .table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.school-management .table tbody tr:last-child td:first-child {
+  border-bottom-left-radius: 12px;
+}
+
+.school-management .table tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 12px;
+}
+
+/* Table Data */
+.school-management .table tbody td {
+  padding: 16px 20px;
+  font-size: 0.95rem;
+  color: #374151;
+  vertical-align: middle;
+  border: none;
+}
+
+/* School Logo in Table */
+.school-management .table tbody td img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid #E5E7EB;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.school-management .table tbody td img:hover {
+  transform: scale(1.5);
+  border-color: #8B5CF6;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+  z-index: 10;
+  position: relative;
+}
+
+/* Table Links */
+.school-management .table tbody td a {
+  color: #3B82F6;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.school-management .table tbody td a:hover {
+  color: #2563EB;
+  text-decoration: underline;
+}
+
+.school-management .table tbody td a::after {
+  content: '🔗';
+  font-size: 0.8rem;
+}
+
+/* Empty State */
+.school-management > p {
+  text-align: center;
+  padding: 64px 24px;
+  background: linear-gradient(135deg, #F9FAFB 0%, #F3F4F6 100%);
+  border-radius: 12px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+  margin-top: 24px;
+  font-size: 1.2rem;
+  color: #6B7280;
+  font-weight: 500;
+}
+
+.school-management > p::before {
+  content: '🏫';
+  display: block;
+  font-size: 4rem;
+  margin-bottom: 16px;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Loading State */
+.school-management > div:first-child {
+  text-align: center;
+  padding: 64px 24px;
+  font-size: 1.2rem;
+  color: #6B7280;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .school-management {
+    padding: 24px 16px;
+  }
+
+  .school-management h4 {
+    font-size: 1.5rem;
+  }
+
+  .school-management form {
+    padding: 20px;
+  }
+
+  .school-management .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .school-management .btn-secondary {
+    margin-left: 0 !important;
+    margin-top: 12px;
+  }
+
+  .school-management .table {
+    font-size: 0.85rem;
+  }
+
+  .school-management .table thead tr th,
+  .school-management .table tbody td {
+    padding: 12px 16px;
+  }
+
+  .school-management .table tbody td img {
+    width: 40px;
+    height: 40px;
+  }
+
+  /* Make table scrollable on mobile */
+  .school-management .table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (max-width: 576px) {
+  .school-management {
+    padding: 20px 12px;
+  }
+
+  .school-management h4 {
+    font-size: 1.3rem;
+  }
+
+  .school-management form {
+    padding: 16px;
+  }
+
+  .school-management .form-control {
+    font-size: 0.9rem;
+  }
+
+  .school-management .btn {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+  }
+
+  .school-management .btn-sm {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+
+  .school-management .table {
+    font-size: 0.8rem;
+  }
+
+  .school-management .table thead tr th,
+  .school-management .table tbody td {
+    padding: 10px 12px;
+  }
+
+  .school-management .table tbody td img {
+    width: 35px;
+    height: 35px;
+  }
+}
+
+/* Focus Styles for Accessibility */
+.school-management .btn:focus,
+.school-management .form-control:focus {
+  outline: 2px solid #8B5CF6;
+  outline-offset: 2px;
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .school-management {
+    border: 2px solid #000000;
+  }
+
+  .school-management .table {
+    border: 2px solid #000000;
+  }
+
+  .school-management .btn-primary {
+    background: #6D28D9;
+    border: 2px solid #000000;
+  }
+
+  .school-management .btn-warning {
+    background: #D97706;
+    border: 2px solid #000000;
+  }
+
+  .school-management .btn-danger {
+    background: #DC2626;
+    border: 2px solid #000000;
+  }
+
+  .school-management .btn-secondary {
+    background: #4B5563;
+    border: 2px solid #000000;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .school-management::before,
+  .school-management > p::before,
+  .school-management .btn::before {
+    animation: none;
+    transition: none;
+  }
+
+  .school-management form:hover,
+  .school-management .table tbody tr:hover,
+  .school-management .btn:hover {
+    transform: none;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .school-management {
+    background: linear-gradient(135deg, #1F2937 0%, #111827 100%);
+  }
+
+  .school-management h4 {
+    color: #F3F4F6;
+  }
+
+  .school-management form {
+    background: #1F2937;
+    border-color: #374151;
+  }
+
+  .school-management .form-label {
+    color: #D1D5DB;
+  }
+
+  .school-management .form-control {
+    background-color: #374151;
+    border-color: #4B5563;
+    color: #F3F4F6;
+  }
+
+  .school-management .form-control:focus {
+    background-color: #4B5563;
+  }
+
+  .school-management .table {
+    background: #1F2937;
+  }
+
+  .school-management .table tbody td {
+    color: #D1D5DB;
+    border-bottom-color: #374151;
+  }
+
+  .school-management .table tbody tr:hover {
+    background: linear-gradient(90deg, #374151 0%, #4B5563 100%);
+  }
+
+  .school-management > p {
+    background: linear-gradient(135deg, #374151 0%, #4B5563 100%);
+    color: #D1D5DB;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .school-management {
+    box-shadow: none;
+    border: 1px solid #000000;
+    page-break-inside: avoid;
+  }
+
+  .school-management form {
+    display: none;
+  }
+
+  .school-management .btn {
+    display: none;
+  }
+
+  .school-management .table {
+    box-shadow: none;
+  }
+
+  .school-management .table tbody td img:hover {
+    transform: none;
+  }
+}
+
+/* Animation for form submission */
+.school-management form.submitting {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.school-management form.submitting .btn-primary::after {
+  content: '';
+  width: 14px;
+  height: 14px;
+  border: 2px solid #FFFFFF;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-left: 8px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Success feedback */
+.school-management .form-success {
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+  color: #065F46;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: slideDown 0.3s ease-out;
+}
+
+.school-management .form-success::before {
+  content: '✓';
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Error feedback */
+.school-management .form-error {
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+  color: #991B1B;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: slideDown 0.3s ease-out;
+}
+
+.school-management .form-error::before {
+  content: '⚠';
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+/* Table action buttons container */
+.school-management .table tbody td:last-child {
+  white-space: nowrap;
+}
+
+/* Custom scrollbar for table wrapper */
+.school-management .table-wrapper::-webkit-scrollbar {
+  height: 8px;
+}
+
+.school-management .table-wrapper::-webkit-scrollbar-track {
+  background: #F1F5F9;
+  border-radius: 4px;
+}
+
+.school-management .table-wrapper::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #8B5CF6 0%, #7C3AED 100%);
+  border-radius: 4px;
+}
+
+.school-management .table-wrapper::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, #7C3AED 0%, #6D28D9 100%);
+}

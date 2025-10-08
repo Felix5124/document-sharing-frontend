@@ -5,6 +5,7 @@ import { getCategories, createCategory, updateCategory, deleteCategory } from '.
 import { toast } from 'react-toastify';
 import { AuthContext } from '../context/AuthContext';
 import useOnScreen from '../hooks/useOnScreen';
+import '../styles/components/CategoryManagement.css';
 
 function CategoryManagement() {
   const { user } = useContext(AuthContext);
@@ -95,16 +96,16 @@ function CategoryManagement() {
         <td>{category.type}</td>
         <td>
           <button
-            className="action-button edit-button me-2"
+            className="action-button edit-button margin-right"
             onClick={() => handleEditCategory(category)}
           >
-            <i className="bi bi-pencil me-2"></i> Sửa
+            <i className="bi bi-pencil icon-margin-right"></i> Sửa
           </button>
           <button
             className="action-button delete-button"
             onClick={() => handleDeleteCategory(category.categoryId)}
           >
-            <i className="bi bi-trash me-2"></i> Xóa
+            <i className="bi bi-trash icon-margin-right"></i> Xóa
           </button>
         </td>
       </tr>
@@ -118,11 +119,11 @@ function CategoryManagement() {
   return (
     <div className="admin-section">
       <h4 className="section-title">
-        <i className="bi bi-tags me-2"></i> Quản lý thể loại tài liệu
+        <i className="bi bi-tags icon-margin-right"></i> Quản lý thể loại tài liệu
       </h4>
 
       {/* Form thêm thể loại mới */}
-      <div className="category-form mb-4">
+      <div className="category-form margin-bottom">
         <h5>Thêm thể loại mới</h5>
         <form onSubmit={handleAddCategory}>
           <div className="form-group">
@@ -146,14 +147,14 @@ function CategoryManagement() {
             />
           </div>
           <button type="submit" className="submit-button">
-            <i className="bi bi-plus-circle me-2"></i> Thêm thể loại
+            <i className="bi bi-plus-circle icon-margin-right"></i> Thêm thể loại
           </button>
         </form>
       </div>
 
       {/* Form chỉnh sửa thể loại */}
       {editingCategory && (
-        <div className="category-form mb-4">
+        <div className="category-form margin-bottom">
           <h5>Chỉnh sửa thể loại</h5>
           <form onSubmit={handleUpdateCategory}>
             <div className="form-group">
@@ -174,15 +175,15 @@ function CategoryManagement() {
                 onChange={(e) => setEditingCategory({ ...editingCategory, type: e.target.value })}
               />
             </div>
-            <button type="submit" className="submit-button me-2">
-              <i className="bi bi-check-circle me-2"></i> Cập nhật
+            <button type="submit" className="submit-button margin-right">
+              <i className="bi bi-check-circle icon-margin-right"></i> Cập nhật
             </button>
             <button
               type="button"
               className="action-button cancel-button"
               onClick={() => setEditingCategory(null)}
             >
-              <i className="bi bi-x-circle me-2"></i> Hủy
+              <i className="bi bi-x-circle icon-margin-right"></i> Hủy
             </button>
           </form>
         </div>

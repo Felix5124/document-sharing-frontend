@@ -1,0 +1,788 @@
+/* — Reset cơ bản (loại bỏ margin/padding mặc định) */
+
+/* Root container */
+.home-root {
+  width: 100%;
+  background: #f9fafb;
+  color: #111;
+  font-family: sans-serif;
+}
+
+.container-root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* Header Section */
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+  gap: 16px;
+}
+
+.title-group {
+  flex: 1;
+}
+
+.main-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: var(--color-text);
+}
+
+.sub-title {
+  font-size: 1.25rem;
+  color: var(--color-subtitle);
+}
+
+/* Search & filter */
+.search-filter-group {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.search-wrapper,
+.filter-wrapper {
+  flex: 0 0 auto;
+}
+
+.search-group {
+  position: relative;
+}
+
+.icon-search {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+}
+
+.search-input {
+  padding: 8px 12px 8px 36px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  width: 200px;
+}
+
+.select-filter {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  background: #fff;
+}
+
+/* Content Section: sidebar + main area */
+.content-section {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+/* Sidebar */
+.sidebar-area {
+  flex: 1 1 220px;
+  max-width: 220px;
+}
+
+/* Main area */
+.main-area {
+  flex: 1;
+}
+
+/* Grid tài liệu: 5 cột */
+.documents-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0px;
+}
+
+/* DocumentCard các style */
+.document-column {
+  width: 175px;
+  margin: 0;
+}
+.documents-grid > *:nth-child(n + 6) {
+  margin-top: 22px;
+}
+.document-card {
+  display: flex;
+  position: relative;
+  width: 100%;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.document-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.document-card-image-container {
+  width: 100%;
+  height: 120px;
+  overflow: hidden;
+  position: relative;
+}
+
+.document-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.school-logo {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  object-fit: cover;
+  background: #fff;
+}
+
+.document-card-body {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.document-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.document-title {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #111827;
+  flex-grow: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-text {
+  font-size: 0.85rem;
+  flex: 1;
+  margin-bottom: 8px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.card-meta {
+  font-size: 0.75rem;
+  color: #666;
+  margin-bottom: 8px;
+}
+.action-center{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 12px;
+}
+/* Button xem chi tiết */
+.btn-primary-custom {
+  padding: 8px 16px;
+  background: var(--color-button);
+  color: #fff;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  transition: background 0.2s ease;
+}
+
+.btn-primary-custom:hover {
+  filter: brightness(1.5);
+}
+
+/* Pagination */
+.pagination-section {
+  margin-top: 16px;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.btn-page {
+  padding: 6px 12px;
+  background: #f8f9fa;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.btn-page:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-page:hover:not(:disabled) {
+  background: #e2e6ea;
+}
+
+/* Loading & Empty */
+.loading-view,
+.empty-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: #777;
+}
+
+.spinner-custom {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #ccc;
+  border-top-color: #007bff;
+  border-radius: 50%;
+  animation: spin 1s infinite linear;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Divider */
+.divider-section {
+  margin: 32px 0;
+  text-align: center;
+  position: relative;
+}
+
+.divider-section::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #ccc;
+  z-index: 1;
+}
+
+.divider-text {
+  display: inline-block;
+  background-color: #f9fafb;
+  padding: 0 12px;
+  font-size: 1rem;
+  color: #555;
+  position: relative;
+  z-index: 2;
+}
+
+/* Schools grid */
+.schools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+/* Contributors section */
+.contributors-section {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.contrib-box {
+  flex: 1 1 240px;
+  max-width: 300px;
+}
+
+/* ContributorColumn, etc. bạn sẽ viết CSS tương ứng giống DocumentCard pattern */
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .documents-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 992px) {
+  .documents-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .content-section {
+    flex-direction: column;
+  }
+  .sidebar-area {
+    width: 100%;
+    margin-bottom: 24px;
+  }
+  .documents-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .documents-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.top-interest-documents-card {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.top-interest-header {
+  background-color: #f8f9fa;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.top-interest-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #111827;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon-graph {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  background-image: url("data:image/svg+xml,%3Csvg fill='currentColor' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M0 0h1v15h15v1H0V0zm11.5 4a.5.5 0 0 1 .5.5V11h-1V5.707l-2.146 2.147a.5.5 0 0 1-.708 0L6 6.207 3.854 8.354a.5.5 0 1 1-.708-.708l2.5-2.5a.5.5 0 0 1 .708 0L9 6.293l1.646-1.647A.5.5 0 0 1 11.5 4z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+/* Body (scrollable content) */
+.top-interest-body {
+  padding: 0 12px 8px 12px;
+  max-height: calc(100vh - 150px);
+  overflow-y: auto;
+}
+
+/* Loading box */
+.loading-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 12px;
+}
+
+.spinner-custom-sm {
+  width: 24px;
+  height: 24px;
+  border: 3px solid #ccc;
+  border-top-color: #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 8px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-text-small {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+/* Empty text */
+.empty-text {
+  font-size: 0.875rem;
+  color: #777;
+  text-align: center;
+  padding: 20px 10px;
+}
+
+/* List of top interest docs */
+.top-interest-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.top-interest-list > li + li {
+  border-top: 1px solid #eee;
+}
+/* Item wrapper */
+.top-interest-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 10px 0;
+  gap: 10px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.top-interest-item:last-child {
+  border-bottom: none;
+}
+
+/* Rank number */
+.item-rank {
+  position: relative;
+  right: -6px;
+  font-size: 1rem;
+  font-weight: bold;
+  min-width: 24px;
+  margin: auto 0;
+  color: #111827;
+}
+
+/* Link container */
+.item-link {
+  display: flex;
+  align-items: flex-start;
+  text-decoration: none;
+  color: inherit;
+  flex-grow: 1;
+  min-width: 0;
+  max-height: 89px;
+  gap: 12px;
+}
+
+/* Thumbnail image */
+.item-image {
+  margin: auto 0;
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+/* Info area */
+.item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Title */
+.item-title {
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-bottom: 4px;
+  color: #111827;
+  /* phần quan trọng để cho phép 2 dòng rồi ... */
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* số dòng muốn hiển thị */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal; /* phải bỏ nowrap để được nhiều dòng */
+}
+
+/* Meta info (download + user) */
+.item-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.item-download,
+.item-user {
+  font-size: 0.6rem;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* User icon */
+.icon-user {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='currentColor' viewBox='0 0 16 16'%3E%3Cpath d='M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6z'/%3E%3Cpath fill-rule='evenodd' d='M8 9a5 5 0 0 0-5 5v.5a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5V14a5 5 0 0 0-5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+/* Contributor Card */
+.contributor-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.contributor-icon {
+  font-size: 2rem;
+  color: #3b82f6;
+  margin-bottom: 0.5rem;
+}
+
+.contributor-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.contributor-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 1rem;
+  border: 2px solid #e5e7eb;
+}
+
+.contributor-name {
+  font-size: 1.2rem;
+  color: var(--color-text);
+  margin-bottom: 0.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.contributor-stat {
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+}
+
+.contributor-link {
+  display: inline-block;
+  color: #fff;
+  background-color: var(--color-button);
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.contributor-link:hover {
+  filter: brightness(1.5);
+  color: #fff;
+}
+
+/* School Card */
+.school-card-wrapper {
+  width: 100%;
+}
+
+.school-card {
+  background: linear-gradient(180deg, #fff 0%, #f9fafb 100%);
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.school-image {
+  width: 100%;
+  height: 200px;
+  object-fit: contain;
+  padding: 20px;
+  background-color: #f8f9fa;
+}
+
+.school-card-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.school-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.school-meta {
+  font-size: 0.9rem;
+  color: #6b7280;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+/* Icons */
+.icon-people,
+.icon-doc {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-right: 4px;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.icon-people {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='currentColor' viewBox='0 0 16 16'%3E%3Cpath d='M13 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM3 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm10 1c-1.105 0-2 .672-2 1.5V11h4v-1.5c0-.828-.895-1.5-2-1.5zM3 8c-1.105 0-2 .672-2 1.5V11h4v-1.5C5 8.672 4.105 8 3 8z'/%3E%3C/svg%3E");
+}
+
+.icon-doc {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='currentColor' viewBox='0 0 16 16'%3E%3Cpath d='M4 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V5.5L9.5 0H4zm3 8h2v1H7V8zm0 2h2v1H7v-1zm0 2h2v1H7v-1zm3-4h1v1h-1V8zm0 2h1v1h-1v-1zm0 2h1v1h-1v-1z'/%3E%3C/svg%3E");
+}
+
+.school-link {
+  background-color: #3b82f6;
+  color: white;
+  padding: 10px;
+  text-align: center;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.school-link:hover {
+  background-color: #2563eb;
+}
+
+.document-school-logo {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  border-radius: 50%;
+  background: #fff;
+  padding: 4px;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+}
+
+.document-card-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.document-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.document-title {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #111827;
+  flex-grow: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 8px;
+}
+
+.document-download {
+  font-size: 0.75rem;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.document-description {
+  font-size: 0.85rem;
+  color: var(--color-subtitle);
+  margin: 10px 0;
+  max-height: 3.2em;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.document-meta {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: auto;
+}
+
+.meta-author,
+.meta-date {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+  gap: 4px;
+}
+
+.document-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  height: 100%;
+  transition: background-color 0.2s ease;
+}
+
+.document-link:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 1px 16px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+}
+
+/* SVG icons */
+.icon-download,
+.icon-user,
+.icon-calendar {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.icon-download {
+  background-image: url("data:image/svg+xml,%3Csvg fill='currentColor' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M.5 9.9V14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V9.9a.5.5 0 0 0-1 0V14a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1V9.9a.5.5 0 0 0-1 0z'/%3E%3Cpath d='M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z'/%3E%3C/svg%3E");
+}
+
+.icon-user {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='currentColor' viewBox='0 0 16 16'%3E%3Cpath d='M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6z'/%3E%3Cpath fill-rule='evenodd' d='M8 9a5 5 0 0 0-5 5v.5a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5V14a5 5 0 0 0-5-5z'/%3E%3C/svg%3E");
+}
+
+.icon-calendar {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='currentColor' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h.5A1.5 1.5 0 0 1 15 2.5v11A1.5 1.5 0 0 1 13.5 15h-11A1.5 1.5 0 0 1 1 13.5v-11A1.5 1.5 0 0 1 2.5 1H3v-.5a.5.5 0 0 1 .5-.5zM2 4v9.5a.5.5 0 0 0 .5.5H13.5a.5.5 0 0 0 .5-.5V4H2z'/%3E%3C/svg%3E");
+}

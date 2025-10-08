@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import api, { getDocumentById, updateDocument, getCategories } from '../services/api';
+import '../styles/components/UpdateDocument.css';
 
 function UpdateDocument() {
   const { id } = useParams();
@@ -195,13 +196,13 @@ function UpdateDocument() {
     }
   };
 
-  if (loading || !document) return <div className="text-center py-5">Đang tải...</div>;
+  if (loading || !document) return <div className="loading-display">Đang tải...</div>;
 
   return (
     <div className="upload-container">
       <div className="upload-card">
         <h2 className="upload-title">
-          <i className="bi bi-pencil-square me-2"></i> Cập nhật tài liệu
+          <i className="bi bi-pencil-square icon-margin-right"></i> Cập nhật tài liệu
         </h2>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="form-group">
@@ -247,7 +248,7 @@ function UpdateDocument() {
             {errors.CategoryId && <p className="error-text">{errors.CategoryId.message}</p>}
           </div>
 
-          <div className="form-group mb-3">
+          <div className="form-group margin-bottom">
             <label className="form-label" htmlFor="tag-input">Tags</label>
             <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
               <input
@@ -267,8 +268,7 @@ function UpdateDocument() {
               />
               <button
                 type="button"
-                className="btn btn-secondary"
-                style={{ padding: '10px 15px', backgroundColor: '#6c757d', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                className="tag-button"
                 onClick={handleExternalAddTag}
               >
                 Thêm Tag
@@ -360,10 +360,10 @@ function UpdateDocument() {
             {errors.File && <p className="error-text">{errors.File.message}</p>}
           </div>
 
-          <div className="form-group mb-3">
+          <div className="form-group margin-bottom">
             <label className="form-label">Ảnh bìa (JPG, PNG, GIF - tùy chọn)</label>
             {currentCoverImageUrl && !previewNewCover && (
-              <div className="mt-2 text-center">
+              <div className="preview-container">
                 <p>Ảnh bìa hiện tại:</p>
                 <img
                   src={currentCoverImageUrl}
@@ -374,7 +374,7 @@ function UpdateDocument() {
               </div>
             )}
             {previewNewCover && (
-              <div className="mt-2 text-center">
+              <div className="preview-container">
                 <p>Xem trước ảnh bìa mới:</p>
                 <img
                   src={previewNewCover}
@@ -383,22 +383,22 @@ function UpdateDocument() {
                 />
               </div>
             )}
-            <div className="input-wrapper input-group">
-              <span className="input-group-text">
+            <div className="input-wrapper file-input-group">
+              <span className="file-input-icon">
                 <i className="bi bi-image"></i>
               </span>
               <input
                 type="file"
-                className="form-control"
+                className="form-input file-input"
                 accept="image/jpeg,image/png,image/gif"
                 {...register('CoverImage')}
               />
             </div>
-            <small className="form-text text-muted">Để trống nếu không muốn thay đổi ảnh bìa.</small>
+            <small className="form-helper-text">Để trống nếu không muốn thay đổi ảnh bìa.</small>
           </div>
 
           <button type="submit" className="submit-button" disabled={loading}>
-            <i className="bi bi-check-circle me-2"></i> {loading ? 'Đang cập nhật...' : 'Cập nhật tài liệu'}
+            <i className="bi bi-check-circle icon-margin-right"></i> {loading ? 'Đang cập nhật...' : 'Cập nhật tài liệu'}
           </button>
           <button
             type="button"
@@ -406,7 +406,7 @@ function UpdateDocument() {
             onClick={() => navigate('/profile')}
             style={{ background: 'linear-gradient(90deg, #EF4444 0%, #DC2626 100%)', marginTop: '10px' }}
           >
-            <i className="bi bi-x-circle me-2"></i> Hủy
+            <i className="bi bi-x-circle icon-margin-right"></i> Hủy
           </button>
         </form>
       </div>

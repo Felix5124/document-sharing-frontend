@@ -1,0 +1,205 @@
+/* Achievements Component Styles */
+
+/* Achievements Container */
+.achievements-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 48px 24px;
+  background-color: #F9FAFB;
+}
+
+.achievements-title {
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+}
+
+.icon-margin-right {
+  margin-right: 0.5rem;
+}
+
+/* Achievements List */
+.achievements-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Achievement Item */
+.achievement-item {
+  background: linear-gradient(180deg, #FFFFFF 0%, #F9FAFB 100%);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.achievement-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+.achievement-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.achievement-name {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
+  transition: color 0.2s ease;
+}
+
+.achievement-description {
+  font-size: 1rem;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.achievement-earned {
+  font-size: 0.9rem;
+  margin: 0;
+  font-style: italic;
+}
+
+.achievement-progress {
+  font-size: 0.9rem;
+  margin: 0;
+  font-style: italic;
+}
+
+/* Loading States */
+.loading-container {
+  text-align: center;
+  padding: 40px 0;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin: 20px 0;
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 5px solid #E5E7EB;
+  border-top: 5px solid #3B82F6;
+  border-radius: 50%;
+  animation: spin 1s ease-in-out infinite;
+  margin: 0 auto;
+}
+
+.loading-text {
+  margin-top: 20px;
+  color: #6B7280;
+  font-size: 1.1rem;
+}
+
+/* Spinner Animation */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 40px 0;
+  background: #f9fafb;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.empty-icon {
+  font-size: 3rem;
+  color: #9ca3af;
+  margin-bottom: 16px;
+}
+
+.empty-state p {
+  font-size: 1.1rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Badge States */
+.achievement-item.achieved {
+  border-left: 4px solid #10B981;
+  background: linear-gradient(180deg, #E6FFFA 0%, #B2F5EA 100%);
+}
+
+.achievement-item.not-achieved {
+  opacity: 0.7;
+  border-left: 4px solid #D1D5DB;
+}
+
+/* Progress Bar (if needed for future enhancements) */
+.achievement-progress-bar {
+  width: 100%;
+  height: 8px;
+  background-color: #E5E7EB;
+  border-radius: 4px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+
+.achievement-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10B981 0%, #059669 100%);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .achievements-container {
+    padding: 24px 16px;
+  }
+  
+  .achievements-title {
+    font-size: 2rem;
+    margin-bottom: 24px;
+  }
+  
+  .achievement-item {
+    padding: 16px;
+  }
+  
+  .achievement-name {
+    font-size: 1.1rem;
+  }
+  
+  .achievement-description {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .achievements-container {
+    padding: 16px 12px;
+  }
+  
+  .achievements-title {
+    font-size: 1.8rem;
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+  }
+  
+  .achievement-item {
+    padding: 12px;
+  }
+  
+  .achievement-name {
+    font-size: 1rem;
+  }
+}
