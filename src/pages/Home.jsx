@@ -91,7 +91,7 @@ function Home() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedSchool, setSelectedSchool] = useState('');
-  const [tags, setTags] = useState('');
+
   const [categories, setCategories] = useState([]);
   const [schools, setSchools] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -132,7 +132,7 @@ function Home() {
       } else {
         setCategories([]);
       }
-    } catch (error) {
+    } catch {
       toast.error('Không thể tải danh mục.');
       setCategories([]);
     }
@@ -141,16 +141,10 @@ function Home() {
   const fetchDocuments = async () => {
     setLoading(true);
     try {
-      const tagArray = tags
-        .split(',')
-        .map((tag) => tag.trim())
-        .filter((tag) => tag.length > 0);
-
       const params = {
         Keyword: searchTerm || undefined,
         CategoryId: selectedCategory ? parseInt(selectedCategory) : undefined,
         SchoolId: selectedSchool ? parseInt(selectedSchool) : undefined,
-        Tags: tagArray.length > 0 ? tagArray : undefined,
         SortBy: 'newest',
         Page: currentPage,
         PageSize: documentsPerPage,
@@ -183,7 +177,7 @@ function Home() {
     try {
       const commenterResponse = await getTopCommenter();
       let commenterData = commenterResponse.data;
-      if (commenterData && Object.prototype.hasOwnProperty.call(commenterData, '$value')) {
+      if (commenterData && '$value' in commenterData) {
         commenterData = commenterData.$value;
       } else if (commenterData && Array.isArray(commenterData.$values)) {
         commenterData = commenterData.$values.length > 0 ? commenterData.$values[0] : null;
@@ -192,7 +186,7 @@ function Home() {
 
       const pointsResponse = await getTopPointsUser();
       let pointsData = pointsResponse.data;
-      if (pointsData && pointsData.hasOwnProperty('$value')) {
+      if (pointsData && '$value' in pointsData) {
         pointsData = pointsData.$value;
       } else if (pointsData && Array.isArray(pointsData.$values)) {
         pointsData = pointsData.$values.length > 0 ? pointsData.$values[0] : null;
@@ -203,12 +197,12 @@ function Home() {
       let topDocData = topDocResponse.data;
       if (topDocData && Array.isArray(topDocData.$values) && topDocData.$values) {
         topDocData = topDocData.$values.length > 0 ? topDocData.$values[0] : null;
-      } else if (topDocData && Object.prototype.hasOwnProperty.call(topDocData, '$value')) {
+      } else if (topDocData && '$value' in topDocData) {
         topDocData = topDocData.$value;
       }
       setTopDownloadedDoc(topDocData);
 
-      const topInterestDocsResponse = await getTopDownloadedDocumentsList(5);
+      const topInterestDocsResponse = await getTopDownloadedDocumentsList(3);
       let topInterestData = topInterestDocsResponse.data;
       if (topInterestData && Array.isArray(topInterestData.$values)) {
         setTopInterestDocuments(topInterestData.$values);
@@ -228,7 +222,7 @@ function Home() {
 
   useEffect(() => {
     fetchDocuments();
-  }, [searchTerm, selectedCategory, selectedSchool, tags, currentPage]);
+  }, [searchTerm, selectedCategory, selectedSchool, currentPage]);
 
   useEffect(() => {
     fetchCategories();
@@ -251,7 +245,6 @@ function Home() {
     return (
       <div ref={cardRef} className={`document-column fade-in ${isVisible ? 'visible' : ''}`}>
         <Link to={`/document/${doc.documentId}`} className="document-link document-card">
-
           <div className="document-card-image-container">
             <img
               src={getFullImageUrl(doc.coverImageUrl)}
@@ -270,7 +263,7 @@ function Home() {
           </div>
           <div className="document-card-body">
             <div className="document-card-header">
-              <h5 className="document-title" title={doc.title}>
+              <h5 className="home-document-title" title={doc.title}>
                 {doc.title}
               </h5>
               <span className="document-download">
@@ -279,7 +272,9 @@ function Home() {
               </span>
             </div>
             <p className="document-description">
-              {doc.description || "Không có mô tả."}
+              {doc.description && doc.description.length > 60
+                ? `${doc.description.slice(0, 57)}...`
+                : doc.description || "Không có mô tả."}
             </p>
             <div className="document-meta">
               <div className="meta-author" title={doc.email ? `Người đăng: ${doc.email}` : 'Không xác định'}>
@@ -295,9 +290,7 @@ function Home() {
         </Link>
       </div>
     );
-
   };
-
 
   const ContributorColumn = ({ title, data, icon, statLabel, statValue, linkTo }) => {
     const columnRef = useRef(null);
@@ -388,22 +381,13 @@ function Home() {
           />
           <div className="item-info">
             <h6 className="item-title" title={doc.title}>
-              {doc.title}
+              {doc.title.length > 20 ? `${doc.title.slice(0, 17)}...` : doc.title}
             </h6>
             <div className="item-meta">
               <span className="item-download">
                 <span className="icon-download"></span>
-                {doc.downloadCount} lượt tải
+                {doc.downloadCount}
               </span>
-              {doc.uploadedByUser?.fullName && (
-                <span
-                  className="item-user"
-                  title={`Người đăng: ${doc.uploadedByUser.fullName}`}
-                >
-                  <span className="icon-user"></span>
-                  {doc.uploadedByUser.fullName}
-                </span>
-              )}
             </div>
           </div>
         </Link>
@@ -585,7 +569,7 @@ function Home() {
 
 
 
-          <div className=" text-center">
+          <div className="text-center">
             <h2 className="main-title">Bảng xếp hạng nổi bật</h2>
           </div>
 
