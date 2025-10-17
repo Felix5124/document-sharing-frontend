@@ -171,10 +171,11 @@
   margin-bottom: 8px;
 }
 
-.document-title {
-  font-size: 1rem;
+/* Tiêu đề tài liệu ở trang Home - chỉ dành cho danh sách tài liệu */
+.home-document-title {
+  font-size: 0.8rem;
   font-weight: bold;
-  color: #111827;
+  color: #a0adc9;
   flex-grow: 1;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -706,8 +707,9 @@
   align-items: center;
 }
 
-.document-title {
-  font-size: 1rem;
+/* Định nghĩa thứ hai cho tiêu đề ở trang Home */
+.home-document-title {
+  font-size: 0.8rem;
   font-weight: bold;
   color: #111827;
   flex-grow: 1;
