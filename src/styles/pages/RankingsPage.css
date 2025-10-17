@@ -1,117 +1,246 @@
-/* RankingsPage.css - Styles for rankings and leaderboards page */
+/* ==========================================================================
+   1. CSS Variables & Global Styles
+   ========================================================================== */
 
-/* Styles to replace Bootstrap classes */
-.container {
-  width: 100%;
-  padding-right: 15px;
-  padding-left: 15px;
-  margin-right: auto;
-  margin-left: auto;
+:root {
+  /* Colors */
+  --color-text-primary: #334155;
+  --color-text-secondary: #64748b;
+  --color-background-page: #f8fafc;
+  --color-background-card: #ffffff;
+  --color-border: #e2e8f0;
+  --color-value-badge-bg: #f1f5f9;
+  --color-gold: gold;
+  --color-silver: silver;
+  --color-bronze: #cd7f32;
+
+  /* Theming Colors for Headers/Icons */
+  --theme-color-points: #ffc107;
+  --theme-color-uploads: #0dcaf0;
+  --theme-color-comments: #0d6efd;
+  --theme-color-downloads-user: #198754;
+  --theme-color-downloads-doc: #dc3545;
+
+  /* Typography */
+  --font-family-base: sans-serif;
+  --font-size-base: 16px;
+
+  /* Spacing */
+  --spacing-gutter: 12px;
+  --spacing-card-padding: 20px;
+  --spacing-item-padding: 16px;
+
+  /* Other */
+  --border-radius-card: 12px;
+  --border-radius-badge: 16px;
+  --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --card-shadow-hover: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+body {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  background-color: var(--color-background-page);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+
+/* ==========================================================================
+   2. Page Layout
+   ========================================================================== */
+
+.rankings-page {
   max-width: 1200px;
-}
-.mt-5 {
-  margin-top: 3rem;
-}
-
-.mt-3 {
-  margin-top: 1rem;
+  margin: 40px auto;
+  padding: 0 20px;
 }
 
-.mb-5 {
-  margin-bottom: 3rem;
+.rankings-page__header {
+  text-align: center;
+  margin-bottom: 40px;
 }
 
-.my-5 {
-  margin-top: 3rem;
-  margin-bottom: 3rem;
+.rankings-page__title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 10px;
 }
 
-.row {
+
+/* ==========================================================================
+   2.5. Tab Navigation (MỚI)
+   ========================================================================== */
+
+.rankings-page__tabs {
   display: flex;
   flex-wrap: wrap;
-  margin-right: -15px;
-  margin-left: -15px;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 40px;
+  border-bottom: 2px solid var(--color-border);
+  padding-bottom: 15px;
 }
 
-.col-md-6 {
-  flex: 0 0 50%;
-  max-width: 50%;
-  padding-right: 15px;
-  padding-left: 15px;
+.rankings-page__tab-button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  background-color: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.2s, color 0.2s;
   position: relative;
-  width: 100%;
-}
-
-.col-md-12 {
-  flex: 0 0 100%;
-  max-width: 100%;
-  padding-right: 15px;
-  padding-left: 15px;
-  position: relative;
-  width: 100%;
-}
-
-.fs-5 {
-  font-size: 1.25rem;
-}
-
-.text-warning {
-  color: #ffc107;
-}
-
-.text-info {
-  color: #0dcaf0;
-}
-
-.text-primary {
-  color: #0d6efd;
-}
-
-.text-success {
-  color: #198754;
-}
-
-.text-danger {
-  color: #dc3545;
-}
-
-.spinner-border {
-  display: inline-block;
-  width: 2rem;
-  height: 2rem;
-  vertical-align: text-bottom;
-  border: 0.25em solid currentColor;
-  border-right-color: transparent;
-  border-radius: 50%;
-  animation: spinner-border 0.75s linear infinite;
-}
-
-@keyframes spinner-border {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.alert {
-  position: relative;
-  padding: 1rem;
-  margin-bottom: 1rem;
   border: 1px solid transparent;
-  border-radius: 0.25rem;
 }
 
-.alert-danger {
-  color: #842029;
-  background-color: #f8d7da;
-  border-color: #f5c2c7;
+.rankings-page__tab-button:hover {
+  background-color: var(--color-value-badge-bg);
+  color: var(--color-text-primary);
 }
 
-.ranking-item-clickable {
+.rankings-page__tab-button--active {
+  color: var(--color-text-primary);
+  background-color: var(--color-background-card);
+  border-color: var(--color-border);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.rankings-page__content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+
+/* ==========================================================================
+   3. Ranking Card Component
+   ========================================================================== */
+
+.ranking-card {
+  background: var(--color-background-card);
+  border-radius: var(--border-radius-card);
+  box-shadow: var(--card-shadow);
+  transition: transform 0.2s, box-shadow 0.2s;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+}
+
+.ranking-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--card-shadow-hover);
+}
+
+.ranking-card__header {
+  color: white;
+  padding: 16px var(--spacing-card-padding);
+  font-size: 1.25rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+}
+
+.ranking-card__body {
+  padding: 0;
+}
+
+.ranking-card__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.ranking-card__item {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-item-padding) var(--spacing-card-padding);
+  border-bottom: 1px solid var(--color-border);
+  transition: background-color 0.15s;
+}
+
+.ranking-card__list .ranking-card__item:last-child {
+  border-bottom: none;
+}
+
+.ranking-card__item--clickable {
   cursor: pointer;
 }
 
-/* Icon styles to replace Bootstrap icons */
-.icon {
+.ranking-card__item--clickable:hover {
+  background-color: var(--color-background-page);
+}
+
+.ranking-card__position {
+  font-weight: 700;
+  font-size: 1.1rem;
+  width: 30px;
+  text-align: center;
+  margin-right: 15px;
+}
+
+/* Special colors for top 3 */
+.ranking-card__item:nth-child(1) .ranking-card__position { color: var(--color-gold); }
+.ranking-card__item:nth-child(2) .ranking-card__position { color: var(--color-silver); }
+.ranking-card__item:nth-child(3) .ranking-card__position { color: var(--color-bronze); }
+
+.ranking-card__image {
+  width: 45px;
+  height: 45px;
+  object-fit: cover;
+  margin-right: 15px;
+  border: 1px solid var(--color-border);
+}
+
+.ranking-card__image--avatar {
+  border-radius: 50%;
+}
+
+.ranking-card__image--document {
+  border-radius: 6px;
+}
+
+.ranking-card__info {
+  flex: 1;
+  min-width: 0; /* Prevents text overflow issues in flexbox */
+}
+
+.ranking-card__name {
+  font-weight: 600;
+  font-size: 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ranking-card__detail {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ranking-card__value {
+  font-weight: 600;
+  background-color: var(--color-value-badge-bg);
+  padding: 4px 12px;
+  border-radius: var(--border-radius-badge);
+  font-size: 0.9rem;
+}
+
+.ranking-card__empty-message {
+  padding: 40px var(--spacing-card-padding);
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+
+/* ==========================================================================
+   4. Icon Styles & Theming
+   ========================================================================== */
+
+.ranking-card__icon {
   display: inline-block;
   width: 1.4rem;
   height: 1.4rem;
@@ -122,477 +251,136 @@
   background-size: contain;
 }
 
-.icon-star-fill {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23ffc107' viewBox='0 0 16 16'%3E%3Cpath d='M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z'/%3E%3C/svg%3E");
+/* Link header background color to icon color */
+.icon--star-fill + .ranking-card__header,
+.ranking-card__header:has(.icon--star-fill) {
+  background-color: var(--theme-color-points);
 }
 
-.icon-cloud-upload-fill {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%230dcaf0' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M7.646 5.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708l2-2z'/%3E%3Cpath d='M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383z'/%3E%3C/svg%3E");
+.icon--cloud-upload-fill + .ranking-card__header,
+.ranking-card__header:has(.icon--cloud-upload-fill) {
+  background-color: var(--theme-color-uploads);
 }
 
-.icon-chat-dots-fill {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%230d6efd' viewBox='0 0 16 16'%3E%3Cpath d='M16 8c0 3.866-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7zM5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z'/%3E%3C/svg%3E");
+.icon--chat-dots-fill + .ranking-card__header,
+.ranking-card__header:has(.icon--chat-dots-fill) {
+  background-color: var(--theme-color-comments);
 }
 
-.icon-person-check-fill {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23198754' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M15.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L12.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0z'/%3E%3Cpath d='M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z'/%3E%3C/svg%3E");
+.icon--person-check-fill + .ranking-card__header,
+.ranking-card__header:has(.icon--person-check-fill) {
+  background-color: var(--theme-color-downloads-user);
 }
 
-.icon-file-earmark-arrow-down-fill {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23dc3545' viewBox='0 0 16 16'%3E%3Cpath d='M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zm-1 4v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.708L7.5 11.293V7.5a.5.5 0 0 1 1 0z'/%3E%3C/svg%3E");
+.icon--file-earmark-arrow-down-fill + .ranking-card__header,
+.ranking-card__header:has(.icon--file-earmark-arrow-down-fill) {
+  background-color: var(--theme-color-downloads-doc);
 }
 
-.rankings-container {
-  max-width: 1280px;
-  margin: 40px auto;
-  padding: 0 20px;
-}
+/* SVG data URIs (giữ nguyên) */
+.icon--star-fill { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='white' viewBox='0 0 16 16'%3E%3Cpath d='M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z'/%3E%3C/svg%3E"); }
+.icon--cloud-upload-fill { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='white' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M7.646 5.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708l2-2z'/%3E%3Cpath d='M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383z'/%3E%3C/svg%3E"); }
+.icon--chat-dots-fill { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='white' viewBox='0 0 16 16'%3E%3Cpath d='M16 8c0 3.866-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7zM5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z'/%3E%3C/svg%3E"); }
+.icon--person-check-fill { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='white' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M15.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L12.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0z'/%3E%3Cpath d='M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z'/%3E%3C/svg%3E"); }
+.icon--file-earmark-arrow-down-fill { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='white' viewBox='0 0 16 16'%3E%3Cpath d='M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zm-1 4v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.708L7.5 11.293V7.5a.5.5 0 0 1 1 0z'/%3E%3C/svg%3E"); }
 
-.rankings-header {
-  text-align: center;
-  margin-bottom: 40px;
-}
 
-.rankings-title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: #1a202c;
-  margin-bottom: 10px;
-  position: relative;
-  display: inline-block;
-}
+/* ==========================================================================
+   5. Page State Styles (Loading & Error)
+   ========================================================================== */
 
-.rankings-title::after {
-  content: '';
-  position: absolute;
-  width: 60%;
-  height: 4px;
-  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-  bottom: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  border-radius: 2px;
-}
-
-.rankings-subtitle {
-  font-size: 1.2rem;
-  color: #64748b;
-  margin-top: 15px;
-}
-
-/* Card styles */
-.ranking-card {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  transition: transform 0.2s, box-shadow 0.2s;
-  overflow: hidden;
-  margin-bottom: 24px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.ranking-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-}
-
-.ranking-card-header {
-  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-  color: white;
-  padding: 16px 20px;
-  font-size: 1.25rem;
-  font-weight: 600;
+.page-loader {
   display: flex;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
+  min-height: 80vh;
 }
 
-.ranking-card-header i {
-  margin-right: 10px;
-  font-size: 1.4rem;
-}
-
-/* List item styles */
-.ranking-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.ranking-item {
-  display: flex;
-  align-items: center;
-  padding: 16px 20px;
-  border-bottom: 1px solid #e2e8f0;
-  transition: background-color 0.15s;
-}
-
-.ranking-item:last-child {
-  border-bottom: none;
-}
-
-.ranking-item:hover {
-  background-color: #f8fafc;
-}
-
-.ranking-position {
-  font-weight: 700;
-  font-size: 1.1rem;
-  width: 30px;
-  min-width: 30px;
-  text-align: center;
-  margin-right: 15px;
-  color: #334155;
-}
-
-.ranking-item:nth-child(1) .ranking-position {
-  color: gold;
-}
-
-.ranking-item:nth-child(2) .ranking-position {
-  color: silver;
-}
-
-.ranking-item:nth-child(3) .ranking-position {
-  color: #cd7f32; /* bronze */
-}
-
-.ranking-avatar {
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-right: 15px;
-  border: 2px solid #e2e8f0;
-}
-
-.document-image {
-  width: 45px;
-  height: 45px;
-  border-radius: 6px;
-  object-fit: cover;
-  margin-right: 15px;
-  border: 1px solid #e2e8f0;
-}
-
-.ranking-info {
-  flex: 1;
-}
-
-.ranking-name {
-  font-weight: 600;
-  color: #334155;
-  margin: 0 0 4px;
-  font-size: 1rem;
-}
-
-.ranking-detail {
-  color: #64748b;
-  font-size: 0.875rem;
-  margin: 0;
-}
-
-.ranking-value {
-  font-weight: 600;
-  background-color: #f1f5f9;
-  padding: 4px 12px;
-  border-radius: 16px;
-  font-size: 0.9rem;
-  color: #334155;
-}
-
-/* Loading state */
-.spinner-border {
-  display: inline-block;
-  width: 2rem;
-  height: 2rem;
-  vertical-align: text-bottom;
-  border: 0.25em solid currentColor;
-  border-right-color: transparent;
-  border-radius: 50%;
-  animation: spinner-border .75s linear infinite;
-}
-
-@keyframes spinner-border {
-  to { transform: rotate(360deg); }
-}
-
-.mt-3 {
-  margin-top: 1rem;
-}
-
-.mt-5 {
-  margin-top: 3rem;
-}
-
-.fs-5 {
-  font-size: 1.25rem;
-}
-
-/* Error state */
-.alert {
-  position: relative;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  border: 1px solid transparent;
-  border-radius: 0.25rem;
-}
-
-.alert-danger {
-  color: #721c24;
-  background-color: #f8d7da;
-  border-color: #f5c6cb;
-}
-
-/* Container and layout for non-bootstrap classes */
-.container {
-  width: 100%;
-  padding-right: 15px;
-  padding-left: 15px;
-  margin-right: auto;
-  margin-left: auto;
-}
-
-.my-5 {
-  margin-top: 3rem;
-  margin-bottom: 3rem;
-}
-
-.mb-5 {
-  margin-bottom: 3rem;
-}
-
-.row {
-  display: flex;
-  flex-wrap: wrap;
-  margin-right: -15px;
-  margin-left: -15px;
-}
-
-.col-md-6, .col-md-12 {
-  position: relative;
-  width: 100%;
-  padding-right: 15px;
-  padding-left: 15px;
-}
-
-.ranking-item-clickable {
-  cursor: pointer;
-}
-
-.ranking-empty {
-  padding: 20px;
-  text-align: center;
-  color: #64748b;
-}
-
-/* Responsive styles */
-@media (min-width: 576px) {
-  .container {
-    max-width: 540px;
-  }
-}
-
-@media (min-width: 768px) {
-  .container {
-    max-width: 720px;
-  }
-  
-  .col-md-6 {
-    flex: 0 0 50%;
-    max-width: 50%;
-  }
-  
-  .col-md-12 {
-    flex: 0 0 100%;
-    max-width: 100%;
-  }
-}
-
-@media (min-width: 992px) {
-  .container {
-    max-width: 960px;
-  }
-}
-
-@media (min-width: 1200px) {
-  .container {
-    max-width: 1140px;
-  }
-}
-
-@media (max-width: 767.98px) {
-  .rankings-title {
-    font-size: 2rem;
-  }
-  
-  .ranking-card-header {
-    font-size: 1.1rem;
-  }
-  
-  .ranking-item {
-    padding: 12px 15px;
-  }
-  
-  .ranking-avatar, .document-image {
-    width: 35px;
-    height: 35px;
-    margin-right: 10px;
-  }
-  
-  .ranking-position {
-    margin-right: 10px;
-    font-size: 1rem;
-  }
-}
-
-@media (max-width: 575.98px) {
-  .rankings-container {
-    padding: 0 15px;
-  }
-  
-  .rankings-title {
-    font-size: 1.7rem;
-  }
-  
-  .ranking-name {
-    font-size: 0.95rem;
-  }
-  
-  .ranking-detail {
-    font-size: 0.8rem;
-  }
-  
-  .ranking-value {
-    font-size: 0.8rem;
-    padding: 3px 8px;
-  }
-}
-
-.ranking-item:nth-child(1) .ranking-position {
-  color: gold;
-}
-
-.ranking-item:nth-child(2) .ranking-position {
-  color: silver;
-}
-
-.ranking-item:nth-child(3) .ranking-position {
-  color: #cd7f32; /* bronze */
-}
-
-.ranking-avatar {
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-right: 15px;
-  border: 2px solid #e2e8f0;
-}
-
-.document-image {
-  width: 45px;
-  height: 45px;
-  border-radius: 6px;
-  object-fit: cover;
-  margin-right: 15px;
-  border: 1px solid #e2e8f0;
-}
-
-.ranking-info {
-  flex: 1;
-}
-
-.ranking-name {
-  font-weight: 600;
-  color: #334155;
-  margin: 0 0 4px;
-  font-size: 1rem;
-}
-
-.ranking-detail {
-  color: #64748b;
-  font-size: 0.875rem;
-  margin: 0;
-}
-
-.ranking-value {
-  font-weight: 600;
-  background-color: #f1f5f9;
-  padding: 4px 12px;
-  border-radius: 16px;
-  font-size: 0.9rem;
-  color: #334155;
-}
-
-/* Loading state */
-.rankings-loading {
-  text-align: center;
-  padding: 50px 0;
-}
-
-.rankings-spinner {
+.loader-spinner {
   width: 3.5rem;
   height: 3.5rem;
-  border-width: 0.25rem;
-  margin-bottom: 20px;
+  border-radius: 50%;
+  border: 0.3em solid #ccc;
+  border-top-color: var(--color-text-primary);
+  animation: spin 1s linear infinite;
 }
 
-.rankings-loading-text {
-  font-size: 1.1rem;
-  color: #64748b;
-  margin-top: 15px;
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-/* Error state */
-.rankings-error {
-  max-width: 600px;
-  margin: 50px auto;
+.loader-text {
+  margin-top: 1.5rem;
+  font-size: 1.25rem;
+  color: var(--color-text-secondary);
 }
 
-/* Responsive styles */
+.error-message {
+  padding: 1rem 1.5rem;
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  border-radius: 8px;
+  text-align: center;
+}
+
+
+/* ==========================================================================
+   6. Responsive Styles
+   ========================================================================== */
+
 @media (max-width: 767.98px) {
-  .rankings-title {
+  .rankings-page__title {
     font-size: 2rem;
   }
-  
-  .ranking-card-header {
-    font-size: 1.1rem;
+
+  .rankings-page__tab-button {
+    padding: 8px 16px;
+    font-size: 0.9rem;
   }
-  
-  .ranking-item {
+
+  .ranking-card__header {
+    font-size: 1.1rem;
+    padding: 12px 15px;
+  }
+
+  .ranking-card__item {
     padding: 12px 15px;
   }
   
-  .ranking-avatar, .document-image {
+  .ranking-card__image {
     width: 35px;
     height: 35px;
     margin-right: 10px;
   }
-  
-  .ranking-position {
+
+  .ranking-card__position {
     margin-right: 10px;
-    font-size: 1rem;
   }
 }
 
 @media (max-width: 575.98px) {
-  .rankings-container {
+  .rankings-page {
     padding: 0 15px;
+    margin-top: 20px;
   }
   
-  .rankings-title {
+  .rankings-page__title {
     font-size: 1.7rem;
   }
-  
-  .ranking-name {
+
+  .ranking-card__name {
     font-size: 0.95rem;
   }
-  
-  .ranking-detail {
+
+  .ranking-card__detail {
     font-size: 0.8rem;
   }
-  
-  .ranking-value {
+
+  .ranking-card__value {
     font-size: 0.8rem;
     padding: 3px 8px;
   }

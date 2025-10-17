@@ -17,6 +17,7 @@ import { useEffect, useState, useContext } from 'react';
 import { getFullImageUrl } from '../utils/imageUtils';
 import '../styles/pages/DocumentDetail.css';
 
+// ... (Các phần code không đổi từ workerUrl đến FormControl giữ nguyên) ...
 let workerUrl;
 try {
   workerUrl = new URL('pdfjs-dist/build/pdf.worker.mjs', import.meta.url).toString();
@@ -152,7 +153,9 @@ const FormControl = ({ as, id, value, onChange, placeholder, rows }) => {
   );
 };
 
+
 function DocumentDetail() {
+  // ... (Toàn bộ hooks và functions xử lý logic giữ nguyên, không thay đổi) ...
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
@@ -507,16 +510,16 @@ function DocumentDetail() {
     finalDisplayDescription = "Không có mô tả.";
     shouldShowReadMoreButton = false;
   }
-
+  
   return (
-    <div className="container-fluid py-4 document-detail-page">
-      <div className="container">
-        {/* Hàng 1: Hình ảnh và Preview */}
-        <div className="row g-4 mb-4">
-          {/* === CỘT BÊN TRÁI === */}
-          <div className="col-12 col-lg-6">
-            {/* Thêm thẻ div bọc ở đây */}
-            <div className="h-100">
+    <div className="document-detail-page">
+      <div className="document-detail-container">
+        {/* === MAIN LAYOUT GRID: Image/Preview and Info === */}
+        <div className="layout-grid top-section">
+
+          {/* === LEFT COLUMN: Cover Image & Actions === */}
+          <div className="layout-column left-column">
+            <div className="document-cover-container">
               <div className="document-cover-section">
                 <div className="cover-image-wrapper">
                   <img
@@ -554,7 +557,7 @@ function DocumentDetail() {
                     variant="primary"
                     onClick={handlePreview}
                     disabled={doc.fileType?.toLowerCase() !== 'pdf'}
-                    className="preview-btn"
+                    className="action-btn preview-btn"
                   >
                     <span className="icon-eye"></span>
                     <span className="btn-text">Xem Online (PDF)</span>
@@ -571,66 +574,58 @@ function DocumentDetail() {
             </div>
           </div>
 
-          {/* === CỘT BÊN PHẢI === */}
-          <div className="col-12 col-lg-6">
-            {/* Thêm thẻ div bọc và đặt logic điều kiện vào trong */}
-            <div className="h-100">
-              {pdfData ? (
-                <div className="document-preview-section">
-                  <div className="preview-header">
-                    <div className="preview-title">
-                      <span className="icon-eye"></span>
-                      <h5>Xem trước tài liệu (2 trang đầu)</h5>
-                    </div>
-                    <CustomButton variant="outline-danger" size="sm" onClick={handleClosePreview} className="preview-close-btn">
-                      <span className="icon-x-lg"></span>
-                      <span>Đóng</span>
-                    </CustomButton>
+          {/* === RIGHT COLUMN: PDF Preview === */}
+          <div className="layout-column right-column preview-wrapper">
+            {pdfData ? (
+              <div className="document-preview-section">
+                <div className="preview-header">
+                  <div className="preview-title">
+                    <span className="icon-eye"></span>
+                    <h5>Xem trước tài liệu (cuộn để xem)</h5>
                   </div>
-                  <div className="preview-container">
-                    <Document file={pdfData} onLoadSuccess={onDocumentLoadSuccess} loading="Đang tải bản xem trước...">
-                      {numPages && (
-                        <div className="pdf-pages-container">
+                  <CustomButton variant="outline-danger" size="sm" onClick={handleClosePreview} className="preview-close-btn">
+                    <span className="icon-x-lg"></span>
+                    <span>Đóng</span>
+                  </CustomButton>
+                </div>
+                <div className="preview-container">
+                  {/* === THAY ĐỔI Ở ĐÂY === */}
+                  <Document file={pdfData} onLoadSuccess={onDocumentLoadSuccess} loading="Đang tải bản xem trước...">
+                    <div className="pdf-pages-container">
+                      {/* Lặp qua để render tối đa 2 trang, cho phép cuộn bên trong */}
+                      {numPages && Array.from(new Array(Math.min(numPages, 2)), (el, index) => (
                           <Page
-                            pageNumber={1}
+                            key={`page_${index + 1}`}
+                            pageNumber={index + 1}
                             width={570}
                             renderTextLayer={false}
                             renderAnnotationLayer={false}
                             className="pdf-page"
                           />
-                          {numPages > 1 && (
-                            <Page
-                              pageNumber={2}
-                              width={570}
-                              renderTextLayer={false}
-                              renderAnnotationLayer={false}
-                              className="pdf-page"
-                            />
-                          )}
-                        </div>
-                      )}
-                      {!numPages && <div className="preview-loading">Không thể tải trang.</div>}
-                    </Document>
-                  </div>
-                </div>
-              ) : (
-                <div className="preview-placeholder">
-                  <div className="preview-placeholder-content">
-                    <div className="preview-placeholder-icon">
-                      <span className="icon-eye"></span>
+                      ))}
                     </div>
-                    <h6>Chức năng xem trước PDF</h6>
-                    <p>Khi bạn nhấn nút "Xem Online (PDF)" phía trên, tài liệu sẽ hiển thị ở đây</p>
-                  </div>
+                    {!numPages && <div className="preview-loading">Không thể tải trang.</div>}
+                  </Document>
+                  {/* === KẾT THÚC THAY ĐỔI === */}
                 </div>
-              )}
-            </div>
+              </div>
+            ) : (
+              <div className="preview-placeholder">
+                <div className="preview-placeholder-content">
+                  <div className="preview-placeholder-icon">
+                    <span className="icon-eye"></span>
+                  </div>
+                  <h6>Chức năng xem trước PDF</h6>
+                  <p>Khi bạn nhấn nút "Xem Online (PDF)", tài liệu sẽ hiển thị ở đây</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Hàng 2: Thông tin tài liệu */}
-        <div className="row g-4">
-          <div className="col-12">
+        {/* === MAIN CONTENT SECTION === */}
+        <div className="layout-grid main-content-section">
+          <div className="layout-column full-width">
             <div className="document-header-section">
               <div className="document-title-row">
                 <div className="document-title-wrapper">
@@ -663,7 +658,7 @@ function DocumentDetail() {
                       disabled={loadingFollow}
                       className="follow-btn"
                     >
-                      <i className={`bi ${isFollowing ? 'bi-person-check-fill' : 'bi-person-plus'} me-1`}></i>
+                      <span className={`follow-icon ${isFollowing ? 'icon-person-check' : 'icon-person-plus'}`}></span>
                       {isFollowing ? 'Đã theo dõi' : loadingFollow ? 'Đang xử lý...' : 'Theo dõi'}
                     </CustomButton>
                   )}
@@ -714,7 +709,7 @@ function DocumentDetail() {
                 )}
               </div>
             </div>
-
+            
             <div className="document-details-card">
               <div className="details-header">
                 <h3>Thông tin chi tiết</h3>
@@ -800,224 +795,226 @@ function DocumentDetail() {
                 </div>
               )}
             </div>
-
+            
+            {/* ... Các section Tài liệu liên quan và Bình luận ... */}
             {relatedDocsByTag && relatedDocsByTag.length > 0 && (
               <div className="related-documents-section">
-                <div className="section-header">
-                  <div className="section-icon">
-                    <span className="icon-tags-fill"></span>
+                  <div className="section-header">
+                      <div className="section-icon">
+                          <span className="icon-tags-fill"></span>
+                      </div>
+                      <h3 className="section-title">Các tài liệu liên quan</h3>
+                      <div className="section-subtitle">Tài liệu cùng chủ đề và tags</div>
                   </div>
-                  <h3 className="section-title">Các tài liệu liên quan</h3>
-                  <div className="section-subtitle">Tài liệu cùng chủ đề và tags</div>
-                </div>
 
-                <div className="related-documents-grid">
-                  {relatedDocsByTag.map(relatedDoc => (
-                    <div key={`tag-${relatedDoc.documentId}`} className="related-document-card">
-                      <Link to={`/document/${relatedDoc.documentId}`} className="card-link">
-                        <div className="card-image-container">
-                          <img
-                            src={getFullImageUrl(relatedDoc.coverImageUrl)}
-                            className="card-image"
-                            alt={relatedDoc.title}
-                            onError={(e) => {
-                              e.target.onerror = null;
-                              e.target.src = getFullImageUrl(null);
-                            }}
-                          />
-                          <div className="card-overlay">
-                            <div className="overlay-icon">
-                              <span className="icon-arrow-right"></span>
-                            </div>
+                  <div className="related-documents-grid">
+                      {relatedDocsByTag.map(relatedDoc => (
+                          <div key={`tag-${relatedDoc.documentId}`} className="related-document-card">
+                              <Link to={`/document/${relatedDoc.documentId}`} className="card-link">
+                                  <div className="card-image-container">
+                                      <img
+                                          src={getFullImageUrl(relatedDoc.coverImageUrl)}
+                                          className="card-image"
+                                          alt={relatedDoc.title}
+                                          onError={(e) => {
+                                              e.target.onerror = null;
+                                              e.target.src = getFullImageUrl(null);
+                                          }}
+                                      />
+                                      <div className="card-overlay">
+                                          <div className="overlay-icon">
+                                              <span className="icon-arrow-right"></span>
+                                          </div>
+                                      </div>
+                                  </div>
+                                  <div className="card-content">
+                                      <h6 className="card-title" title={relatedDoc.title}>
+                                          {relatedDoc.title.length > 45 ? relatedDoc.title.substring(0, 45) + '...' : relatedDoc.title}
+                                      </h6>
+                                      {relatedDoc.uploaderFullName && (
+                                          <div className="card-author">
+                                              <span className="icon-person"></span>
+                                              <span className="author-name">{relatedDoc.uploaderFullName}</span>
+                                          </div>
+                                      )}
+                                  </div>
+                              </Link>
                           </div>
-                        </div>
-                        <div className="card-content">
-                          <h6 className="card-title" title={relatedDoc.title}>
-                            {relatedDoc.title.length > 45 ? relatedDoc.title.substring(0, 45) + '...' : relatedDoc.title}
-                          </h6>
-                          {relatedDoc.uploaderFullName && (
-                            <div className="card-author">
-                              <span className="icon-person"></span>
-                              <span className="author-name">{relatedDoc.uploaderFullName}</span>
-                            </div>
-                          )}
-                        </div>
-                      </Link>
-                    </div>
-                  ))}
-                </div>
+                      ))}
+                  </div>
               </div>
             )}
-
+            
             {relatedDocsByCategory && relatedDocsByCategory.length > 0 && (
-              <div className="related-documents-section">
-                <div className="section-divider"></div>
-                <div className="section-header">
-                  <div className="section-icon">
-                    <span className="icon-files"></span>
-                  </div>
-                  <h3 className="section-title">Có thể bạn quan tâm</h3>
-                  <div className="section-subtitle">Tài liệu cùng danh mục</div>
-                </div>
-
-                <div className="related-documents-grid">
-                  {relatedDocsByCategory.map(relatedDoc => (
-                    <div key={relatedDoc.documentId} className="related-document-card">
-                      <Link to={`/document/${relatedDoc.documentId}`} className="card-link">
-                        <div className="card-image-container">
-                          <img
-                            src={getFullImageUrl(relatedDoc.coverImageUrl)}
-                            className="card-image"
-                            alt={relatedDoc.title}
-                            onError={(e) => {
-                              e.target.onerror = null;
-                              e.target.src = getFullImageUrl(null);
-                            }}
-                          />
-                          <div className="card-overlay">
-                            <div className="overlay-icon">
-                              <span className="icon-arrow-right"></span>
-                            </div>
-                          </div>
+                <div className="related-documents-section">
+                    <div className="section-divider"></div>
+                    <div className="section-header">
+                        <div className="section-icon">
+                            <span className="icon-files"></span>
                         </div>
-                        <div className="card-content">
-                          <h6 className="card-title" title={relatedDoc.title}>
-                            {relatedDoc.title.length > 40 ? relatedDoc.title.substring(0, 40) + '...' : relatedDoc.title}
-                          </h6>
-                          {relatedDoc.uploadedByEmail && (
-                            <div className="card-author">
-                              <span className="icon-person"></span>
-                              <span className="author-name">{relatedDoc.uploadedByEmail}</span>
-                            </div>
-                          )}
-                        </div>
-                      </Link>
+                        <h3 className="section-title">Có thể bạn quan tâm</h3>
+                        <div className="section-subtitle">Tài liệu cùng danh mục</div>
                     </div>
-                  ))}
+
+                    <div className="related-documents-grid">
+                        {relatedDocsByCategory.map(relatedDoc => (
+                            <div key={relatedDoc.documentId} className="related-document-card">
+                                <Link to={`/document/${relatedDoc.documentId}`} className="card-link">
+                                    <div className="card-image-container">
+                                        <img
+                                            src={getFullImageUrl(relatedDoc.coverImageUrl)}
+                                            className="card-image"
+                                            alt={relatedDoc.title}
+                                            onError={(e) => {
+                                                e.target.onerror = null;
+                                                e.target.src = getFullImageUrl(null);
+                                            }}
+                                        />
+                                        <div className="card-overlay">
+                                            <div className="overlay-icon">
+                                                <span className="icon-arrow-right"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="card-content">
+                                        <h6 className="card-title" title={relatedDoc.title}>
+                                            {relatedDoc.title.length > 40 ? relatedDoc.title.substring(0, 40) + '...' : relatedDoc.title}
+                                        </h6>
+                                        {relatedDoc.uploadedByEmail && (
+                                            <div className="card-author">
+                                                <span className="icon-person"></span>
+                                                <span className="author-name">{relatedDoc.uploadedByEmail}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </Link>
+                            </div>
+                        ))}
+                    </div>
                 </div>
-              </div>
             )}
-
+            
             <div className="comments-section">
-              <div className="comments-header">
-                <div className="comments-title">
-                  <span className="icon-chat-left-text"></span>
-                  <h3>Bình luận và đánh giá</h3>
-                  <span className="comments-count">({comments.length})</span>
-                </div>
-              </div>
-
-              <div className="comment-form-card">
-                <div className="comment-form-header">
-                  <h5>Chia sẻ đánh giá của bạn</h5>
-                </div>
-                <CustomForm onSubmit={handleCommentSubmit} className="comment-form">
-                  <div className="form-row">
-                    <div className="form-col">
-                      <FormGroup className="mb-3">
-                        <FormLabel htmlFor="commentContent">Nội dung bình luận</FormLabel>
-                        <FormControl
-                          as="textarea"
-                          id="commentContent"
-                          rows={4}
-                          value={comment.Content}
-                          onChange={(e) => setComment({ ...comment, Content: e.target.value })}
-                          placeholder={user ? "Chia sẻ ý kiến và đánh giá của bạn về tài liệu này..." : "Vui lòng đăng nhập để bình luận"}
-                          disabled={!user}
-                          className="comment-textarea"
-                        />
-                      </FormGroup>
+                <div className="comments-header">
+                    <div className="comments-title">
+                        <span className="icon-chat-left-text"></span>
+                        <h3>Bình luận và đánh giá</h3>
+                        <span className="comments-count">({comments.length})</span>
                     </div>
-                  </div>
+                </div>
 
-                  <div className="form-row">
-                    <div className="form-col">
-                      <FormGroup className="mb-4">
-                        <FormLabel>Đánh giá (sao)</FormLabel>
-                        <div className="rating-input-wrapper">
-                          <StarRatingInput
-                            rating={comment.Rating}
-                            onChange={(rating) => setComment({ ...comment, Rating: rating })}
-                          />
-                        </div>
-                      </FormGroup>
+                <div className="comment-form-card">
+                    <div className="comment-form-header">
+                        <h5>Chia sẻ đánh giá của bạn</h5>
                     </div>
-                  </div>
-
-                  <div className="form-actions">
-                    <CustomButton
-                      type="submit"
-                      variant="primary"
-                      disabled={!user || !comment.Content.trim()}
-                      className="submit-comment-btn"
-                    >
-                      <span className="icon-send"></span>
-                      <span>Gửi bình luận</span>
-                    </CustomButton>
-                  </div>
-                </CustomForm>
-              </div>
-
-              <div className="comments-display">
-                {comments.length > 0 ? (
-                  <div className="comments-container">
-                    {comments.slice(0, pdfData ? 1 : 5).map((cmt) => (
-                      <div key={cmt.CommentId || cmt.UserId + cmt.CreatedAt} className="comment-card">
-                        <div className="comment-header">
-                          <div className="comment-author">
-                            <div className="author-avatar">
-                              <span className="icon-person-circle"></span>
+                    <CustomForm onSubmit={handleCommentSubmit} className="comment-form">
+                        <div className="comment-form-row">
+                            <div className="comment-form-column">
+                                <FormGroup className="comment-form-group">
+                                    <FormLabel htmlFor="commentContent">Nội dung bình luận</FormLabel>
+                                    <FormControl
+                                        as="textarea"
+                                        id="commentContent"
+                                        rows={4}
+                                        value={comment.Content}
+                                        onChange={(e) => setComment({ ...comment, Content: e.target.value })}
+                                        placeholder={user ? "Chia sẻ ý kiến và đánh giá của bạn về tài liệu này..." : "Vui lòng đăng nhập để bình luận"}
+                                        disabled={!user}
+                                        className="comment-textarea"
+                                    />
+                                </FormGroup>
                             </div>
-                            <div className="author-info">
-                              <div className="author-name">{cmt.UserEmail}</div>
-                              <div className="comment-date">
-                                {cmt.CreatedAt ? new Date(cmt.CreatedAt).toLocaleString('vi-VN') : 'N/A'}
-                              </div>
-                            </div>
-                          </div>
                         </div>
 
-                        <div className="comment-content">
-                          <div className="comment-text">
-                            {cmt.Content}
-                          </div>
-                          {cmt.Rating > 0 && (
-                            <div className="comment-rating">
-                              <div className="rating-label">Đánh giá:</div>
-                              <StarRatingDisplay rating={cmt.Rating} totalReviews={1} />
+                        <div className="comment-form-row">
+                            <div className="comment-form-column">
+                                <FormGroup className="comment-form-group rating-group">
+                                    <FormLabel>Đánh giá (sao)</FormLabel>
+                                    <div className="rating-input-wrapper">
+                                        <StarRatingInput
+                                            rating={comment.Rating}
+                                            onChange={(rating) => setComment({ ...comment, Rating: rating })}
+                                        />
+                                    </div>
+                                </FormGroup>
                             </div>
-                          )}
                         </div>
-                      </div>
-                    ))}
 
-                    {comments.length > (pdfData ? 1 : 5) && (
-                      <div className="view-more-comments">
-                        <CustomButton
-                          variant="outline-secondary"
-                          size="sm"
-                          onClick={() => navigate(`/postcommentdetail/${id}`)}
-                          className="view-all-btn"
-                        >
-                          <span className="icon-plus-circle"></span>
-                          <span>Xem tất cả {comments.length} bình luận</span>
-                        </CustomButton>
-                      </div>
+                        <div className="form-actions">
+                            <CustomButton
+                                type="submit"
+                                variant="primary"
+                                disabled={!user || !comment.Content.trim()}
+                                className="submit-comment-btn"
+                            >
+                                <span className="icon-send"></span>
+                                <span>Gửi bình luận</span>
+                            </CustomButton>
+                        </div>
+                    </CustomForm>
+                </div>
+                
+                <div className="comments-display">
+                    {comments.length > 0 ? (
+                        <div className="comments-container">
+                            {comments.slice(0, pdfData ? 1 : 5).map((cmt) => (
+                                <div key={cmt.CommentId || cmt.UserId + cmt.CreatedAt} className="comment-card">
+                                    <div className="comment-header">
+                                        <div className="comment-author">
+                                            <div className="author-avatar">
+                                                <span className="icon-person-circle"></span>
+                                            </div>
+                                            <div className="author-info-comment">
+                                                <div className="author-name-comment">{cmt.UserEmail}</div>
+                                                <div className="comment-date">
+                                                    {cmt.CreatedAt ? new Date(cmt.CreatedAt).toLocaleString('vi-VN') : 'N/A'}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="comment-content">
+                                        <div className="comment-text">
+                                            {cmt.Content}
+                                        </div>
+                                        {cmt.Rating > 0 && (
+                                            <div className="comment-rating">
+                                                <div className="rating-label">Đánh giá:</div>
+                                                <StarRatingDisplay rating={cmt.Rating} totalReviews={1} />
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+
+                            {comments.length > (pdfData ? 1 : 5) && (
+                                <div className="view-more-comments">
+                                    <CustomButton
+                                        variant="outline-secondary"
+                                        size="sm"
+                                        onClick={() => navigate(`/postcommentdetail/${id}`)}
+                                        className="view-all-btn"
+                                    >
+                                        <span className="icon-plus-circle"></span>
+                                        <span>Xem tất cả {comments.length} bình luận</span>
+                                    </CustomButton>
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <div className="no-comments">
+                            <div className="no-comments-icon">
+                                <span className="icon-chat-left-text"></span>
+                            </div>
+                            <div className="no-comments-text">
+                                <h5>Chưa có bình luận nào</h5>
+                                <p>Hãy là người đầu tiên chia sẻ đánh giá về tài liệu này!</p>
+                            </div>
+                        </div>
                     )}
-                  </div>
-                ) : (
-                  <div className="no-comments">
-                    <div className="no-comments-icon">
-                      <span className="icon-chat-left-text"></span>
-                    </div>
-                    <div className="no-comments-text">
-                      <h5>Chưa có bình luận nào</h5>
-                      <p>Hãy là người đầu tiên chia sẻ đánh giá về tài liệu này!</p>
-                    </div>
-                  </div>
-                )}
-              </div>
+                </div>
             </div>
+
           </div>
         </div>
       </div>
@@ -1045,5 +1042,6 @@ function DocumentDetail() {
     </div>
   );
 }
+
 
 export default DocumentDetail;

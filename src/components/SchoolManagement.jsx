@@ -9,6 +9,7 @@ function SchoolManagement() {
   const [formData, setFormData] = useState({ name: '', logo: null, externalUrl: '' });
   const [editingSchool, setEditingSchool] = useState(null);
 
+  
   // Lấy danh sách trường học
   useEffect(() => {
     const fetchSchools = async () => {

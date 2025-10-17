@@ -202,7 +202,7 @@ function Home() {
       }
       setTopDownloadedDoc(topDocData);
 
-      const topInterestDocsResponse = await getTopDownloadedDocumentsList(3);
+      const topInterestDocsResponse = await getTopDownloadedDocumentsList(5);
       let topInterestData = topInterestDocsResponse.data;
       if (topInterestData && Array.isArray(topInterestData.$values)) {
         setTopInterestDocuments(topInterestData.$values);
