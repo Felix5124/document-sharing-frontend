@@ -4,6 +4,8 @@ import { uploadDocument, getCategories } from '../services/api';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import '../styles/components/UploadDocument.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHeading, faParagraph, faFolder, faStar, faPaperclip, faImage, faTags, faCloudArrowUp } from '../utils/icons';
 
 function UploadDocument() {
   const { register, handleSubmit, formState: { errors }, reset, watch, setValue } = useForm({
@@ -150,8 +152,8 @@ function UploadDocument() {
   }
 
   return (
-    <div className="upload-container">
-      <div className="upload-card">
+    <div className="all-container">
+      <div className="all-container-card">
         <h2 className="upload-title">
           <i className="bi bi-upload icon-margin-right"></i> Tải lên tài liệu
         </h2>
@@ -159,7 +161,7 @@ function UploadDocument() {
           <div className="form-group">
             <label className="form-label">Tiêu đề</label>
             <div className="input-wrapper">
-              <i className="bi bi-fonts input-icon"></i>
+              <div className='input-icon'><FontAwesomeIcon icon={faHeading} /></div>
               <input
                 type="text"
                 className="form-input"
@@ -172,7 +174,7 @@ function UploadDocument() {
           <div className="form-group">
             <label className="form-label">Mô tả</label>
             <div className="input-wrapper">
-              <i className="bi bi-text-paragraph input-icon"></i>
+              <div className='input-icon'><FontAwesomeIcon icon={faParagraph} /></div>
               <textarea
                 className="form-input"
                 {...register('Description')}
@@ -182,45 +184,52 @@ function UploadDocument() {
 
           <div className="form-group">
             <label className="form-label">Danh mục</label>
-            <select
-              className="form-select"
-              {...register('CategoryId', {
-                required: 'Vui lòng chọn danh mục',
-                validate: (value) => (value && parseInt(value, 10) !== 0) || 'Vui lòng chọn danh mục',
-              })}
-            >
-              <option value="">Chọn danh mục</option>
-              {Array.isArray(categories) && categories.length > 0 ? (
-                categories.map((category, index) => (
-                  <option key={category.categoryId || index} value={category.categoryId}>
-                    {category.name || `Danh mục ${index + 1}`}
-                  </option>
-                ))
-              ) : (
-                <option disabled>Không có danh mục</option>
-              )}
-            </select>
+            <div className="input-wrapper">
+              <div className="input-icon"><FontAwesomeIcon icon={faFolder} /></div>
+              <select
+                className="form-select"
+                {...register('CategoryId', {
+                  required: 'Vui lòng chọn danh mục',
+                  validate: (value) => (value && parseInt(value, 10) !== 0) || 'Vui lòng chọn danh mục',
+                })}
+              >
+                <option value="">Chọn danh mục</option>
+                {Array.isArray(categories) && categories.length > 0 ? (
+                  categories.map((category, index) => (
+                    <option key={category.categoryId || index} value={category.categoryId}>
+                      {category.name || `Danh mục ${index + 1}`}
+                    </option>
+                  ))
+                ) : (
+                  <option disabled>Không có danh mục</option>
+                )}
+              </select>
+            </div>
             {errors.CategoryId && <p className="error-text">{errors.CategoryId.message}</p>}
           </div>
 
-          <div className="form-group margin-bottom" style={{ marginTop: '10px' }}>
+          <div className="form-group">
             <label className="form-label" htmlFor="tag-input-upload">Tags</label>
-            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-              <input
-                type="text"
-                id="tag-input-upload"
-                className="form-input"
-                style={{ flexGrow: 1, width: '100%', padding: '10px 10px 10px 10px', border: '1px solid #ccc', borderRadius: '4px' }}
-                value={tagInputText}
-                onChange={(e) => setTagInputText(e.target.value)}
-                placeholder="Nhập tên tag rồi nhấn 'Thêm Tag' hoặc Enter"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleAddTag();
-                  }
-                }}
-              />
+            <div className="tag-input-row">
+              <div className="input-wrapper">
+                <div className="input-icon">
+                  <FontAwesomeIcon icon={faTags} />
+                </div>
+                <input
+                  type="text"
+                  id="tag-input-upload"
+                  className="form-input"
+                  value={tagInputText}
+                  onChange={(e) => setTagInputText(e.target.value)}
+                  placeholder="Nhập tên tag rồi nhấn 'Thêm Tag' hoặc Enter"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleAddTag();
+                    }
+                  }}
+                />
+              </div>
               <button
                 type="button"
                 className="tag-button"
@@ -231,30 +240,13 @@ function UploadDocument() {
             </div>
           </div>
 
+
           {currentTags && currentTags.length > 0 && (
-            <div className="tags-display-upload" style={{
-              marginTop: '20px',
-              marginBottom: '15px',
-              padding: '10px',
-              border: '1px solid #e0e0e0',
-              borderRadius: '4px',
-              backgroundColor: '#f9f9f9'
-            }}>
-              <strong style={{ display: 'block', marginBottom: '8px' }}>Tags:</strong>
-              <ul style={{ listStyle: 'none', paddingLeft: '0', margin: '0', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+            <div className="tags-display-upload">
+              <strong>Tags:</strong>
+              <ul>
                 {currentTags.map((tag, index) => (
-                  <li
-                    key={index}
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      background: '#007bff',
-                      color: 'white',
-                      padding: '6px 10px',
-                      borderRadius: '15px',
-                      fontSize: '0.875em'
-                    }}
-                  >
+                  <li key={index}>
                     <span>{tag.label}</span>
                     <button
                       type="button"
@@ -262,16 +254,6 @@ function UploadDocument() {
                         const newTags = currentTags.filter((_, i) => i !== index);
                         setValue('Tags', newTags, { shouldValidate: true, shouldDirty: true });
                         toast.info(`Tag "${tag.label}" đã được xóa.`);
-                      }}
-                      style={{
-                        marginLeft: '10px',
-                        background: 'transparent',
-                        border: 'none',
-                        color: 'white',
-                        cursor: 'pointer',
-                        fontWeight: 'bold',
-                        fontSize: '1.1em',
-                        lineHeight: '1'
                       }}
                       aria-label={`Xóa tag ${tag.label}`}
                     >
@@ -287,7 +269,7 @@ function UploadDocument() {
           <div className="form-group">
             <label className="form-label">Điểm yêu cầu</label>
             <div className="input-wrapper">
-              <i className="bi bi-star input-icon"></i>
+              <div className="input-icon"><FontAwesomeIcon icon={faStar} /></div>
               <input
                 type="number"
                 className="form-input"
@@ -304,7 +286,7 @@ function UploadDocument() {
           <div className="form-group">
             <label className="form-label">File tài liệu</label>
             <div className="input-wrapper">
-              <i className="bi bi-paperclip input-icon"></i>
+              <div className="input-icon"><FontAwesomeIcon icon={faPaperclip} /></div>
               <input
                 type="file"
                 className="form-input"
@@ -318,9 +300,7 @@ function UploadDocument() {
           <div className="form-group margin-bottom">
             <label className="form-label">Ảnh bìa (JPG, PNG, GIF - tùy chọn)</label>
             <div className="input-wrapper file-input-group">
-              <span className="file-input-icon">
-                <i className="bi bi-image"></i>
-              </span>
+              <div className="input-icon"> <FontAwesomeIcon icon={faImage} /></div>
               <input
                 type="file"
                 className="form-input file-input"
@@ -331,22 +311,13 @@ function UploadDocument() {
             {previewCover && (
               <div className="preview-container">
                 <p>Xem trước ảnh bìa:</p>
-                <img
-                  src={previewCover}
-                  alt="Xem trước ảnh bìa"
-                  style={{
-                    maxWidth: '200px',
-                    maxHeight: '200px',
-                    objectFit: 'cover',
-                    border: '1px solid #ddd',
-                  }}
-                />
+                <img src={previewCover} alt="Xem trước ảnh bìa" />
               </div>
             )}
           </div>
 
           <button type="submit" className="submit-button">
-            <i className="bi bi-cloud-upload icon-margin-right"></i> Tải lên
+            Tải lên
           </button>
         </form>
       </div>

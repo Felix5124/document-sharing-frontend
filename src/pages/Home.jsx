@@ -17,6 +17,20 @@ import { getFullImageUrl } from '../utils/imageUtils';
 import useOnScreen from '../hooks/useOnScreen';
 import { useRef } from 'react';
 import '../styles/pages/Home.css';
+import {
+  faMagnifyingGlass,
+  faUser,
+  faCalendarDays,
+  faDownload,
+  faChartLine,
+  faStar,
+  faCommentDots,
+  faCircleExclamation,
+  faSchool,
+  faFileLines,
+  faUsers
+} from '@fortawesome/free-solid-svg-icons';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 // Component Banner riêng
@@ -267,7 +281,7 @@ function Home() {
                 {doc.title}
               </h5>
               <span className="document-download">
-                <span className="icon-download"></span>
+                <FontAwesomeIcon icon={faDownload} className="icon-download" />
                 {doc.downloadCount}
               </span>
             </div>
@@ -278,11 +292,12 @@ function Home() {
             </p>
             <div className="document-meta">
               <div className="meta-author" title={doc.email ? `Người đăng: ${doc.email}` : 'Không xác định'}>
-                <span className="icon-user"></span>
+                <FontAwesomeIcon icon={faUser} />
+
                 {doc.email || 'Không xác định'}
               </div>
               <div className="meta-date">
-                <span className="icon-calendar"></span>
+                <FontAwesomeIcon icon={faCalendarDays} />
                 {new Date(doc.uploadedAt).toLocaleDateString()}
               </div>
             </div>
@@ -384,8 +399,9 @@ function Home() {
               {doc.title.length > 20 ? `${doc.title.slice(0, 17)}...` : doc.title}
             </h6>
             <div className="item-meta">
+                {doc.uploadedByUser?.email || doc.email || 'Ẩn danh'}
               <span className="item-download">
-                <span className="icon-download"></span>
+                <FontAwesomeIcon icon={faDownload} />
                 {doc.downloadCount}
               </span>
             </div>
@@ -422,7 +438,7 @@ function Home() {
       <div className="top-interest-documents-card">
         <div className="top-interest-header">
           <h5 className="top-interest-title">
-            <i className="icon-graph"></i>
+            <FontAwesomeIcon icon={faChartLine} />
             Tài liệu được quan tâm nhiều
           </h5>
         </div>
@@ -445,9 +461,8 @@ function Home() {
             <div className="search-filter-group">
               <div className="search-wrapper">
                 <div className="search-group">
-                  <i className="icon-search">
-                    <FontAwesomeIcon icon="fa-solid fa-magnifying-glass" />
-                  </i>
+                  <FontAwesomeIcon icon={faMagnifyingGlass} className='icon-search' />
+
                   <input
                     type="text"
                     className="search-input"
@@ -539,7 +554,7 @@ function Home() {
                 </>
               ) : (
                 <div className="empty-view">
-                  <i className="icon-empty"></i>
+                  <FontAwesomeIcon icon={faCircleExclamation} size="2x" />
                   <p>Không có tài liệu nào để hiển thị.</p>
                 </div>
               )}
@@ -562,7 +577,8 @@ function Home() {
             </div>
           ) : (
             <div className="empty-view">
-              <i className="icon-empty-school"></i>
+              <FontAwesomeIcon icon={faSchool} size="2x" />
+
               <p>Không có trường đại học nào để hiển thị.</p>
             </div>
           )} */}
@@ -578,7 +594,7 @@ function Home() {
               <ContributorColumn
                 title="Người bình luận nhiều nhất"
                 data={topCommenter}
-                icon="icon-comment"
+                icon={<FontAwesomeIcon icon={faCommentDots} />}
                 statLabel="Số bình luận"
                 statValue={topCommenter?.commentCount}
               />
@@ -587,7 +603,7 @@ function Home() {
               <ContributorColumn
                 title="Người điểm cao nhất"
                 data={topPointsUser}
-                icon="icon-star"
+                icon={<FontAwesomeIcon icon={faStar} />}
                 statLabel="Điểm"
                 statValue={topPointsUser?.points}
               />
@@ -596,6 +612,7 @@ function Home() {
               <ContributorColumn
                 title="Tài liệu tải nhiều nhất"
                 data={topDownloadedDoc}
+                icon={<FontAwesomeIcon icon={faDownload} />}
                 statLabel="Lượt tải"
                 statValue={topDownloadedDoc?.downloadCount}
                 linkTo={topDownloadedDoc ? `/document/${topDownloadedDoc.documentId}` : null}

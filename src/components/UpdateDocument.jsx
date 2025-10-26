@@ -199,7 +199,7 @@ function UpdateDocument() {
   if (loading || !document) return <div className="loading-display">Đang tải...</div>;
 
   return (
-    <div className="upload-container">
+    <div className="update-container">
       <div className="upload-card">
         <h2 className="upload-title">
           <i className="bi bi-pencil-square icon-margin-right"></i> Cập nhật tài liệu

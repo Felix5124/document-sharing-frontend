@@ -60,9 +60,9 @@ function Notifications() {
   };
 
   return (
-    <div className="notifications-container">
-      <div className="notifications-card">
-        <h2 className="notifications-title">
+    <div className="all-container">
+      <div className="all-container-card">
+        <h2 className="upload-title">
           <i className="bi bi-bell icon-margin-right"></i> Thông báo
         </h2>
         {loading ? (

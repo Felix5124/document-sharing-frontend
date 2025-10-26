@@ -50,9 +50,10 @@ body {
    2. Page Layout
    ========================================================================== */
 
-.rankings-page {
-  max-width: 1200px;
-  margin: 40px auto;
+.rankings-page {  
+  max-width: 800px;
+  background: linear-gradient(180deg, #ffffff 0%, #f9fafb 100%);
+  margin: 24px auto;
   padding: 0 20px;
 }
 

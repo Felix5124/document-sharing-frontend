@@ -1,98 +1,5 @@
-/* Icon margin classes */
-.icon-margin-right {
-  margin-right: 0.5rem;
-}
 
-.icon-margin-left {
-  margin-left: 0.5rem;
-}
-
-/* Hiệu ứng fade-in cho từng hàng */
-.fade-in {
-  opacity: 0;
-  transform: translateY(10px);
-  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-}
-
-.fade-in.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Admin Section bao quanh */
-.admin-section {
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e5e7eb;
-  transition: box-shadow 0.3s ease;
-}
-
-.admin-section:hover {
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-}
-
-
-/* Table wrapper */
-.admin-table-wrapper {
-  overflow-x: auto;
-  border-radius: 8px;
-  background: #fafafa;
-}
-
-/* Bảng admin */
-.admin-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  background: #ffffff;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-.admin-table th,
-.admin-table td {
-  padding: 16px 20px;
-  text-align: left;
-  font-size: 0.95rem;
-  color: #374151;
-}
-
-.admin-table th {
-  background: linear-gradient(90deg, #4B5EAA 0%, #2A3F8A 100%);
-  color: #ffffff;
-  font-weight: 600;
-  text-transform: uppercase;
-  font-size: 0.9rem;
-}
-
-.admin-table tr {
-  border-bottom: 1px solid #e5e7eb;
-  transition: background 0.3s ease, transform 0.3s ease;
-}
-
-.admin-table tr:hover {
-  background: #f5faff;
-  transform: scale(1.01);
-}
-
-/* Hiệu ứng delay cho từng hàng */
-.admin-table tr:nth-child(1) { transition-delay: 0.1s; }
-.admin-table tr:nth-child(2) { transition-delay: 0.2s; }
-.admin-table tr:nth-child(3) { transition-delay: 0.3s; }
-
-/* Badge trạng thái */
-.status-badge {
-  padding: 6px 14px;
-  border-radius: 12px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
+/* Base status-badge moved to GlobalStyles.css */
 
 .status-badge.locked {
   background: #fee2e2;
@@ -146,20 +53,7 @@
   box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
 }
 
-/* Empty State */
-.empty-state {
-  text-align: center;
-  padding: 40px 0;
-  background: #f9fafb;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-.empty-icon {
-  font-size: 3rem;
-  color: #9ca3af;
-  margin-bottom: 16px;
-}
+/* Empty state moved to GlobalStyles.css */
 
 .empty-state p {
   font-size: 1.1rem;

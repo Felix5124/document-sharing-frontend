@@ -17,53 +17,12 @@
   transform: translateY(-2px);
 }
 
-/* Utility classes để thay thế Bootstrap */
-.icon-margin-right {
-  margin-right: 0.5rem;
-}
-
 .icon-margin-right-sm {
   margin-right: 0.25rem;
 }
 
 .margin-right-sm {
   margin-right: 0.5rem;
-}
-
-/* Loading States */
-.loading-container {
-  text-align: center;
-  padding: 48px 24px;
-  background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  margin: 20px 0;
-}
-
-.spinner {
-  width: 48px;
-  height: 48px;
-  border: 4px solid #e5e7eb;
-  border-top: 4px solid #dc2626;
-  border-radius: 50%;
-  animation: spin 1s ease-in-out infinite;
-  margin: 0 auto;
-}
-
-.loading-text {
-  margin-top: 20px;
-  color: #6b7280;
-  font-size: 1.1rem;
-  font-weight: 500;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
 }
 
 /* Admin Table Wrapper */
@@ -288,50 +247,7 @@
   margin-left: 6px;
 }
 
-/* Fade-in Animation */
-.fade-in {
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
-}
-
-.fade-in.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Staggered animation for table rows */
-.document-table tbody tr:nth-child(1) .fade-in {
-  transition-delay: 0.1s;
-}
-
-.document-table tbody tr:nth-child(2) .fade-in {
-  transition-delay: 0.2s;
-}
-
-.document-table tbody tr:nth-child(3) .fade-in {
-  transition-delay: 0.3s;
-}
-
-.document-table tbody tr:nth-child(4) .fade-in {
-  transition-delay: 0.4s;
-}
-
-.document-table tbody tr:nth-child(5) .fade-in {
-  transition-delay: 0.5s;
-}
-
-/* Empty State */
-.empty-state {
-  text-align: center;
-  padding: 64px 24px;
-  background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
-  border-radius: 12px;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
-  margin-top: 24px;
-  position: relative;
-  overflow: hidden;
-}
+/* Empty State moved to GlobalStyles.css */
 
 .empty-icon {
   font-size: 4rem;
@@ -349,13 +265,6 @@
   50% {
     transform: translateY(-10px);
   }
-}
-
-.empty-state p {
-  font-size: 1.2rem;
-  color: #6b7280;
-  margin: 0;
-  font-weight: 500;
 }
 
 /* Success Animation for Actions */
@@ -392,167 +301,10 @@
   }
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .admin-section {
-    padding: 16px;
-    margin-bottom: 16px;
-  }
-
-  .document-table th,
-  .document-table td {
-    padding: 12px 16px;
-    font-size: 0.9rem;
-  }
-
-  .action-button {
-    padding: 6px 12px;
-    font-size: 0.8rem;
-  }
-
-  .action-container {
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .empty-state {
-    padding: 48px 16px;
-  }
-
-  .empty-icon {
-    font-size: 3rem;
-  }
-
-  .empty-state p {
-    font-size: 1.1rem;
-  }
-
-  .loading-container {
-    padding: 32px 16px;
-  }
-}
-
-@media (max-width: 576px) {
-  .admin-section {
-    padding: 12px;
-  }
-
-  .document-table th,
-  .document-table td {
-    padding: 8px 12px;
-    font-size: 0.85rem;
-  }
-
-  .action-button {
-    padding: 4px 8px;
-    font-size: 0.75rem;
-  }
-
-  .admin-table-wrapper {
-    border-radius: 8px;
-  }
-
-  .document-table {
-    border-radius: 8px;
-  }
-
-  .document-table th:first-child,
-  .document-table th:last-child {
-    border-radius: 8px 8px 0 0;
-  }
-
-  .download-count {
-    font-size: 0.75rem;
-    padding: 2px 8px;
-  }
-
-  .status-badge {
-    font-size: 0.7rem;
-    padding: 4px 8px;
-  }
-}
-
 /* Focus Styles for Accessibility */
 .action-button:focus {
   outline: 2px solid #dc2626;
   outline-offset: 2px;
-}
-
-/* High Contrast Mode Support */
-@media (prefers-contrast: high) {
-  .admin-section {
-    border: 2px solid #000000;
-  }
-
-  .lock-button,
-  .delete-button {
-    background: #cc0000;
-    border: 2px solid #000000;
-  }
-
-  .unlock-button {
-    background: #008000;
-    border: 2px solid #000000;
-  }
-
-  .empty-state {
-    border: 2px solid #666666;
-  }
-}
-
-/* Dark Mode Support */
-@media (prefers-color-scheme: dark) {
-  .admin-section {
-    background: #1f2937;
-    color: #f3f4f6;
-  }
-
-  .document-table {
-    background: #1f2937;
-  }
-
-  .document-table td {
-    color: #f3f4f6;
-    border-bottom-color: #374151;
-  }
-
-  .document-table tbody tr:hover {
-    background: linear-gradient(90deg, #7f1d1d 0%, #991b1b 100%);
-  }
-
-  .empty-state {
-    background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
-    color: #d1d5db;
-  }
-
-  .loading-container {
-    background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
-  }
-}
-
-/* Print Styles */
-@media print {
-  .admin-section {
-    box-shadow: none;
-    border: 1px solid #000000;
-    page-break-inside: avoid;
-  }
-
-  .action-button {
-    display: none;
-  }
-
-  .document-table {
-    box-shadow: none;
-  }
-
-  .empty-state {
-    display: none;
-  }
-
-  .loading-container {
-    display: none;
-  }
 }
 
 /* Custom Scrollbar for Table Wrapper */
@@ -591,14 +343,4 @@
 
 .document-table tbody tr.pending-row {
   background: rgba(245, 158, 11, 0.05);
-}
-
-/* Enhanced Loading State */
-.loading-container.enhanced {
-  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
-}
-
-.loading-container.enhanced .spinner {
-  border-top-color: #dc2626;
-  border-right-color: #dc2626;
 }

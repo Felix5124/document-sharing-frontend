@@ -94,7 +94,7 @@ function Login() {
               <FontAwesomeIcon icon={faEnvelope} className="input-icon" />
               <input
                 type="email"
-                className="form-control"
+                className="form-input"
                 placeholder='Nhập email của bạn'
                 {...formRegister('Email', {
                   required: 'Vui lòng nhập email',
@@ -113,7 +113,7 @@ function Login() {
               <FontAwesomeIcon icon={faLock} className="input-icon" />
               <input
                 type={showPassword ? "text" : "password"}
-                className="form-control"
+                className="form-input"
                 placeholder='Nhập mật khẩu của bạn'
                 {...formRegister('Password', { required: 'Vui lòng nhập mật khẩu' })}
               />

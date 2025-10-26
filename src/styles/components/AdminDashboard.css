@@ -111,19 +111,7 @@
   background: #f9fafb;
 }
 
-/* Admin Section */
-.admin-section {
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e5e7eb;
-  transition: box-shadow 0.3s ease;
-}
-
-.admin-section:hover {
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-}
+/* Admin Section moved to GlobalStyles.css */
 
 /* Section Title */
 .section-title {
@@ -137,72 +125,11 @@
   padding-bottom: 10px;
 }
 
-/* Admin Table */
-.admin-table-wrapper {
-  overflow-x: auto;
-  border-radius: 8px;
-  background: #fafafa;
-}
+/* Admin table moved to GlobalStyles.css */
 
-.admin-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  background: #ffffff;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
+/* Stagger delay moved to GlobalStyles.css */
 
-.admin-table th,
-.admin-table td {
-  padding: 16px 20px;
-  text-align: left;
-  font-size: 0.95rem;
-  color: #374151;
-}
-
-.admin-table th {
-  background: linear-gradient(90deg, #4B5EAA 0%, #2A3F8A 100%);
-  color: #ffffff;
-  font-weight: 600;
-  text-transform: uppercase;
-  font-size: 0.9rem;
-}
-
-.admin-table tr {
-  border-bottom: 1px solid #e5e7eb;
-  transition: background 0.3s ease, transform 0.3s ease;
-}
-
-.admin-table tr:hover {
-  background: #f5faff;
-  transform: scale(1.01);
-}
-
-/* Stagger Effect for Table Rows */
-.admin-table tr:nth-child(1) {
-  transition-delay: 0.1s;
-}
-
-.admin-table tr:nth-child(2) {
-  transition-delay: 0.2s;
-}
-
-.admin-table tr:nth-child(3) {
-  transition-delay: 0.3s;
-}
-
-/* Status Badge */
-.status-badge {
-  padding: 6px 14px;
-  border-radius: 12px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
+/* Base status-badge moved to GlobalStyles.css */
 
 .status-locked {
   background: #fee2e2;

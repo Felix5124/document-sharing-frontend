@@ -1,11 +1,11 @@
 /* Container & Card */
-.post-page-container {
+.all-container {
   padding: 1rem;
   display: flex;
   justify-content: center;
 }
 
-.post-page-card {
+.all-container-card {
   width: 100%;
   max-width: 800px;
   background-color: #ffffff;
@@ -41,36 +41,11 @@
   margin-bottom: 1.25rem;
 }
 
-.form-label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-}
 
-.input-wrapper {
-  position: relative;
-}
-
-.form-input {
-  width: 100%;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid transparent;
-  border-radius: 6px;
-  font-size: 1rem;
-  resize: vertical;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: var(--color-hover);
-  box-shadow: 0 0 4px rgba(230, 173, 41, 0.3);
-}
 
 /* Buttons */
 .btn-submit,
-.btn-submit-comment,
-.btn-comment {
+.btn-submit-comment {
   background-color: var(--color-button);
   color: white;
   align-self: flex-end;
@@ -90,7 +65,7 @@
 .btn-comment {
   align-self: flex-end;
   margin-top: 0.5rem;
-  background-color: var(--color-button);
+  background-color: #079d6e;
   color: #fff;
   border: none;
   padding: 0.45rem 0.85rem;

@@ -1,11 +1,32 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import { getUser, updateUser, getUploadCount, uploadAvatar, deleteDocument, getDownloads, getSchools } from '../services/api';
+import {
+  getUser,
+  updateUser,
+  getUploadCount,
+  uploadAvatar,
+  deleteDocument,
+  getDownloads,
+  getSchools
+} from '../services/api';
 import { toast } from 'react-toastify';
 import Achievements from '../components/Achievements';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faUserCircle,
+  faCamera,
+  faUser,
+  faEnvelope,
+  faBuilding,
+  faStar,
+  faAward,
+  faCheckCircle,
+  faCloudUploadAlt,
+  faCloudDownloadAlt,
+  faTrash,
+} from '@fortawesome/free-solid-svg-icons';
 
 import '../styles/pages/Profile.css';
 
@@ -92,11 +113,12 @@ function Profile() {
 
   const handleDeleteDocument = async (documentId) => {
     const confirmDelete = window.confirm('Bạn có chắc chắn muốn xóa tài liệu này? Hành động này không thể hoàn tác.');
-    
     if (confirmDelete) {
       try {
         await deleteDocument(documentId);
-        setUploads((prevUploads) => prevUploads.filter(upload => upload.documentId !== documentId));
+        setUploads((prevUploads) =>
+          prevUploads.filter(upload => upload.documentId !== documentId)
+        );
         setUploadCount((prevCount) => prevCount - 1);
         toast.success('Xóa tài liệu thành công.');
       } catch (error) {
@@ -109,39 +131,45 @@ function Profile() {
   if (!userData) return <div>Đang tải...</div>;
 
   return (
-    <div className="profile-container">
-      <div className="profile-card">
-        <h2 className="profile-title">
-          <span className="icon icon-person-circle"></span> Hồ sơ cá nhân
+    <div className="all-container">
+      <div className="all-container-card">
+        <h2 className="upload-title">
+          <FontAwesomeIcon icon={faUserCircle} /> Hồ sơ cá nhân
         </h2>
+
         <div className="profile-content">
-          <div className="avatar-section" style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
-            <div className="avatar-wrapper" style={{ position: 'relative', width: '200px', height: '200px' }}>
+          <div className="avatar-section">
+            <div className="avatar-wrapper">
               <img
-                src={avatarFile ? URL.createObjectURL(avatarFile) : (userData.avatarUrl ? `https://localhost:7013${userData.avatarUrl}` : '../src/assets/images/anh.png')}
+                src={
+                  avatarFile
+                    ? URL.createObjectURL(avatarFile)
+                    : (userData.avatarUrl
+                      ? `https://localhost:7013${userData.avatarUrl}`
+                      : '../src/assets/images/anh.png')
+                }
                 alt="Avatar"
                 className="avatar-img"
-                style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
                 onError={(e) => (e.target.src = '/default-avatar.png')}
               />
-              <div className="avatar-upload" style={{ position: 'absolute', bottom: '10px', right: '10px', backgroundColor: 'rgba(0, 0, 0, 0.5)', borderRadius: '50%', padding: '8px' }}>
-                <span className="icon-camera-fill" style={{ color: 'white', fontSize: '1.5rem', display: 'inline-block', width: '1.5rem', height: '1.5rem' }}></span>
+              <div className="avatar-upload">
+                <FontAwesomeIcon icon={faCamera} />
                 <input
                   type="file"
                   accept="image/*"
                   className="avatar-input"
                   onChange={handleAvatarChange}
-                  style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer' }}
                 />
               </div>
             </div>
           </div>
+
           <div className="profile-form">
             <form onSubmit={handleSubmit(onSubmit)}>
               <div className="form-group">
                 <label className="form-label">Họ tên</label>
                 <div className="input-wrapper">
-                  <span className="icon-person input-icon"></span>
+                  <FontAwesomeIcon icon={faUser} className="input-icon" />
                   <input
                     type="text"
                     className="form-input"
@@ -151,10 +179,11 @@ function Profile() {
                 </div>
                 {errors.FullName && <p className="error-text">{errors.FullName.message}</p>}
               </div>
+
               <div className="form-group">
                 <label className="form-label">Email</label>
                 <div className="input-wrapper">
-                  <span className="icon-envelope input-icon"></span>
+                  <FontAwesomeIcon icon={faEnvelope} className="input-icon" />
                   <input
                     type="email"
                     className="form-input"
@@ -163,10 +192,11 @@ function Profile() {
                   />
                 </div>
               </div>
+
               <div className="form-group">
                 <label className="form-label">Trường học</label>
                 <div className="input-wrapper">
-                  <span className="icon-building input-icon"></span>
+                  <FontAwesomeIcon icon={faBuilding} className="input-icon" />
                   <select
                     className="form-input"
                     defaultValue={userData.schoolId || 0}
@@ -176,7 +206,7 @@ function Profile() {
                     })}
                   >
                     <option value="0">Chọn trường học</option>
-                    {schools.map(school => (
+                    {schools.map((school) => (
                       <option key={school.schoolId} value={school.schoolId}>
                         {school.name}
                       </option>
@@ -185,10 +215,11 @@ function Profile() {
                 </div>
                 {errors.SchoolId && <p className="error-text">{errors.SchoolId.message}</p>}
               </div>
+
               <div className="form-group">
                 <label className="form-label">Điểm tích lũy</label>
                 <div className="input-wrapper">
-                  <span className="icon-star input-icon"></span>
+                  <FontAwesomeIcon icon={faStar} className="input-icon" />
                   <input
                     type="text"
                     className="form-input"
@@ -197,10 +228,11 @@ function Profile() {
                   />
                 </div>
               </div>
+
               <div className="form-group">
                 <label className="form-label">Cấp độ</label>
                 <div className="input-wrapper">
-                  <span className="icon-award input-icon"></span>
+                  <FontAwesomeIcon icon={faAward} className="input-icon" />
                   <input
                     type="text"
                     className="form-input"
@@ -209,43 +241,43 @@ function Profile() {
                   />
                 </div>
               </div>
+
               <button type="submit" className="submit-button">
-                <span className="icon icon-check-circle"></span> Cập nhật
+                <FontAwesomeIcon icon={faCheckCircle} /> Cập nhật
               </button>
             </form>
           </div>
         </div>
+
         <hr className="profile-divider" />
+
         <div className="profile-stats">
-          <h4 className="stats-title">
-            <span className="icon icon-cloud-upload"></span> Tài liệu đã tải lên ({uploadCount})
+          <h4 className="profile-title">
+            <FontAwesomeIcon icon={faCloudUploadAlt} /> Tài liệu đã tải lên ({uploadCount})
           </h4>
-          <ul className="stats-list">
+          <ul className="stats-list-profile">
             {uploads.length > 0 ? (
               uploads.map((upload) => (
-                <li key={upload.documentId} className="stats-item" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
-                  <span
-                    onClick={() => handleDocumentClick(upload.documentId)}
-                    style={{ flex: 1 }}
-                  >
-                    {upload.title} ({upload.fileType}) - {upload.downloadCount} lượt tải - Tải lên: {new Date(upload.uploadedAt).toLocaleString()} - Trạng thái: <span style={{ color: upload.isApproved ? 'green' : 'red' }}>{upload.isApproved ? 'Đã duyệt' : 'Chưa duyệt'}</span>
+                <li
+                  key={upload.documentId}
+                  className="stats-item-profile"
+                  onClick={() => handleDocumentClick(upload.documentId)}
+                >
+                  <span style={{ flex: 1 }}>
+                    {upload.title} ({upload.fileType}) - {upload.downloadCount} lượt tải -
+                    Tải lên: {new Date(upload.uploadedAt).toLocaleString()} - Trạng thái:{' '}
+                    <span style={{ color: upload.isApproved ? 'green' : 'red' }}>
+                      {upload.isApproved ? 'Đã duyệt' : 'Chưa duyệt'}
+                    </span>
                   </span>
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       handleDeleteDocument(upload.documentId);
                     }}
-                    style={{
-                      backgroundColor: '#ff4d4f',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '5px',
-                      padding: '5px 10px',
-                      cursor: 'pointer',
-                      marginLeft: '10px'
-                    }}
+                    className="delete-button"
                   >
-                    <span className="icon icon-trash"></span> Xóa
+                    <FontAwesomeIcon icon={faTrash} /> Xóa
                   </button>
                 </li>
               ))
@@ -254,15 +286,16 @@ function Profile() {
             )}
           </ul>
         </div>
-        <hr className="profile-divider" />
+
+
         <div className="profile-stats">
-          <h4 className="stats-title">
-            <span className="icon icon-cloud-download"></span> Tài liệu đã tải xuống ({downloadCount})
+          <h4 className="profile-title">
+            <FontAwesomeIcon icon={faCloudDownloadAlt} /> Tài liệu đã tải xuống ({downloadCount})
           </h4>
           <ul className="stats-list">
             {downloads.length > 0 ? (
               downloads.map((download) => (
-                <li key={download.documentId} className="stats-item" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <li key={download.documentId} className="stats-item-profile">
                   <span style={{ flex: 1 }}>
                     {download.title} - Tải xuống: {new Date(download.addedAt).toLocaleString()}
                   </span>
@@ -273,7 +306,7 @@ function Profile() {
             )}
           </ul>
         </div>
-        <hr className="profile-divider" />
+
         <div className="profile-achievements">
           <Achievements />
         </div>

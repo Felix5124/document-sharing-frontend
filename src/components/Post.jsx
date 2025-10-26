@@ -98,9 +98,9 @@ const Post = () => {
   };
 
   return (
-    <div className="post-page-container">
-      <div className="post-page-card">
-        <h2 className="post-page-title">
+    <div className="all-container">
+      <div className="all-container-card">
+        <h2 className="upload-title">
           Diễn đàn
         </h2>
 
@@ -119,7 +119,7 @@ const Post = () => {
                   placeholder="Tiêu đề bài viết"
                   value={newPost.title}
                   onChange={e => setNewPost({ ...newPost, title: e.target.value })}
-                  className="form-input"
+                  className="form-input-no-icon"
                   required
                 />
               </div>
@@ -132,7 +132,7 @@ const Post = () => {
                   placeholder="Bạn đang nghĩ gì?"
                   value={newPost.content}
                   onChange={e => setNewPost({ ...newPost, content: e.target.value })}
-                  className="form-input"
+                  className="form-input-no-icon"
                   rows="3"
                   required
                 />

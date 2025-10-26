@@ -48,7 +48,7 @@ function Register() {
               <FontAwesomeIcon icon={faUser} className="input-icon" />
               <input
                 type="text"
-                className="form-control"
+                className="form-input"
                 placeholder='Nhập họ tên của bạn'
                 {...formRegister('FullName', { required: 'Vui lòng nhập họ tên' })}
               />
@@ -61,7 +61,7 @@ function Register() {
               <FontAwesomeIcon icon={faEnvelope} className="input-icon" />
               <input
                 type="email"
-                className="form-control"
+                className="form-input"
                 placeholder='Nhập email của bạn'
                 {...formRegister('Email', {
                   required: 'Vui lòng nhập email',
@@ -80,7 +80,7 @@ function Register() {
               <FontAwesomeIcon icon={faLock} className="input-icon" />
               <input
                 type={showPassword ? "text" : "password"}
-                className="form-control"
+                className="form-input"
                 placeholder='Nhập mật khẩu của bạn'
                 {...formRegister('Password', {
                   required: 'Vui lòng nhập mật khẩu',
@@ -100,7 +100,7 @@ function Register() {
               <FontAwesomeIcon icon={faLock} className="input-icon" />
               <input
                 type={showPasswordAccept ? "text" : "password"}
-                className="form-control"
+                className="form-input"
                 placeholder='Xác nhận mật khẩu của bạn'
                 {...formRegister('ConfirmPassword', {
                   required: 'Vui lòng xác nhận mật khẩu',
