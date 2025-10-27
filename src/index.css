@@ -69,15 +69,6 @@ body {
 .category-wrapper {
   flex: 0 0 200px;
 }
-
-
-.card-title {
-  font-size: 1.3rem;
-  font-weight: 600;
-  color: #111827;
-  margin-bottom: 10px;
-}
-
 .card-description {
   font-size: 0.95rem;
   color: #6b7280;
@@ -462,15 +453,6 @@ body {
   background-color: #f8f9fa;
 }
 
-.school-card .card-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-}
-
-.school-card .card-text {
-  color: #6c757d;
-}
 
 .school-card .btn {
   font-size: 0.875rem;

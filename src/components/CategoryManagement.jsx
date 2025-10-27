@@ -5,6 +5,16 @@ import { getCategories, createCategory, updateCategory, deleteCategory } from '.
 import { toast } from 'react-toastify';
 import { AuthContext } from '../context/AuthContext';
 import useOnScreen from '../hooks/useOnScreen';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faTags,
+  faPlusCircle,
+  faCheckCircle,
+  faXmarkCircle,
+  faPencilAlt,
+  faTrash
+} from '@fortawesome/free-solid-svg-icons';
+
 import '../styles/components/CategoryManagement.css';
 
 function CategoryManagement() {
@@ -99,13 +109,13 @@ function CategoryManagement() {
             className="action-button edit-button margin-right"
             onClick={() => handleEditCategory(category)}
           >
-            <i className="bi bi-pencil icon-margin-right"></i> Sửa
+            <FontAwesomeIcon icon={faPencilAlt} className="icon-margin-right" /> Sửa
           </button>
           <button
             className="action-button delete-button"
             onClick={() => handleDeleteCategory(category.categoryId)}
           >
-            <i className="bi bi-trash icon-margin-right"></i> Xóa
+            <FontAwesomeIcon icon={faTrash} className="icon-margin-right" /> Xóa
           </button>
         </td>
       </tr>
@@ -118,10 +128,6 @@ function CategoryManagement() {
 
   return (
     <div className="admin-section">
-      <h4 className="section-title">
-        <i className="bi bi-tags icon-margin-right"></i> Quản lý thể loại tài liệu
-      </h4>
-
       {/* Form thêm thể loại mới */}
       <div className="category-form margin-bottom">
         <h5>Thêm thể loại mới</h5>
@@ -130,7 +136,7 @@ function CategoryManagement() {
             <label className="form-label">Tên thể loại</label>
             <input
               type="text"
-              className="form-input"
+              className="form-input-no-icon"
               value={newCategory.name}
               onChange={(e) => setNewCategory({ ...newCategory, name: e.target.value })}
               placeholder="Nhập tên thể loại"
@@ -140,14 +146,14 @@ function CategoryManagement() {
             <label className="form-label">Loại</label>
             <input
               type="text"
-              className="form-input"
+              className="form-input-no-icon"
               value={newCategory.type}
               onChange={(e) => setNewCategory({ ...newCategory, type: e.target.value })}
               placeholder="Nhập loại (ví dụ: pdf, doc)"
             />
           </div>
-          <button type="submit" className="submit-button">
-            <i className="bi bi-plus-circle icon-margin-right"></i> Thêm thể loại
+          <button type="submit" className="submit-button btn-cate">
+            <FontAwesomeIcon icon={faPlusCircle} className="icon-margin-right" /> Thêm thể loại
           </button>
         </form>
       </div>
@@ -161,7 +167,7 @@ function CategoryManagement() {
               <label className="form-label">Tên thể loại</label>
               <input
                 type="text"
-                className="form-input"
+                className="form-input-no-icon"
                 value={editingCategory.name}
                 onChange={(e) => setEditingCategory({ ...editingCategory, name: e.target.value })}
               />
@@ -170,20 +176,21 @@ function CategoryManagement() {
               <label className="form-label">Loại</label>
               <input
                 type="text"
-                className="form-input"
+                className="form-input-no-icon"
                 value={editingCategory.type}
                 onChange={(e) => setEditingCategory({ ...editingCategory, type: e.target.value })}
               />
             </div>
             <button type="submit" className="submit-button margin-right">
-              <i className="bi bi-check-circle icon-margin-right"></i> Cập nhật
+              <FontAwesomeIcon icon={faCheckCircle} className="icon-margin-right" /> Cập nhật
+
             </button>
             <button
               type="button"
               className="action-button cancel-button"
               onClick={() => setEditingCategory(null)}
             >
-              <i className="bi bi-x-circle icon-margin-right"></i> Hủy
+              <FontAwesomeIcon icon={faXmarkCircle} className="icon-margin-right" /> Hủy
             </button>
           </form>
         </div>
@@ -209,7 +216,7 @@ function CategoryManagement() {
         </div>
       ) : (
         <div className="empty-state">
-          <i className="bi bi-tags empty-icon"></i>
+          <FontAwesomeIcon icon={faTags} className="empty-icon" />
           <p>Không có thể loại nào để hiển thị.</p>
         </div>
       )}

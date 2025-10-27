@@ -71,15 +71,6 @@
   margin: 24px 0;
 }
 
-/* Form styles */
-.comment-form {
-  margin-bottom: 32px;
-  padding: 20px;
-  background-color: #f9fafb;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-}
-
 /* Comments list */
 .comments-list {
   margin-top: 32px;
@@ -100,11 +91,6 @@
   white-space: pre-line;
 }
 
-.comment-rating {
-  margin-top: 12px;
-  display: flex;
-  align-items: center;
-}
 
 .rating-stars {
   color: #f59e0b;

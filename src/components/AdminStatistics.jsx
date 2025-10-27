@@ -1,6 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
 import useOnScreen from '../hooks/useOnScreen';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faUsers,
+  faFileLines,
+  faDownload,
+  faChartColumn
+} from '@fortawesome/free-solid-svg-icons';
 import '../styles/components/AdminStatistics.css';
 
 const AdminStatistics = () => {
@@ -34,11 +41,9 @@ const AdminStatistics = () => {
         toast.error(err.message);
       }
     };
-
     fetchStatistics();
   }, []);
 
-  // Component cho Stats Card với hiệu ứng fade-in
   const StatsCard = ({ title, value, icon }) => {
     const cardRef = useRef(null);
     const isVisible = useOnScreen(cardRef);
@@ -46,7 +51,7 @@ const AdminStatistics = () => {
     return (
       <div ref={cardRef} className={`stats-card fade-in ${isVisible ? 'visible' : ''}`}>
         <h5 className="card-title">
-          <i className={`bi ${icon} icon-margin`}></i> {title}
+          <FontAwesomeIcon icon={icon} className="icon-margin" /> {title}
         </h5>
         <p className="card-text">{value}</p>
       </div>
@@ -55,29 +60,26 @@ const AdminStatistics = () => {
 
   return (
     <div className="admin-section">
-      <h4 className="section-title">
-        <i className="bi bi-bar-chart-line icon-margin"></i> Thống kê hệ thống
-      </h4>
       <div className="stats-grid">
         <div className="stats-column">
           <StatsCard
             title="Tổng số người dùng"
             value={statistics.totalUsers}
-            icon="bi-people"
+            icon={faUsers}
           />
         </div>
         <div className="stats-column">
           <StatsCard
             title="Tổng số tài liệu"
             value={statistics.totalDocuments}
-            icon="bi-file-earmark"
+            icon={faFileLines}
           />
         </div>
         <div className="stats-column">
           <StatsCard
             title="Tổng số lượt tải về"
             value={statistics.totalDownloads}
-            icon="bi-download"
+            icon={faDownload}
           />
         </div>
       </div>

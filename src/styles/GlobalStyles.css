@@ -243,3 +243,89 @@ body {
   color: #9ca3af;
   margin-bottom: 20px;
 }
+
+/* Admin Section - unified */
+.admin-section {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+@media (max-width: 768px) {
+  .admin-section {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+}
+
+@media (max-width: 576px) {
+  .admin-section {
+    padding: 12px;
+  }
+}
+
+/* Admin Table - unified base */
+.admin-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 0;
+}
+
+.admin-table th {
+  padding: 12px 16px;
+  font-size: 0.95rem;
+  line-height: 1.2;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+}
+.admin-table td {
+  padding: 12px 16px;
+  font-size: 0.95rem;
+  line-height: 1.2;
+  border-bottom: 1px solid #e5e7eb;
+}
+.admin-table th:nth-child(1),
+.admin-table td:nth-child(1) {
+  width: 25%;
+}
+
+.admin-table th:nth-child(2),
+.admin-table td:nth-child(2) {
+  width: 15%;
+}
+
+.admin-table th:nth-child(3),
+.admin-table td:nth-child(3) {
+  width: 5%;
+}
+
+.admin-table th:nth-child(4),
+.admin-table td:nth-child(4) {
+  width: 15%;
+}
+.admin-table th:nth-child(5),
+.admin-table td:nth-child(5) {
+  width: 30%;
+}
+
+.admin-table tr {
+  transition: all 0.3s ease;
+}
+
+.admin-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-table-wrapper {
+  overflow-x: auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+  margin-top: 24px;
+  position: relative;
+}

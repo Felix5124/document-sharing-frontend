@@ -25,7 +25,7 @@
   font-size: 1.5rem;
   font-weight: 700;
   color: #111827;
-  margin-bottom: 32px;
+  margin-bottom: 10px;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -99,11 +99,6 @@
 .profile-form {
   flex: 1;
 }
-
-.form-group {
-  margin-bottom: 20px;
-}
-
 .input-wrapper {
   position: relative;
   display: flex;
@@ -207,34 +202,5 @@
 
   .avatar-section {
     margin: 0 auto 20px;
-  }
-}
-
-@media (max-width: 768px) {
-  .profile-card {
-    padding: 24px;
-  }
-
-  .profile-title {
-    font-size: 1.6rem;
-  }
-}
-
-@media (max-width: 576px) {
-  .profile-container {
-    padding: 24px 16px;
-  }
-
-  .profile-card {
-    padding: 16px;
-  }
-
-  .profile-title {
-    font-size: 1.4rem;
-  }
-
-  .stats-item {
-    padding: 10px;
-    font-size: 0.9rem;
   }
 }

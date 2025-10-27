@@ -5,6 +5,10 @@ import { getPendingDocuments, approveDocument } from '../services/api';
 import { toast } from 'react-toastify';
 import { AuthContext } from '../context/AuthContext';
 import useOnScreen from '../hooks/useOnScreen';
+// ⬆️ Add to top of DocumentApproval.jsx
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheckCircle, faFileCircleCheck, faFolderOpen } from '@fortawesome/free-solid-svg-icons';
+
 import '../styles/components/DocumentApproval.css';
 
 function DocumentApproval() {
@@ -57,7 +61,7 @@ function DocumentApproval() {
             className="action-button approve-button"
             onClick={() => handleApprove(doc.documentId)}
           >
-            <i className="bi bi-check-circle icon-margin-right"></i> Duyệt
+            <FontAwesomeIcon icon={faCheckCircle} className="icon-margin-right" /> Duyệt
           </button>
         </td>
       </tr>
@@ -70,9 +74,6 @@ function DocumentApproval() {
 
   return (
     <div className="admin-section">
-      <h4 className="section-title">
-        <i className="bi bi-file-earmark-check icon-margin-right"></i> Tài liệu chờ duyệt
-      </h4>
       {pendingDocs.length > 0 ? (
         <div className="admin-table-wrapper">
           <table className="admin-table">
@@ -92,7 +93,7 @@ function DocumentApproval() {
         </div>
       ) : (
         <div className="empty-state">
-          <i className="bi bi-folder-x empty-icon"></i>
+          <FontAwesomeIcon icon={faFolderOpen} className="empty-icon" />
           <p>Không có tài liệu chờ duyệt.</p>
         </div>
       )}

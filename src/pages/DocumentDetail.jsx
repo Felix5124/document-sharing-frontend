@@ -146,7 +146,7 @@ const FormGroup = ({ className = "", children }) => {
 };
 
 const FormLabel = ({ htmlFor, children }) => {
-  return <label className="form-label" htmlFor={htmlFor}>{children}</label>;
+  return <label className="form-label form-max" htmlFor={htmlFor}>{children}</label>;
 };
 
 const FormControl = ({ as, id, value, onChange, placeholder, rows }) => {
@@ -707,7 +707,114 @@ function DocumentDetail() {
                 </div>
               )}
             </div>
+            {/* === MAIN LAYOUT GRID: Image/Preview and Info === */}
+            <div className="layout-grid top-section">
 
+              {/* === LEFT COLUMN: Cover Image & Actions === */}
+              <div className="layout-column left-column">
+                <div className="document-cover-container">
+                  <div className="document-cover-section">
+                    <div className="cover-image-wrapper">
+                      <img
+                        src={getFullImageUrl(doc.coverImageUrl)}
+                        alt={doc.title}
+                        className="document-cover-image"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = getFullImageUrl(null);
+                        }}
+                      />
+                      <div className="cover-image-overlay">
+                        <div className="document-type-badge">
+                          {doc.fileType ? doc.fileType.toUpperCase() : 'FILE'}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+
+                </div>
+              </div>
+
+              {/* === RIGHT COLUMN: PDF Preview === */}
+              <div className="layout-column right-column preview-wrapper">
+                {pdfData ? (
+                  <div className="document-preview-section">
+                    <div className="preview-header">
+                      <div className="preview-title">
+                        <FontAwesomeIcon icon={faEye} />
+                        <h5>Xem trước tài liệu (cuộn để xem)</h5>
+                      </div>
+                      <CustomButton variant="outline-danger" size="sm" onClick={handleClosePreview} className="preview-close-btn">
+                        <FontAwesomeIcon icon={faXmark} />
+                        <span>Đóng</span>
+                      </CustomButton>
+                    </div>
+                    <div className="preview-container">
+                      {/* === THAY ĐỔI Ở ĐÂY === */}
+                      <Document file={pdfData} onLoadSuccess={onDocumentLoadSuccess} loading="Đang tải bản xem trước...">
+                        <div className="pdf-pages-container">
+                          {/* Lặp qua để render tối đa 2 trang, cho phép cuộn bên trong */}
+                          {numPages && Array.from(new Array(Math.min(numPages, 2)), (el, index) => (
+                            <Page
+                              key={`page_${index + 1}`}
+                              pageNumber={index + 1}
+                              width={570}
+                              renderTextLayer={false}
+                              renderAnnotationLayer={false}
+                              className="pdf-page"
+                            />
+                          ))}
+                        </div>
+                        {!numPages && <div className="preview-loading">Không thể tải trang.</div>}
+                      </Document>
+                      {/* === KẾT THÚC THAY ĐỔI === */}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="preview-placeholder">
+                    <div className="preview-placeholder-content">
+                      <div className="preview-placeholder-icon">
+                        <span className="icon-eye"></span>
+                      </div>
+                      <h6>Chức năng xem trước PDF</h6>
+                      <p>Khi bạn nhấn nút "Xem Online (PDF)", tài liệu sẽ hiển thị ở đây</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="action-buttons-section">
+              <div className="action-buttons-grid">
+                <CustomButton
+                  variant="outline-secondary"
+                  onClick={handleDownload}
+                  className="action-btn download-btn"
+                >
+                  <FontAwesomeIcon icon={faDownload} />
+                  <div className="btn-content">
+                    <span className="btn-text">Tải xuống</span>
+                    <span className="file-info">{formatFileSize(doc.fileSize || 0)}</span>
+                  </div>
+                </CustomButton>
+
+                <CustomButton
+                  variant="primary"
+                  onClick={handlePreview}
+                  disabled={doc.fileType?.toLowerCase() !== 'pdf'}
+                  className="action-btn preview-btn"
+                >
+                  <span className="btn-text">Xem Online</span>
+                </CustomButton>
+              </div>
+
+              {doc.pointsRequired > 0 && (
+                <div className="points-required-banner">
+                  <FontAwesomeIcon icon={faCoins} />
+                  Cần {doc.pointsRequired} điểm để tải
+                </div>
+              )}
+            </div>
             {/* ... Các section Tài liệu liên quan và Bình luận ... */}
             {relatedDocsByTag && relatedDocsByTag.length > 0 && (
               <div className="related-documents-section">
@@ -819,6 +926,19 @@ function DocumentDetail() {
                 <div className="comment-form-header">
                   <h5>Chia sẻ đánh giá của bạn</h5>
                 </div>
+                <div className="comment-form-row">
+                  <div className="comment-form-column">
+                    <FormGroup className="comment-form-group rating-group">
+                      <FormLabel>Đánh giá (sao)</FormLabel>
+                      <div className="rating-input-wrapper">
+                        <StarRatingInput
+                          rating={comment.Rating}
+                          onChange={(rating) => setComment({ ...comment, Rating: rating })}
+                        />
+                      </div>
+                    </FormGroup>
+                  </div>
+                </div>
                 <CustomForm onSubmit={handleCommentSubmit} className="comment-form">
                   <div className="comment-form-row">
                     <div className="comment-form-column">
@@ -838,19 +958,7 @@ function DocumentDetail() {
                     </div>
                   </div>
 
-                  <div className="comment-form-row">
-                    <div className="comment-form-column">
-                      <FormGroup className="comment-form-group rating-group">
-                        <FormLabel>Đánh giá (sao)</FormLabel>
-                        <div className="rating-input-wrapper">
-                          <StarRatingInput
-                            rating={comment.Rating}
-                            onChange={(rating) => setComment({ ...comment, Rating: rating })}
-                          />
-                        </div>
-                      </FormGroup>
-                    </div>
-                  </div>
+
 
                   <div className="form-actions">
                     <CustomButton
@@ -929,113 +1037,7 @@ function DocumentDetail() {
 
           </div>
         </div>
-        {/* === MAIN LAYOUT GRID: Image/Preview and Info === */}
-        <div className="layout-grid top-section">
 
-          {/* === LEFT COLUMN: Cover Image & Actions === */}
-          <div className="layout-column left-column">
-            <div className="document-cover-container">
-              <div className="document-cover-section">
-                <div className="cover-image-wrapper">
-                  <img
-                    src={getFullImageUrl(doc.coverImageUrl)}
-                    alt={doc.title}
-                    className="document-cover-image"
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = getFullImageUrl(null);
-                    }}
-                  />
-                  <div className="cover-image-overlay">
-                    <div className="document-type-badge">
-                      {doc.fileType ? doc.fileType.toUpperCase() : 'FILE'}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="action-buttons-section">
-                <div className="action-buttons-grid">
-                  <CustomButton
-                    variant="outline-secondary"
-                    onClick={handleDownload}
-                    className="action-btn download-btn"
-                  >
-                    <FontAwesomeIcon icon={faDownload} />
-                    <div className="btn-content">
-                      <span className="btn-text">Tải xuống</span>
-                      <span className="file-info">{formatFileSize(doc.fileSize || 0)}</span>
-                    </div>
-                  </CustomButton>
-
-                  <CustomButton
-                    variant="primary"
-                    onClick={handlePreview}
-                    disabled={doc.fileType?.toLowerCase() !== 'pdf'}
-                    className="action-btn preview-btn"
-                  >
-                    <span className="btn-text">Xem Online</span>
-                  </CustomButton>
-                </div>
-
-                {doc.pointsRequired > 0 && (
-                  <div className="points-required-banner">
-                    <FontAwesomeIcon icon={faCoins} />
-                    Cần {doc.pointsRequired} điểm để tải
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* === RIGHT COLUMN: PDF Preview === */}
-          <div className="layout-column right-column preview-wrapper">
-            {pdfData ? (
-              <div className="document-preview-section">
-                <div className="preview-header">
-                  <div className="preview-title">
-                    <FontAwesomeIcon icon={faEye} />
-                    <h5>Xem trước tài liệu (cuộn để xem)</h5>
-                  </div>
-                  <CustomButton variant="outline-danger" size="sm" onClick={handleClosePreview} className="preview-close-btn">
-                    <FontAwesomeIcon icon={faXmark} />
-                    <span>Đóng</span>
-                  </CustomButton>
-                </div>
-                <div className="preview-container">
-                  {/* === THAY ĐỔI Ở ĐÂY === */}
-                  <Document file={pdfData} onLoadSuccess={onDocumentLoadSuccess} loading="Đang tải bản xem trước...">
-                    <div className="pdf-pages-container">
-                      {/* Lặp qua để render tối đa 2 trang, cho phép cuộn bên trong */}
-                      {numPages && Array.from(new Array(Math.min(numPages, 2)), (el, index) => (
-                        <Page
-                          key={`page_${index + 1}`}
-                          pageNumber={index + 1}
-                          width={570}
-                          renderTextLayer={false}
-                          renderAnnotationLayer={false}
-                          className="pdf-page"
-                        />
-                      ))}
-                    </div>
-                    {!numPages && <div className="preview-loading">Không thể tải trang.</div>}
-                  </Document>
-                  {/* === KẾT THÚC THAY ĐỔI === */}
-                </div>
-              </div>
-            ) : (
-              <div className="preview-placeholder">
-                <div className="preview-placeholder-content">
-                  <div className="preview-placeholder-icon">
-                    <span className="icon-eye"></span>
-                  </div>
-                  <h6>Chức năng xem trước PDF</h6>
-                  <p>Khi bạn nhấn nút "Xem Online (PDF)", tài liệu sẽ hiển thị ở đây</p>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
       </div>
 
       <CustomModal

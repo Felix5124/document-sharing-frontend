@@ -1,13 +1,6 @@
 /* AdminStatistics Component Styles */
 
-/* Admin Section */
-.admin-section {
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-  padding: 24px;
-  margin-bottom: 24px;
-}
+/* Admin Section moved to GlobalStyles.css */
 
 
 /* Statistics Card */
@@ -120,76 +113,6 @@
   font-size: 1.5rem;
   opacity: 0.8;
 }
-
-/* Responsive Design */
-@media (max-width: 992px) {
-  .stats-column {
-    flex: 0 0 50%;
-    max-width: 50%;
-  }
-  
-  .stats-card .card-text {
-    font-size: 2.2rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .admin-section {
-    padding: 16px;
-    margin-bottom: 16px;
-  }
-  
-  .section-title {
-    font-size: 1.5rem;
-    margin-bottom: 16px;
-  }
-  
-  .stats-column {
-    flex: 0 0 100%;
-    max-width: 100%;
-  }
-  
-  .stats-card {
-    padding: 20px;
-  }
-  
-  .stats-card .card-title {
-    font-size: 1.1rem;
-  }
-  
-  .stats-card .card-text {
-    font-size: 2rem;
-  }
-  
-  .stats-grid > * {
-    margin-bottom: 16px;
-  }
-}
-
-@media (max-width: 576px) {
-  .section-title {
-    font-size: 1.3rem;
-    flex-direction: column;
-    text-align: center;
-    gap: 8px;
-  }
-  
-  .stats-card {
-    padding: 16px;
-  }
-  
-  .stats-card .card-title {
-    font-size: 1rem;
-    flex-direction: column;
-    gap: 4px;
-  }
-  
-  .stats-card .card-text {
-    font-size: 1.8rem;
-  }
-}
-
-
 /* Hover effects for better interactivity */
 .stats-card::before {
   content: '';

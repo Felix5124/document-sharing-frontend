@@ -116,19 +116,6 @@
   flex-direction: column;
   flex: 1;
 }
-
-.card-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin-bottom: 10px;
-  color: #1F2937;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
 .card-description {
   color: #6B7280;
   font-size: 0.9rem;

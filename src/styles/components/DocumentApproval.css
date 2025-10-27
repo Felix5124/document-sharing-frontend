@@ -1,21 +1,7 @@
 /* DocumentApproval Component Styles */
 
-/* Admin Section - Specialized for Document Approval */
-.admin-section {
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-  padding: 24px;
-  margin-bottom: 24px;
-  transition: box-shadow 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
+/* Admin Section moved to GlobalStyles.css */
 
-.admin-section:hover {
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
-  transform: translateY(-2px);
-}
 
 /* Admin Table Wrapper */
 .admin-table-wrapper {
@@ -23,20 +9,7 @@
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   background: #ffffff;
-  margin-top: 24px;
   position: relative;
-}
-
-.admin-table-wrapper::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, #10b981 0%, #059669 50%, #10b981 100%);
-  background-size: 200% 100%;
-  animation: shimmer 2s ease-in-out infinite;
 }
 
 @keyframes shimmer {
@@ -48,53 +21,27 @@
   }
 }
 
-/* Admin Table */
-.admin-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  background: #ffffff;
-  border-radius: 12px;
-  overflow: hidden;
-  margin: 0;
-}
+/* Admin Table base moved to GlobalStyles.css */
 
-.admin-table th,
-.admin-table td {
-  padding: 16px 20px;
-  text-align: left;
-  font-size: 0.95rem;
-  border-bottom: 1px solid #e5e7eb;
-  transition: all 0.3s ease;
-}
 
 .admin-table th {
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  color: #ffffff;
-  font-weight: 600;
-  text-transform: uppercase;
-  font-size: 0.9rem;
-  letter-spacing: 0.5px;
   position: relative;
 }
 
 .admin-table th:first-child {
   border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
 }
 
 .admin-table th:last-child {
   border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
 }
 
 .admin-table tr {
   transition: all 0.3s ease;
   position: relative;
-}
-
-.admin-table tbody tr:hover {
-  background: linear-gradient(90deg, #f0fdf4 0%, #ecfdf5 100%);
-  transform: scale(1.01);
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.1);
 }
 
 .admin-table tbody tr:last-child td:first-child {

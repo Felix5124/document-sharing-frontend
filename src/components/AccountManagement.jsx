@@ -5,6 +5,14 @@ import { getAllUsers, lockUser } from '../services/api';
 import { toast } from 'react-toastify';
 import { AuthContext } from '../context/AuthContext';
 import useOnScreen from '../hooks/useOnScreen';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faLock,
+  faLockOpen,
+  faUsers,
+  faUserSlash
+} from '@fortawesome/free-solid-svg-icons';
+
 import '../styles/components/AccountManagement.css';
 function AccountManagement() {
   const { user } = useContext(AuthContext);
@@ -64,8 +72,12 @@ function AccountManagement() {
             className={`action-button ${user.isLocked ? 'unlock-button' : 'lock-button'}`}
             onClick={() => handleLockUnlock(user.userId, user.isLocked)}
           >
-            <i className={`bi ${user.isLocked ? 'bi-unlock' : 'bi-lock'} icon-margin-right`}></i>
+            <FontAwesomeIcon
+              icon={user.isLocked ? faLockOpen : faLock}
+              className="icon-margin-right"
+            />
             {user.isLocked ? 'Mở khóa' : 'Khóa'}
+
           </button>
         </td>
       </tr>
@@ -78,9 +90,6 @@ function AccountManagement() {
 
   return (
     <div className="admin-section">
-      <h4 className="section-title">
-        <i className="bi bi-people icon-margin-right"></i> Danh sách người dùng
-      </h4>
       {users.length > 0 ? (
         <div className="admin-table-wrapper">
           <table className="admin-table">
@@ -101,9 +110,10 @@ function AccountManagement() {
         </div>
       ) : (
         <div className="empty-state">
-          <i className="bi bi-person-x empty-icon"></i>
+          <FontAwesomeIcon icon={faUserSlash} className="empty-icon" />
           <p>Không có người dùng nào để hiển thị.</p>
         </div>
+
       )}
     </div>
   );

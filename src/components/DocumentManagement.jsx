@@ -3,6 +3,14 @@ import { getDocuments, deleteDocument, lockDocument } from '../services/api';
 import { toast } from 'react-toastify';
 import useOnScreen from '../hooks/useOnScreen';
 import '../styles/components/DocumentManagement.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faLock,
+  faLockOpen,
+  faTrash,
+  faFileCircleXmark,
+  faFileShield
+} from '@fortawesome/free-solid-svg-icons';
 
 function DocumentManagement() {
   const [documents, setDocuments] = useState([]);
@@ -70,14 +78,18 @@ function DocumentManagement() {
               className={`action-button ${doc.isLock ? 'unlock-button' : 'lock-button'} margin-right-sm`}
               onClick={() => handleLockUnlock(doc.documentId, doc.isLock)}
             >
-              <i className={`bi ${doc.isLock ? 'bi-unlock' : 'bi-lock'} icon-margin-right-sm`}></i>
+              <FontAwesomeIcon
+                icon={doc.isLock ? faLockOpen : faLock}
+                className="icon-margin-right-sm"
+              />
               {doc.isLock ? 'Mở khóa' : 'Khóa'}
             </button>
+
             <button
               className="action-button delete-button"
               onClick={() => handleDelete(doc.documentId)}
             >
-              <i className="bi bi-trash icon-margin-right-sm"></i> Xóa
+              <FontAwesomeIcon icon={faTrash} className="icon-margin-right-sm" /> Xóa
             </button>
           </div>
         </td>
@@ -91,9 +103,6 @@ function DocumentManagement() {
 
   return (
     <div className="admin-section">
-      <h4 className="section-title">
-        <i className="bi bi-file-earmark-lock icon-margin-right"></i> Quản lý tài liệu
-      </h4>
       {loading ? (
         <div className="loading-container">
           <div className="spinner"></div>
@@ -101,7 +110,7 @@ function DocumentManagement() {
         </div>
       ) : documents.length > 0 ? (
         <div className="admin-table-wrapper">
-          <table className="document-table">
+          <table className="admin-table">
             <thead>
               <tr>
                 <th>Tiêu đề</th>
@@ -120,7 +129,7 @@ function DocumentManagement() {
         </div>
       ) : (
         <div className="empty-state">
-          <i className="bi bi-folder-x empty-icon"></i>
+          <FontAwesomeIcon icon={faFileCircleXmark} className="empty-icon" />
           <p>Không có tài liệu nào để hiển thị.</p>
         </div>
       )}
