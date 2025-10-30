@@ -21,6 +21,7 @@ import UploadDocument from './components/UploadDocument';
 import UpdateDocument from './components/UpdateDocument';
 import SearchResultsPage from './pages/SearchResultsPage';
 import Chatbot from './components/Chatbot'
+import UpgradeAccount from './pages/UpgradeAccount';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUp, faComment } from '@fortawesome/free-solid-svg-icons';
 
@@ -81,6 +82,7 @@ function App() {
           <Route path="/document/:id" element={<ErrorBoundary><DocumentDetail /></ErrorBoundary>} />
           <Route path="/postcommentdetail/:id" element={<ErrorBoundary><PostCommentDetail /></ErrorBoundary>} />
           <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+          <Route path="/upgrade-account" element={<PrivateRoute><UpgradeAccount /></PrivateRoute>} />
           <Route
             path="/admin"
             element={
@@ -173,7 +175,11 @@ function App() {
         </footer>
 
 
-        <ToastContainer />
+        <ToastContainer
+          autoClose={1000}
+          pauseOnHover={true}
+          pauseOnFocusLoss={false}
+        />
       </BrowserRouter>
     </AuthProvider>
   );

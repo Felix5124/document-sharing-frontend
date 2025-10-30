@@ -1,4 +1,4 @@
-import { Document, Page, pdfjs } from 'react-pdf';
+import { Document, Page } from 'react-pdf';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
   getDocumentById,
@@ -6,173 +6,28 @@ import {
   downloadDocument,
   previewDocument,
   follow,
+  unfollow,
   getUserFollowing,
   addComment,
   getRelatedDocumentsByTags,
   getRelatedDocuments
 } from '../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faEye,
-  faXmark,
-  faDownload,
-  faFolder,
-  faFile,
-  faDatabase,
-  faCalendar,
-  faCoins,
-  faTags,
-  faArrowRight,
-  faUser,
-  faUserPlus,
-  faUserCheck,
-  faPaperPlane,
-  faCommentDots,
-  faStar,
-  faStarHalfAlt,
-  faPlusCircle,
-} from '@fortawesome/free-solid-svg-icons';
+import { faEye, faDownload, faFolder, faFile, faDatabase, faCalendar, faTags, faArrowRight, faUser, faPaperPlane, faCommentDots, faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 
 import { AuthContext } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 import { useEffect, useState, useContext } from 'react';
 import { getFullImageUrl } from '../utils/imageUtils';
+import '../config/pdfConfig';
+import { formatFileSize } from '../utils/fileUtils';
+import StarRatingDisplay from '../components/DocumentDetail/StarRatingDisplay';
+import StarRatingInput from '../components/DocumentDetail/StarRatingInput';
+import CustomModal from '../components/DocumentDetail/CustomModal';
+import CustomButton from '../components/DocumentDetail/CustomButton';
+import CustomForm, { FormGroup, FormLabel, FormControl } from '../components/DocumentDetail/CustomForm';
 import '../styles/pages/DocumentDetail.css';
 
-let workerUrl;
-try {
-  workerUrl = new URL('pdfjs-dist/build/pdf.worker.mjs', import.meta.url).toString();
-} catch (e) {
-  workerUrl = '/pdf.worker.min.js';
-}
-pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
-
-const formatFileSize = (bytes) => {
-  if (bytes === 0) return '0 Bytes';
-  const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  if (i < 0 || i >= sizes.length) return '0 Bytes';
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-};
-
-const StarRatingDisplay = ({ rating, totalReviews }) => {
-  const fullStars = Math.floor(rating);
-  const halfStar = rating % 1 >= 0.5;
-  const emptyStars = Math.max(0, 5 - fullStars - (halfStar ? 1 : 0));
-
-  return (
-    <span className="star-rating-display">
-      {[...Array(fullStars)].map((_, i) => <span key={`full-${i}`} className="star-icon star-filled"></span>)}
-      {halfStar && <FontAwesomeIcon icon={faStarHalfAlt} />}
-      {[...Array(emptyStars)].map((_, i) => <span key={`empty-${i}`} className="star-icon star-empty"></span>)}
-      {totalReviews > 0 && <span className="rating-value">{rating}/5</span>}
-    </span>
-  );
-};
-
-const StarRatingInput = ({ rating, onChange }) => {
-  const [hoverRating, setHoverRating] = useState(0);
-
-  return (
-    <div className="star-rating-input">
-      {[...Array(5)].map((_, index) => {
-        const starValue = index + 1;
-        return (
-          <span
-            key={starValue}
-            className={`star-icon ${(hoverRating || rating) >= starValue ? 'star-filled' : 'star-empty'}`}
-            onClick={() => onChange(starValue)}
-            onMouseEnter={() => setHoverRating(starValue)}
-            onMouseLeave={() => setHoverRating(0)}
-          ></span>
-        );
-      })}
-      <span className="rating-text">{rating} sao</span>
-    </div>
-  );
-};
-
-// Custom Modal Component
-const CustomModal = ({ show, onHide, title, children, footer }) => {
-  if (!show) return null;
-
-  return (
-    <div className="custom-modal-overlay" onClick={onHide}>
-      <div className="custom-modal" onClick={e => e.stopPropagation()}>
-        <div className="custom-modal-header">
-          <h5 className="custom-modal-title">{title}</h5>
-          <button type="button" className="custom-modal-close" onClick={onHide}>&times;</button>
-        </div>
-        <div className="custom-modal-body">
-          {children}
-        </div>
-        {footer && (
-          <div className="custom-modal-footer">
-            {footer}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
-// Custom Button Component
-const CustomButton = ({ variant = "primary", size, onClick, disabled, type, children, className = "" }) => {
-  const btnClass = `custom-btn btn-${variant}${size ? ` btn-${size}` : ""} ${className}`;
-  return (
-    <button
-      className={btnClass}
-      onClick={onClick}
-      disabled={disabled}
-      type={type || "button"}
-    >
-      {children}
-    </button>
-  );
-};
-
-// Custom Form Components
-const CustomForm = ({ onSubmit, className = "", children }) => {
-  return (
-    <form onSubmit={onSubmit} className={`custom-form ${className}`}>
-      {children}
-    </form>
-  );
-};
-
-const FormGroup = ({ className = "", children }) => {
-  return <div className={`form-group ${className}`}>{children}</div>;
-};
-
-const FormLabel = ({ htmlFor, children }) => {
-  return <label className="form-label form-max" htmlFor={htmlFor}>{children}</label>;
-};
-
-const FormControl = ({ as, id, value, onChange, placeholder, rows }) => {
-  if (as === "textarea") {
-    return (
-      <textarea
-        className="form-control"
-        id={id}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        rows={rows || 3}
-      />
-    );
-  }
-
-  return (
-    <input
-      className="form-control"
-      id={id}
-      value={value}
-      onChange={onChange}
-      placeholder={placeholder}
-    />
-  );
-};
 
 
 function DocumentDetail() {
@@ -185,6 +40,7 @@ function DocumentDetail() {
   const [comment, setComment] = useState({ Content: '', Rating: 5 });
   const [pdfData, setPdfData] = useState(null);
   const [isFollowing, setIsFollowing] = useState(false);
+  const [followId, setFollowId] = useState(null); // Store follow ID for unfollow
   const [loadingFollow, setLoadingFollow] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
@@ -195,21 +51,34 @@ function DocumentDetail() {
   const [totalRatedComments, setTotalRatedComments] = useState(0);
   const [relatedDocsByCategory, setRelatedDocsByCategory] = useState([]);
   const [relatedDocsByTag, setRelatedDocsByTag] = useState([]);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
 
   useEffect(() => {
     setDoc(null);
     setComments([]);
-    setPdfData(null);
+    clearPdfData();
     setRelatedDocsByCategory([]);
     setRelatedDocsByTag([]);
     setIsDescriptionExpanded(false);
     setAverageRating(0);
     setTotalRatedComments(0);
     setIsFollowing(false);
+    setFollowId(null); // Reset follow ID
     fetchDocument();
     fetchComments();
   }, [id]);
+
+  // Lock body scroll when preview modal is open
+  useEffect(() => {
+    if (isPreviewOpen) {
+      const original = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = original || '';
+      };
+    }
+  }, [isPreviewOpen]);
 
   useEffect(() => {
     if (user && user.userId && doc?.uploadedBy) {
@@ -308,8 +177,14 @@ function DocumentDetail() {
     try {
       const response = await getUserFollowing(user.userId);
       const follows = Array.isArray(response.data?.$values) ? response.data.$values : (Array.isArray(response.data) ? response.data : []);
-      const isAlreadyFollowing = follows.some(follow => follow.followedUserId === doc.uploadedBy);
-      setIsFollowing(isAlreadyFollowing);
+      const currentFollow = follows.find(follow => follow.followedUserId === doc.uploadedBy);
+      if (currentFollow) {
+        setIsFollowing(true);
+        setFollowId(currentFollow.followId); // Store follow ID for unfollow
+      } else {
+        setIsFollowing(false);
+        setFollowId(null);
+      }
     } catch {
       // Ignore follow status check errors
     }
@@ -321,12 +196,7 @@ function DocumentDetail() {
       setShowErrorModal(true);
       return;
     }
-    const userPoints = user.points || 0;
-    if (doc.pointsRequired > 0 && userPoints < doc.pointsRequired) {
-      setErrorMessage(`Bạn không đủ điểm để tải tài liệu. Cần ${doc.pointsRequired} điểm, bạn hiện có ${userPoints} điểm.`);
-      setShowErrorModal(true);
-      return;
-    }
+    // points feature removed: allow download flow to proceed for authenticated users
     setShowConfirmModal(true);
   };
 
@@ -374,16 +244,21 @@ function DocumentDetail() {
     setErrorMessage('');
   };
 
+  const clearPdfData = () => {
+    setPdfData(null);
+    try {
+      if (pdfData) window.URL.revokeObjectURL(pdfData);
+    } catch {}
+  };
+
   const handlePreview = async () => {
     if (doc.fileType?.toLowerCase() !== 'pdf') {
       setErrorMessage('Chức năng xem trước chỉ hỗ trợ file PDF.');
       setShowErrorModal(true);
-      setPdfData(null);
       return;
     }
     if (pdfData) {
-      setPdfData(null);
-      if (pdfData) window.URL.revokeObjectURL(pdfData);
+      setIsPreviewOpen(true);
       return;
     }
     try {
@@ -392,6 +267,7 @@ function DocumentDetail() {
         const blob = new Blob([response.data], { type: 'application/pdf' });
         const url = window.URL.createObjectURL(blob);
         setPdfData(url);
+        setIsPreviewOpen(true);
       } else {
         const text = new TextDecoder().decode(response.data);
         const json = JSON.parse(text);
@@ -429,8 +305,7 @@ function DocumentDetail() {
   };
 
   const handleClosePreview = () => {
-    setPdfData(null);
-    if (pdfData) window.URL.revokeObjectURL(pdfData);
+    setIsPreviewOpen(false);
   };
 
   const toggleDescription = () => setIsDescriptionExpanded(!isDescriptionExpanded);
@@ -448,11 +323,23 @@ function DocumentDetail() {
     }
     setLoadingFollow(true);
     try {
-      const followData = { UserId: user.userId, FollowedUserId: doc.uploadedBy };
-      await follow(followData);
-      const currentlyFollowing = isFollowing;
-      setIsFollowing(!currentlyFollowing);
-      toast.success(!currentlyFollowing ? 'Đã theo dõi tác giả.' : 'Đã hủy theo dõi tác giả.');
+      if (isFollowing && followId) {
+        // Unfollow
+        await unfollow(followId);
+        setIsFollowing(false);
+        setFollowId(null);
+        toast.success('Đã hủy theo dõi tác giả.');
+      } else {
+        // Follow
+        const followData = { UserId: user.userId, FollowedUserId: doc.uploadedBy };
+        const response = await follow(followData);
+        setIsFollowing(true);
+        // Extract follow ID from response
+        if (response.data && response.data.followId) {
+          setFollowId(response.data.followId);
+        }
+        toast.success('Đã theo dõi tác giả.');
+      }
     } catch (error) {
       const errData = error.response?.data;
       let msg = 'Không thể thực hiện hành động theo dõi.';
@@ -543,19 +430,7 @@ function DocumentDetail() {
                 <div className="document-title-wrapper">
                   <h1 className="detail-document-title">{doc.title}</h1>
                 </div>
-                {doc.school?.logoUrl && (
-                  <div className="school-logo-container">
-                    <img
-                      src={getFullImageUrl(doc.school.logoUrl)}
-                      alt={doc.school.name || 'School Logo'}
-                      className="school-logo"
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = getFullImageUrl('default-school-logo.png');
-                      }}
-                    />
-                  </div>
-                )}
+                {/* school logo removed */}
               </div>
 
               <div className="document-meta-row">
@@ -576,7 +451,59 @@ function DocumentDetail() {
                   )}
                 </div>
               </div>
+              <div className="layout-grid top-section">
 
+                {/* === LEFT COLUMN: Cover Image & Actions === */}
+                        {/* Cover image as a single centered card (removed left/right columns) */}
+                        <div className="cover-card">
+                          <div className="cover-image-wrapper">
+                            <img
+                              src={getFullImageUrl(doc.coverImageUrl)}
+                              alt={doc.title}
+                              className="document-cover-image"
+                              onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = getFullImageUrl(null);
+                              }}
+                            />
+                            <div className="cover-image-overlay">
+                              <div className="document-type-badge">
+                                {doc.fileType ? doc.fileType.toUpperCase() : 'FILE'}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                {/* Xóa khu vực xem trước cũ: hiển thị trong modal thay vì inline */}
+
+              </div>
+              <div className="action-buttons-section">
+                <div className="action-buttons-grid">
+                  <CustomButton
+                    variant="outline-secondary"
+                    onClick={handleDownload}
+                    className="action-btn download-btn"
+                  >
+                    <FontAwesomeIcon icon={faDownload} />
+                    <div className="btn-content">
+                      <span className="btn-text">Tải xuống</span>
+                      <span className="file-info">{formatFileSize(doc.fileSize || 0)}</span>
+                    </div>
+                  </CustomButton>
+
+                  <CustomButton
+                    variant="primary"
+                    onClick={handlePreview}
+                    disabled={doc.fileType?.toLowerCase() !== 'pdf'}
+                    className="action-btn preview-btn"
+                  >
+                    <FontAwesomeIcon icon={faEye} />
+                    <span className="btn-text">Xem Online</span>
+                  </CustomButton>
+                </div>
+
+                {/* points badge removed */}
+              </div>
               <div className="document-stats-row">
                 <div className="stats-item">
                   {totalRatedComments > 0 ? (
@@ -677,15 +604,7 @@ function DocumentDetail() {
                   </div>
                 </div>
 
-                <div className="detail-item">
-                  <div className="detail-icon">
-                    <span className="icon-coin"></span>
-                  </div>
-                  <div className="detail-content">
-                    <div className="detail-label">Điểm yêu cầu</div>
-                    <div className="detail-value">{doc.pointsRequired || 0}</div>
-                  </div>
-                </div>
+                {/* points details removed */}
               </div>
 
               {doc.tags && doc.tags.length > 0 && (
@@ -708,113 +627,8 @@ function DocumentDetail() {
               )}
             </div>
             {/* === MAIN LAYOUT GRID: Image/Preview and Info === */}
-            <div className="layout-grid top-section">
-
-              {/* === LEFT COLUMN: Cover Image & Actions === */}
-              <div className="layout-column left-column">
-                <div className="document-cover-container">
-                  <div className="document-cover-section">
-                    <div className="cover-image-wrapper">
-                      <img
-                        src={getFullImageUrl(doc.coverImageUrl)}
-                        alt={doc.title}
-                        className="document-cover-image"
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = getFullImageUrl(null);
-                        }}
-                      />
-                      <div className="cover-image-overlay">
-                        <div className="document-type-badge">
-                          {doc.fileType ? doc.fileType.toUpperCase() : 'FILE'}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
 
 
-                </div>
-              </div>
-
-              {/* === RIGHT COLUMN: PDF Preview === */}
-              <div className="layout-column right-column preview-wrapper">
-                {pdfData ? (
-                  <div className="document-preview-section">
-                    <div className="preview-header">
-                      <div className="preview-title">
-                        <FontAwesomeIcon icon={faEye} />
-                        <h5>Xem trước tài liệu (cuộn để xem)</h5>
-                      </div>
-                      <CustomButton variant="outline-danger" size="sm" onClick={handleClosePreview} className="preview-close-btn">
-                        <FontAwesomeIcon icon={faXmark} />
-                        <span>Đóng</span>
-                      </CustomButton>
-                    </div>
-                    <div className="preview-container">
-                      {/* === THAY ĐỔI Ở ĐÂY === */}
-                      <Document file={pdfData} onLoadSuccess={onDocumentLoadSuccess} loading="Đang tải bản xem trước...">
-                        <div className="pdf-pages-container">
-                          {/* Lặp qua để render tối đa 2 trang, cho phép cuộn bên trong */}
-                          {numPages && Array.from(new Array(Math.min(numPages, 2)), (el, index) => (
-                            <Page
-                              key={`page_${index + 1}`}
-                              pageNumber={index + 1}
-                              width={570}
-                              renderTextLayer={false}
-                              renderAnnotationLayer={false}
-                              className="pdf-page"
-                            />
-                          ))}
-                        </div>
-                        {!numPages && <div className="preview-loading">Không thể tải trang.</div>}
-                      </Document>
-                      {/* === KẾT THÚC THAY ĐỔI === */}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="preview-placeholder">
-                    <div className="preview-placeholder-content">
-                      <div className="preview-placeholder-icon">
-                        <span className="icon-eye"></span>
-                      </div>
-                      <h6>Chức năng xem trước PDF</h6>
-                      <p>Khi bạn nhấn nút "Xem Online (PDF)", tài liệu sẽ hiển thị ở đây</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-            <div className="action-buttons-section">
-              <div className="action-buttons-grid">
-                <CustomButton
-                  variant="outline-secondary"
-                  onClick={handleDownload}
-                  className="action-btn download-btn"
-                >
-                  <FontAwesomeIcon icon={faDownload} />
-                  <div className="btn-content">
-                    <span className="btn-text">Tải xuống</span>
-                    <span className="file-info">{formatFileSize(doc.fileSize || 0)}</span>
-                  </div>
-                </CustomButton>
-
-                <CustomButton
-                  variant="primary"
-                  onClick={handlePreview}
-                  disabled={doc.fileType?.toLowerCase() !== 'pdf'}
-                  className="action-btn preview-btn"
-                >
-                  <span className="btn-text">Xem Online</span>
-                </CustomButton>
-              </div>
-
-              {doc.pointsRequired > 0 && (
-                <div className="points-required-banner">
-                  <FontAwesomeIcon icon={faCoins} />
-                  Cần {doc.pointsRequired} điểm để tải
-                </div>
-              )}
-            </div>
             {/* ... Các section Tài liệu liên quan và Bình luận ... */}
             {relatedDocsByTag && relatedDocsByTag.length > 0 && (
               <div className="related-documents-section">
@@ -1045,11 +859,40 @@ function DocumentDetail() {
         onHide={handleCancelDownload}
         title="Xác nhận tải tài liệu"
         footer={<>
-          <CustomButton variant="secondary" onClick={handleCancelDownload}>Hủy</CustomButton>
-          <CustomButton variant="primary" onClick={handleConfirmDownload}>Xác nhận</CustomButton>
+          <CustomButton variant="cancel" onClick={handleCancelDownload}>Hủy</CustomButton>
+          <CustomButton variant="secondary" onClick={handleConfirmDownload}>Xác nhận</CustomButton>
         </>}
       >
-        Bạn có muốn dùng {doc?.pointsRequired || 0} điểm để tải tài liệu này không?
+        Bạn có muốn tải tài liệu này?
+      </CustomModal>
+
+      {/* Modal xem PDF toàn bộ trang */}
+      <CustomModal
+        show={isPreviewOpen}
+        onHide={handleClosePreview}
+        title="Xem Online (PDF)"
+      >
+        {pdfData ? (
+          <div style={{ maxHeight: '80vh', overflowY: 'auto' }}>
+            <Document file={pdfData} onLoadSuccess={onDocumentLoadSuccess} loading="Đang tải tài liệu...">
+              {numPages && Array.from({ length: numPages }, (_, i) => (
+                <Page
+                  key={`page_${i + 1}`}
+                  pageNumber={i + 1}
+                  renderTextLayer={false}
+                  renderAnnotationLayer={false}
+                  className="pdf-page"
+                />
+              ))}
+              {!numPages && <div className="preview-loading">Không thể tải trang.</div>}
+            </Document>
+          </div>
+        ) : (
+          <div className="loading-container">
+            <div className="spinner"></div>
+            <p className="loading-text">Đang chuẩn bị tài liệu...</p>
+          </div>
+        )}
       </CustomModal>
 
       <CustomModal

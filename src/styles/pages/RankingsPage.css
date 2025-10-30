@@ -15,7 +15,7 @@
   --color-bronze: #cd7f32;
 
   /* Theming Colors for Headers/Icons */
-  --theme-color-points: #ffc107;
+  /* points theme removed */
   --theme-color-uploads: #0dcaf0;
   --theme-color-comments: #0d6efd;
   --theme-color-downloads-user: #198754;
@@ -255,7 +255,7 @@ body {
 /* Link header background color to icon color */
 .icon--star-fill + .ranking-card__header,
 .ranking-card__header:has(.icon--star-fill) {
-  background-color: var(--theme-color-points);
+  background-color: var(--color-background-card);
 }
 
 .icon--cloud-upload-fill + .ranking-card__header,

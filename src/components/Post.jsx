@@ -175,7 +175,7 @@ const Post = () => {
                 <div className="comments-wrapper">
                   {comments[post.postId].map(comment => (
                     <div key={comment.postCommentId} className="comment-item">
-                      <div className="comment-header">
+                      <div className="comment-post-header">
                         <img
                           src={comment.user?.avatarUrl ? `https://localhost:7013${comment.user.avatarUrl}` : '/assets/images/default-avatar.png'}
                           alt="Avatar"

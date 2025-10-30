@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { getNotificationById, markNotificationAsRead, deleteNotification } from '../services/api';
-import '../styles//components/NotificationDetail.css';
+import '../styles/components/NotificationDetail.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBell, faClock, faArrowLeft, faTrash, faFileLines, faUser } from '@fortawesome/free-solid-svg-icons';
 
 function NotificationDetail() {
   const { notificationId } = useParams();
@@ -68,61 +70,67 @@ function NotificationDetail() {
   };
 
   return (
-    <div className="notifications-container">
-      <div className="notifications-card">
-        <h2 className="notifications-title">
-          <i className="bi bi-bell icon-margin-right"></i> Chi tiết thông báo
-        </h2>
+    <div className="all-container">
+      <div className='all-container-card'>
+        <div className="detail-header">
+          <div className="detail-title">
+            <FontAwesomeIcon icon={faBell} className="me-2" />
+            Chi tiết thông báo
+          </div>
+          <button className="btn-ghost" onClick={handleBack}>
+            <FontAwesomeIcon icon={faArrowLeft} className="me-2" /> Quay lại
+          </button>
+        </div>
+  
         {loading ? (
           <div className="loading-container">
             <div className="spinner"></div>
             <p className="loading-text">Đang tải chi tiết thông báo...</p>
           </div>
         ) : notification ? (
-          <div className="notifications-list">
-            <div className="notification-item read">
-              <div className="notification-content">
-                <p className="notification-sender">
-                  <strong>Người gửi:</strong> {notification.document?.uploadedBy?.fullName || 'Hệ thống'}
-                </p>
-                <p className="notification-message">
-                  <strong>Nội dung:</strong> {notification.message}
-                </p>
-                <div className="flex-container flex-justify-between flex-align-center margin-bottom-sm">
-                  <span className="notification-time">
-                    <strong>Ngày gửi:</strong>{' '}
-                    {new Date(notification.sentAt).toLocaleString('vi-VN', {
-                      day: '2-digit',
-                      month: '2-digit',
-                      year: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit',
-                      second: '2-digit',
-                    })}
-                  </span>
-                  {notification.documentId && (
-                    <button
-                      className="action-button view-document-button"
-                      onClick={handleViewDocument}
-                    >
-                      <i className="bi bi-file-earmark-text icon-margin-right-sm"></i> Xem tài liệu
-                    </button>
-                  )}
-                </div>
-                <div className="notification-actions flex-container flex-justify-end">
-                  <button className="action-button back-button margin-right-sm" onClick={handleBack}>
-                    <i className="bi bi-arrow-left icon-margin-right-sm"></i> Quay lại
-                  </button>
-                  <button className="action-button delete-button" onClick={handleDelete}>
-                    <i className="bi bi-trash icon-margin-right-sm"></i> Xóa
-                  </button>
-                </div>
+          <>
+            <div className="detail-meta">
+              <div className="meta-item">
+                <FontAwesomeIcon icon={faUser} className="me-2" />
+                <span>{notification.document?.uploadedBy?.fullName || 'Hệ thống'}</span>
               </div>
+              <div className="meta-item">
+                <FontAwesomeIcon icon={faClock} className="me-2" />
+                <span>
+                  {new Date(notification.sentAt).toLocaleString('vi-VN', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                  })}
+                </span>
+              </div>
+              <span className={`status-chip ${notification.isRead ? 'read' : 'unread'}`}>
+                {notification.isRead ? 'Đã đọc' : 'Chưa đọc'}
+              </span>
             </div>
-          </div>
+  
+            <div className="detail-message">
+              <div className="message-label">Nội dung</div>
+              <div className="message-body">{notification.message}</div>
+            </div>
+  
+            <div className="detail-actions">
+              {notification.documentId && (
+                <button className="btn-secondary" onClick={handleViewDocument}>
+                  <FontAwesomeIcon icon={faFileLines} className="me-2" /> Xem tài liệu
+                </button>
+              )}
+              <button className="btn-danger" onClick={handleDelete}>
+                <FontAwesomeIcon icon={faTrash} className="me-2" /> Xóa
+              </button>
+            </div>
+          </>
         ) : (
           <div className="empty-state">
-            <i className="bi bi-exclamation-circle empty-icon"></i>
+            <span className="empty-icon">!</span>
             <p>Không tìm thấy thông báo.</p>
           </div>
         )}

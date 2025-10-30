@@ -8,8 +8,7 @@ import {
   getUploadCount,
   uploadAvatar,
   deleteDocument,
-  getDownloads,
-  getSchools
+  getDownloads
 } from '../services/api';
 import { toast } from 'react-toastify';
 import Achievements from '../components/Achievements';
@@ -19,8 +18,6 @@ import {
   faCamera,
   faUser,
   faEnvelope,
-  faBuilding,
-  faStar,
   faAward,
   faCheckCircle,
   faCloudUploadAlt,
@@ -39,24 +36,22 @@ function Profile() {
   const [uploadCount, setUploadCount] = useState(0);
   const [downloadCount, setDownloadCount] = useState(0);
   const [avatarFile, setAvatarFile] = useState(null);
-  const [schools, setSchools] = useState([]);
+  // schools removed
   const { register, handleSubmit, formState: { errors } } = useForm();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [userResponse, uploadResponse, downloadResponse, schoolsResponse] = await Promise.all([
+        const [userResponse, uploadResponse, downloadResponse] = await Promise.all([
           getUser(user.userId),
           getUploadCount(user.userId),
           getDownloads(user.userId),
-          getSchools()
         ]);
         setUserData(userResponse.data);
         setUploads(uploadResponse.data.uploads);
         setUploadCount(uploadResponse.data.uploadCount);
         setDownloads(downloadResponse.data);
         setDownloadCount(downloadResponse.data.length);
-        setSchools(schoolsResponse.data);
       } catch (error) {
         console.error('Fetch error:', error.response?.data || error.message);
         if (error.response?.status === 401) {
@@ -87,7 +82,6 @@ function Profile() {
 
       const updateData = {
         FullName: data.FullName,
-        SchoolId: parseInt(data.SchoolId)
       };
       await updateUser(user.userId, updateData);
 
@@ -193,41 +187,7 @@ function Profile() {
                 </div>
               </div>
 
-              <div className="form-group">
-                <label className="form-label">Trường học</label>
-                <div className="input-wrapper">
-                  <FontAwesomeIcon icon={faBuilding} className="input-icon" />
-                  <select
-                    className="form-input"
-                    defaultValue={userData.schoolId || 0}
-                    {...register('SchoolId', {
-                      required: 'Vui lòng chọn trường học',
-                      validate: (value) => parseInt(value) !== 0 || 'Vui lòng chọn trường học',
-                    })}
-                  >
-                    <option value="0">Chọn trường học</option>
-                    {schools.map((school) => (
-                      <option key={school.schoolId} value={school.schoolId}>
-                        {school.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                {errors.SchoolId && <p className="error-text">{errors.SchoolId.message}</p>}
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Điểm tích lũy</label>
-                <div className="input-wrapper">
-                  <FontAwesomeIcon icon={faStar} className="input-icon" />
-                  <input
-                    type="text"
-                    className="form-input"
-                    value={userData.points}
-                    disabled
-                  />
-                </div>
-              </div>
+              {/* School and points removed from profile */}
 
               <div className="form-group">
                 <label className="form-label">Cấp độ</label>

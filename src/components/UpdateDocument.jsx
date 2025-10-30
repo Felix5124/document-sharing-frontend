@@ -10,7 +10,7 @@ function UpdateDocument() {
   const navigate = useNavigate();
   const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm({
     defaultValues: {
-      Title: '', Description: '', CategoryId: '', UploadedBy: '', PointsRequired: 0,
+      Title: '', Description: '', CategoryId: '', UploadedBy: '',
       Tags: [],
       File: null,
       CoverImage: null,
@@ -41,8 +41,7 @@ function UpdateDocument() {
         setValue('Title', docData.Title || docData.title || '');
         setValue('Description', docData.Description || docData.description || '');
         setValue('CategoryId', docData.CategoryId || docData.categoryId || '');
-        setValue('UploadedBy', docData.UploadedBy || docData.uploadedBy || '');
-        setValue('PointsRequired', docData.PointsRequired || docData.pointsRequired || 0);
+  setValue('UploadedBy', docData.UploadedBy || docData.uploadedBy || '');
 
         if (docData.tags && Array.isArray(docData.tags)) {
           const initialTags = docData.tags.map(tag => ({
@@ -151,8 +150,7 @@ function UpdateDocument() {
       }
       formData.append('UploadedBy', uploadedBy.toString());
 
-      const pointsRequired = parseInt(data.PointsRequired, 10);
-      formData.append('PointsRequired', (isNaN(pointsRequired) ? 0 : pointsRequired).toString());
+  // points removed: do not append PointsRequired
 
       if (data.File && data.File.length > 0) {
         const selectedFile = data.File[0];
@@ -328,18 +326,7 @@ function UpdateDocument() {
             </div>
           )}
 
-          <div className="form-group">
-            <label className="form-label">Điểm yêu cầu</label>
-            <div className="input-wrapper">
-              <i className="bi bi-star input-icon"></i>
-              <input
-                type="number"
-                className="form-input"
-                {...register('PointsRequired', { min: { value: 0, message: 'Điểm phải lớn hơn hoặc bằng 0' } })}
-              />
-            </div>
-            {errors.PointsRequired && <p className="error-text">{errors.PointsRequired.message}</p>}
-          </div>
+          {/* Points field removed */}
 
           <div className="form-group">
             <label className="form-label">File tài liệu (để trống nếu không muốn thay đổi)</label>

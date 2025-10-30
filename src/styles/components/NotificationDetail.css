@@ -1,0 +1,116 @@
+/* Notification Detail Styles */
+.notification-detail {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.detail-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.detail-title {
+	font-size: 1.5rem;
+	font-weight: 700;
+	color: #111827;
+	display: flex;
+	align-items: center;
+}
+
+.btn-ghost {
+	padding: 10px 14px;
+	background: transparent;
+	border: 1px solid #d1d5db;
+	color: #374151;
+	border-radius: 8px;
+	cursor: pointer;
+	font-weight: 600;
+	transition: all 0.2s ease;
+}
+.btn-ghost:hover {
+	background: #f3f4f6;
+}
+
+.btn-danger {
+	padding: 12px 20px;
+	background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+	color: #fff;
+	border: none;
+	border-radius: 8px;
+	cursor: pointer;
+	font-weight: 600;
+	font-size: 0.95rem;
+	transition: all 0.3s ease;
+	box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+.btn-danger:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+}
+
+.detail-meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px 16px;
+	align-items: center;
+}
+
+.meta-item {
+	display: inline-flex;
+	align-items: center;
+	color: #4b5563;
+	font-size: 0.95rem;
+}
+
+.status-chip {
+	padding: 6px 10px;
+	border-radius: 999px;
+	font-size: 0.8rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.4px;
+}
+.status-chip.unread {
+	background: rgba(59, 130, 246, 0.12);
+	color: #2563eb;
+	border: 1px solid rgba(59, 130, 246, 0.3);
+}
+.status-chip.read {
+	background: rgba(16, 185, 129, 0.12);
+	color: #059669;
+	border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.detail-message {
+	background: #ffffff;
+	border: 1px solid #e5e7eb;
+	border-radius: 12px;
+	padding: 18px 20px;
+    margin-top: 10px;
+}
+.message-label {
+	font-size: 0.85rem;
+	color: #6b7280;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	margin-bottom: 8px;
+}
+.message-body {
+	font-size: 1.05rem;
+	color: #111827;
+	line-height: 1.6;
+}
+
+.detail-actions {
+	display: flex;
+	gap: 12px;
+	margin-top: 8px;
+    justify-content: flex-end;
+}
+
+@media (max-width: 576px) {
+	.detail-title { font-size: 1.25rem; }
+	.detail-actions { flex-direction: column; }
+}

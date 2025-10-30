@@ -7,7 +7,6 @@ import AccountManagement from '../components/AccountManagement';
 import CategoryManagement from '../components/CategoryManagement';
 import DocumentManagement from '../components/DocumentManagement';
 import AdminStatistics from '../components/AdminStatistics';
-import SchoolManagement from '../components/SchoolManagement';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faFileCircleCheck,
@@ -108,7 +107,6 @@ function AdminDashboard() {
             {activeSection === 'category-management' && <CategoryManagement />}
             {activeSection === 'document-management' && <DocumentManagement />}
             {activeSection === 'statistics' && <AdminStatistics />}
-            {activeSection === 'school-management' && <SchoolManagement />}
           </div>
         </div>
       </div>

@@ -7,7 +7,6 @@ import '../styles/pages/RankingsPage.css';
 
 function RankingsPage() {
     const [rankings, setRankings] = useState({
-        points: [],
         uploads: [],
         comments: [],
         docDownloads: [],
@@ -18,15 +17,14 @@ function RankingsPage() {
     const navigate = useNavigate();
 
     // State mới để quản lý tab đang hoạt động
-    const [activeTab, setActiveTab] = useState('points');
+    const [activeTab, setActiveTab] = useState('uploads');
 
     useEffect(() => {
         const fetchAllRankings = async () => {
             setLoading(true);
             setError(null);
             try {
-                const [pointsRes, uploadsRes, commentsRes, docDownloadsRes, topDocsRes] = await Promise.all([
-                    api.get('/users/rankings/points?limit=10'),
+                const [uploadsRes, commentsRes, docDownloadsRes, topDocsRes] = await Promise.all([
                     api.get('/users/rankings/uploads?limit=10'),
                     api.get('/users/rankings/comments?limit=10'),
                     api.get('/users/rankings/document-downloads?limit=10'),
@@ -34,7 +32,6 @@ function RankingsPage() {
                 ]);
 
                 setRankings({
-                    points: (pointsRes.data.$values || pointsRes.data || []),
                     uploads: (uploadsRes.data.$values || uploadsRes.data || []),
                     comments: (commentsRes.data.$values || commentsRes.data || []),
                     docDownloads: (docDownloadsRes.data.$values || docDownloadsRes.data || []),
@@ -54,15 +51,7 @@ function RankingsPage() {
 
     // Cấu hình cho các tab để dễ dàng quản lý và render
     const tabConfig = {
-        points: {
-            label: "Điểm Số",
-            title: "TOP ĐIỂM SỐ",
-            data: rankings.points,
-            unit: "điểm",
-            itemType: "user",
-            iconModifier: "icon--star-fill",
-            valueKey: "value" // Giả sử key trả về là 'value'
-        },
+        // points removed
         uploads: {
             label: "Đăng Tải",
             title: "TOP NGƯỜI DÙNG ĐĂNG TÀI LIỆU",

@@ -2,6 +2,20 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useContext, useEffect, useState, useRef } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import '../styles/components/Navbar.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faHouse,
+  faComments,
+  faUpload,
+  faUser,
+  faBell,
+  faHeart,
+  faGears,
+  faRightFromBracket,
+  faRightToBracket,
+  faUserPlus,
+  faBars
+} from '@fortawesome/free-solid-svg-icons';
 import { getUserNotifications } from '../services/api';
 import logo from '../assets/images/logoweb.png';
 
@@ -11,9 +25,24 @@ function Navbar() {
   const { user, logout } = useContext(AuthContext);
   const [unreadCount, setUnreadCount] = useState(0);
   const navbarRef = useRef(null);
+  const dropdownRef = useRef(null);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // Hàm lấy số thông báo chưa đọc
+  // --- Đóng dropdown khi click ra ngoài ---
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target)
+      ) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // --- Lấy thông báo chưa đọc ---
   const fetchUnreadNotifications = async () => {
     if (!user || user.isAdmin) return;
     try {
@@ -22,7 +51,7 @@ function Navbar() {
       if (data && Array.isArray(data.$values)) {
         data = data.$values;
       } else if (!Array.isArray(data)) {
-        console.warn("Dữ liệu thông báo không đúng định dạng mảng:", response.data);
+        console.warn('Dữ liệu thông báo không đúng định dạng mảng:', response.data);
         data = [];
       }
       const unread = data.filter((notification) => !notification.isRead).length;
@@ -32,7 +61,7 @@ function Navbar() {
     }
   };
 
-  // Lắng nghe sự kiện cuộn để thu nhỏ navbar
+  // --- Navbar cuộn ---
   useEffect(() => {
     const handleScroll = () => {
       if (navbarRef.current) {
@@ -43,12 +72,11 @@ function Navbar() {
         }
       }
     };
-
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Lấy thông báo khi user hoặc đường dẫn thay đổi
+  // --- Fetch lại khi user hoặc path thay đổi ---
   useEffect(() => {
     if (user && !user.isAdmin) {
       fetchUnreadNotifications();
@@ -61,32 +89,26 @@ function Navbar() {
     }
   }, [user, location.pathname]);
 
-  // Xử lý đăng xuất
+  // --- Logout ---
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
 
-  // Xử lý đóng/mở menu trên mobile
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
-  };
+  // --- Toggle menu/dropdown ---
+  const toggleMenu = () => setMenuOpen((prev) => !prev);
 
   return (
     <nav ref={navbarRef} className="navbar">
       <div className="navbar-container">
         <div className="navbar-logo">
           <Link className="navbar-logo-item" to="/">
-            <img
-              src={logo}
-              alt="Logo"
-              className="navbar-logo-image"
-            />
+            <img src={logo} alt="Logo" className="navbar-logo-image" />
             Document Sharing
           </Link>
         </div>
 
-        <div className='navbar-menu'>
+        <div className="navbar-menu">
           <button
             className={`menu-toggle ${menuOpen ? 'menu-open' : ''}`}
             onClick={toggleMenu}
@@ -94,105 +116,108 @@ function Navbar() {
           >
             <span className="menu-icon"></span>
           </button>
+
           <div className={`navbar-menu-item ${menuOpen ? 'open' : ''}`}>
             <ul className="navbar-links">
               <li className="navbar-item">
-                <Link
-                  className={`navbar-link ${location.pathname === '/' ? 'active' : ''}`}
-                  to="/"
-                >
-                  Home
+                <Link className={`navbar-link ${location.pathname === '/' ? 'active' : ''}`} to="/">
+                  <FontAwesomeIcon icon={faHouse} />
                 </Link>
               </li>
+
               <li className="navbar-item">
-                <Link
-                  className={`navbar-link ${location.pathname === '/posts' ? 'active' : ''}`}
-                  to="/posts"
-                >
-                  Diễn đàn
+                <Link className={`navbar-link ${location.pathname === '/posts' ? 'active' : ''}`} to="/posts">
+                  <FontAwesomeIcon icon={faComments} />
                 </Link>
               </li>
+
               {user && (
                 <>
-                  {user.isAdmin ? (
+                  {!user.isAdmin && (
                     <>
                       <li className="navbar-item">
-                        <Link
-                          className={`navbar-link ${location.pathname === '/profile' ? 'active' : ''}`}
-                          to="/profile"
-                        >
-                          Hồ sơ
+                        <Link className={`navbar-link ${location.pathname === '/upload' ? 'active' : ''}`} to="/upload">
+                          <FontAwesomeIcon icon={faUpload} />
                         </Link>
                       </li>
-                      <li className="navbar-item">
-                        <Link
-                          className={`navbar-link ${location.pathname === '/admin' ? 'active' : ''}`}
-                          to="/admin"
-                        >
-                          Quản trị
-                        </Link>
-                      </li>
-                    </>
-                  ) : (
-                    <>
-                      <li className="navbar-item">
-                        <Link
-                          className={`navbar-link ${location.pathname === '/upload' ? 'active' : ''}`}
-                          to="/upload"
-                        >
-                          Tải lên tài liệu
-                        </Link>
-                      </li>
-                      <li className="navbar-item">
-                        <Link
-                          className={`navbar-link ${location.pathname === '/profile' ? 'active' : ''}`}
-                          to="/profile"
-                        >
-                          Hồ sơ
-                        </Link>
-                      </li>
+
                       <li className="navbar-item">
                         <Link
                           className={`navbar-link ${location.pathname === '/notifications' ? 'active' : ''}`}
                           to="/notifications"
                         >
-                          Thông báo
-                          {unreadCount > 0 && <span className="notification-badge" />}
+                          <FontAwesomeIcon icon={faBell} />
+                          {unreadCount > 0 && (
+                            <span className="nav-notification-badge">
+                              {unreadCount > 99 ? '99+' : unreadCount}
+                            </span>
+                          )}
                         </Link>
                       </li>
+
                       <li className="navbar-item">
                         <Link
                           className={`navbar-link ${location.pathname === '/follow' ? 'active' : ''}`}
                           to="/follow"
                         >
-                          Theo dõi
+                          <FontAwesomeIcon icon={faHeart} />
                         </Link>
                       </li>
                     </>
                   )}
-                  <li className="navbar-item">
-                    <button className="navbar-link logout-button" onClick={handleLogout}>
-                      Đăng xuất
+
+                  <li className="navbar-item dropdown" ref={dropdownRef}>
+                    <button className="navbar-link dropdown-toggle" onClick={toggleMenu}>
+                      <FontAwesomeIcon icon={faBars} />
                     </button>
+
+                    {menuOpen && (
+                      <ul className="dropdown-menu">
+                        <li>
+                          <Link
+                            className={`drop-menu-btn ${location.pathname === '/profile' ? 'active' : ''}`}
+                            to="/profile"
+                            onClick={() => setMenuOpen(false)}
+                          >
+                            <FontAwesomeIcon icon={faUser} /> Hồ sơ
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            className={`drop-menu-btn ${location.pathname === '/upgrade-account' ? 'active' : ''}`}
+                            to="/upgrade-account"
+                            onClick={() => setMenuOpen(false)}
+                          >
+                            <FontAwesomeIcon icon={faUser} /> Nâng cấp tài khoản
+                          </Link>
+                        </li>
+                        <li>
+                          <button
+                            className="logout-button"
+                            onClick={() => {
+                              handleLogout();
+                              setMenuOpen(false);
+                            }}
+                          >
+                            <FontAwesomeIcon icon={faRightFromBracket} /> Đăng xuất
+                          </button>
+                        </li>
+                      </ul>
+                    )}
                   </li>
                 </>
               )}
+
               {!user && (
                 <>
                   <li className="navbar-item">
-                    <Link
-                      className={`navbar-link ${location.pathname === '/login' ? 'active' : ''}`}
-                      to="/login"
-                    >
-                      Đăng nhập
+                    <Link className={`navbar-link ${location.pathname === '/login' ? 'active' : ''}`} to="/login">
+                      <FontAwesomeIcon icon={faRightToBracket} />
                     </Link>
                   </li>
                   <li className="navbar-item">
-                    <Link
-                      className={`navbar-link ${location.pathname === '/register' ? 'active' : ''}`}
-                      to="/register"
-                    >
-                      Đăng ký
+                    <Link className={`navbar-link ${location.pathname === '/register' ? 'active' : ''}`} to="/register">
+                      <FontAwesomeIcon icon={faUserPlus} />
                     </Link>
                   </li>
                 </>

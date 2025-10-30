@@ -190,7 +190,7 @@
   }
 }
 
-.notification-item.read {
+.notification-item.unread {
   border-left: 4px solid #333;
 }
 

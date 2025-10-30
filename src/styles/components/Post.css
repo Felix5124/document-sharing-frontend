@@ -14,7 +14,11 @@
   padding: 1.5rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
-
+.comment-post-header{
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
 /* Title */
 .post-page-title {
   margin-bottom: 1.5rem;
@@ -102,11 +106,17 @@
   align-items: center;
   margin-bottom: 0.75rem;
 }
-
-.post-avatar,
-.comment-avatar {
+.post-avatar{
   width: 40px;
   height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 6px;
+}
+
+.comment-avatar {
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   object-fit: cover;
   margin-right: 6px;

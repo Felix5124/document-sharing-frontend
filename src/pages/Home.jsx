@@ -1,12 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   searchDocuments,
   getCategories,
   getTopCommenter,
-  getTopPointsUser,
   getTopDownloadedDocument,
-  getTopDownloadedDocumentsList,
-  getSchools
+  getTopDownloadedDocumentsList
 } from '../services/api';
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
@@ -15,7 +13,6 @@ import bannerImage2 from '../assets/images/anhbg2.jpg';
 import bannerImage3 from '../assets/images/anhbg3.jpg';
 import { getFullImageUrl } from '../utils/imageUtils';
 import useOnScreen from '../hooks/useOnScreen';
-import { useRef } from 'react';
 import '../styles/pages/Home.css';
 import {
   faMagnifyingGlass,
@@ -23,17 +20,12 @@ import {
   faCalendarDays,
   faDownload,
   faChartLine,
-  faStar,
   faCommentDots,
-  faCircleExclamation,
-  faSchool,
-  faFileLines,
-  faUsers
+  faCircleExclamation
 } from '@fortawesome/free-solid-svg-icons';
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-// Component Banner riêng
+// Banner
 function Banner() {
   const bannerRef = useRef(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -41,11 +33,10 @@ function Banner() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentImageIndex((prevIndex) =>
-        prevIndex === bannerImages.length - 1 ? 0 : prevIndex + 1
+      setCurrentImageIndex((prev) =>
+        prev === bannerImages.length - 1 ? 0 : prev + 1
       );
-    }, 5000); // Chuyển mỗi 5 giây
-
+    }, 5000);
     return () => clearInterval(interval);
   }, [bannerImages.length]);
 
@@ -69,31 +60,12 @@ function Banner() {
         backgroundImage: `url(${bannerImages[currentImageIndex]})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        marginTop: 0,
-        padding: 0,
-        borderRadius: 0,
-        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+        boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
       }}
     >
-      <div
-        className="banner-content"
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '100%',
-          color: 'white',
-          textAlign: 'center',
-          padding: '30px',
-        }}
-      >
-        <h1 style={{ fontSize: '2.8rem', marginBottom: '15px' }}>
-          Chào mừng đến với Thư viện Tài liệu Học tập
-        </h1>
-        <p style={{ fontSize: '1.4rem' }}>
-          Tìm kiếm và khám phá tài liệu học tập dễ dàng!
-        </p>
+      <div className="banner-content">
+        <h1>Chào mừng đến với Thư viện Tài liệu Học tập</h1>
+        <p>Tìm kiếm và khám phá tài liệu học tập dễ dàng!</p>
       </div>
     </div>
   );
@@ -103,52 +75,28 @@ function Home() {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
-  const [selectedSchool, setSelectedSchool] = useState('');
 
   const [categories, setCategories] = useState([]);
-  const [schools, setSchools] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const documentsPerPage = 10;
 
   const [topCommenter, setTopCommenter] = useState(null);
-  const [topPointsUser, setTopPointsUser] = useState(null);
   const [topDownloadedDoc, setTopDownloadedDoc] = useState(null);
   const [topInterestDocuments, setTopInterestDocuments] = useState([]);
   const [loadingTopInterest, setLoadingTopInterest] = useState(false);
 
-  const fetchSchools = async () => {
-    try {
-      const response = await getSchools();
-      let data = response.data || [];
-      if (Array.isArray(data)) {
-        setSchools(data);
-      } else if (data && Array.isArray(data.$values)) {
-        setSchools(data.$values);
-      } else {
-        setSchools([]);
-      }
-    } catch (error) {
-      toast.error('Không thể tải danh sách trường học.');
-      setSchools([]);
-    }
-  };
-
   const fetchCategories = async () => {
     try {
-      const response = await getCategories();
-      let data = response.data || [];
-      if (Array.isArray(data)) {
-        setCategories(data);
-      } else if (data && Array.isArray(data.$values)) {
-        setCategories(data.$values);
-      } else {
-        setCategories([]);
-      }
+      const res = await getCategories();
+      const data = res.data;
+      if (Array.isArray(data)) setCategories(data);
+      else if (data?.$values) setCategories(data.$values);
+      else setCategories([]);
     } catch {
       toast.error('Không thể tải danh mục.');
-      setCategories([]);
     }
   };
 
@@ -156,28 +104,18 @@ function Home() {
     setLoading(true);
     try {
       const params = {
-        Keyword: searchTerm || undefined,
+        Keyword: debouncedSearchTerm || undefined,
         CategoryId: selectedCategory ? parseInt(selectedCategory) : undefined,
-        SchoolId: selectedSchool ? parseInt(selectedSchool) : undefined,
         SortBy: 'newest',
         Page: currentPage,
         PageSize: documentsPerPage,
       };
-
-      const response = await searchDocuments(params);
-      const responseData = response.data;
-      const docs = responseData.documents || [];
-      const total = responseData.total || 0;
-
-      if (Array.isArray(docs)) {
-        const approvedDocuments = docs.filter((doc) => doc.isApproved && !doc.isLock);
-        setDocuments(approvedDocuments);
-        setTotalPages(Math.ceil(total / documentsPerPage));
-      } else {
-        setDocuments([]);
-        setTotalPages(1);
-      }
-    } catch (error) {
+      const res = await searchDocuments(params);
+      const { documents: docs = [], total = 0 } = res.data;
+      const approvedDocs = docs.filter((d) => d.isApproved && !d.isLock);
+      setDocuments(approvedDocs);
+      setTotalPages(Math.ceil(total / documentsPerPage));
+    } catch {
       toast.error('Không thể tải tài liệu.');
       setDocuments([]);
       setTotalPages(1);
@@ -189,44 +127,26 @@ function Home() {
   const fetchHomePageData = async () => {
     setLoadingTopInterest(true);
     try {
-      const commenterResponse = await getTopCommenter();
-      let commenterData = commenterResponse.data;
-      if (commenterData && '$value' in commenterData) {
-        commenterData = commenterData.$value;
-      } else if (commenterData && Array.isArray(commenterData.$values)) {
-        commenterData = commenterData.$values.length > 0 ? commenterData.$values[0] : null;
-      }
+      const commenterRes = await getTopCommenter();
+      let commenterData = commenterRes.data;
+      if (Array.isArray(commenterData?.$values))
+        commenterData = commenterData.$values[0] || null;
       setTopCommenter(commenterData);
 
-      const pointsResponse = await getTopPointsUser();
-      let pointsData = pointsResponse.data;
-      if (pointsData && '$value' in pointsData) {
-        pointsData = pointsData.$value;
-      } else if (pointsData && Array.isArray(pointsData.$values)) {
-        pointsData = pointsData.$values.length > 0 ? pointsData.$values[0] : null;
-      }
-      setTopPointsUser(pointsData);
-
-      const topDocResponse = await getTopDownloadedDocument();
-      let topDocData = topDocResponse.data;
-      if (topDocData && Array.isArray(topDocData.$values) && topDocData.$values) {
-        topDocData = topDocData.$values.length > 0 ? topDocData.$values[0] : null;
-      } else if (topDocData && '$value' in topDocData) {
-        topDocData = topDocData.$value;
-      }
+      const topDocRes = await getTopDownloadedDocument();
+      let topDocData = topDocRes.data;
+      if (Array.isArray(topDocData?.$values))
+        topDocData = topDocData.$values[0] || null;
       setTopDownloadedDoc(topDocData);
 
-      const topInterestDocsResponse = await getTopDownloadedDocumentsList(5);
-      let topInterestData = topInterestDocsResponse.data;
-      if (topInterestData && Array.isArray(topInterestData.$values)) {
+      const topInterestRes = await getTopDownloadedDocumentsList(5);
+      let topInterestData = topInterestRes.data;
+      if (Array.isArray(topInterestData?.$values))
         setTopInterestDocuments(topInterestData.$values);
-      } else if (Array.isArray(topInterestData)) {
+      else if (Array.isArray(topInterestData))
         setTopInterestDocuments(topInterestData);
-      } else {
-        setTopInterestDocuments([]);
-      }
-    } catch (error) {
-      console.error("Error fetching home page data:", error);
+      else setTopInterestDocuments([]);
+    } catch {
       toast.error('Không thể tải dữ liệu bảng xếp hạng.');
       setTopInterestDocuments([]);
     } finally {
@@ -235,45 +155,39 @@ function Home() {
   };
 
   useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearchTerm(searchTerm), 500);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  useEffect(() => {
     fetchDocuments();
-  }, [searchTerm, selectedCategory, selectedSchool, currentPage]);
+  }, [debouncedSearchTerm, selectedCategory, currentPage]);
 
   useEffect(() => {
     fetchCategories();
-    fetchSchools();
     fetchHomePageData();
   }, []);
 
   const handleNextPage = () => {
     if (currentPage < totalPages) setCurrentPage(currentPage + 1);
   };
-
   const handlePrevPage = () => {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
   };
 
-
   const DocumentCard = ({ doc }) => {
-    const cardRef = useRef(null);
-    const isVisible = useOnScreen(cardRef);
+    const ref = useRef(null);
+    const isVisible = useOnScreen(ref);
     return (
-      <div ref={cardRef} className={`document-column fade-in ${isVisible ? 'visible' : ''}`}>
+      <div ref={ref} className={`document-column fade-in ${isVisible ? 'visible' : ''}`}>
         <Link to={`/document/${doc.documentId}`} className="document-link document-card">
           <div className="document-card-image-container">
             <img
               src={getFullImageUrl(doc.coverImageUrl)}
-              alt={doc.title || 'Cover'}
+              alt={doc.title}
               className="document-card-image"
-              onError={(e) => { e.target.src = getFullImageUrl(null); }}
+              onError={(e) => (e.target.src = getFullImageUrl(null))}
             />
-            {doc.school?.logoUrl && (
-              <img
-                src={getFullImageUrl(doc.school.logoUrl)}
-                alt={doc.school.name || 'School Logo'}
-                className="document-school-logo"
-                onError={(e) => { e.target.src = '/default-school-logo.png'; }}
-              />
-            )}
           </div>
           <div className="document-card-body">
             <div className="document-card-header">
@@ -281,23 +195,20 @@ function Home() {
                 {doc.title}
               </h5>
               <span className="document-download">
-                <FontAwesomeIcon icon={faDownload} className="icon-download" />
-                {doc.downloadCount}
+                <FontAwesomeIcon icon={faDownload} /> {doc.downloadCount}
               </span>
             </div>
             <p className="document-description">
-              {doc.description && doc.description.length > 60
+              {doc.description?.length > 60
                 ? `${doc.description.slice(0, 57)}...`
-                : doc.description || "Không có mô tả."}
+                : doc.description || 'Không có mô tả.'}
             </p>
             <div className="document-meta">
-              <div className="meta-author" title={doc.email ? `Người đăng: ${doc.email}` : 'Không xác định'}>
-                <FontAwesomeIcon icon={faUser} />
-
-                {doc.email || 'Không xác định'}
+              <div className="meta-author" title={doc.email || 'Không xác định'}>
+                <FontAwesomeIcon icon={faUser} /> {doc.email || 'Không xác định'}
               </div>
               <div className="meta-date">
-                <FontAwesomeIcon icon={faCalendarDays} />
+                <FontAwesomeIcon icon={faCalendarDays} />{' '}
                 {new Date(doc.uploadedAt).toLocaleDateString()}
               </div>
             </div>
@@ -308,26 +219,22 @@ function Home() {
   };
 
   const ContributorColumn = ({ title, data, icon, statLabel, statValue, linkTo }) => {
-    const columnRef = useRef(null);
-    const isVisible = useOnScreen(columnRef);
-
+    const ref = useRef(null);
+    const isVisible = useOnScreen(ref);
     return (
-      <div ref={columnRef} className={`contributor-column fade-in ${isVisible ? 'visible' : ''}`}>
+      <div ref={ref} className={`contributor-column fade-in ${isVisible ? 'visible' : ''}`}>
         <h4 className="column-title">{title}</h4>
         {data ? (
           <div className="contributor-card">
-            {icon && <span className={`contributor-icon icon-${icon}`}></span>}
             {linkTo ? (
               <>
                 <img
                   src={getFullImageUrl(data.coverImageUrl)}
-                  alt={data.title || 'Document cover'}
+                  alt={data.title}
                   className="contributor-image"
-                  onError={(e) => { e.target.src = getFullImageUrl(null); }}
+                  onError={(e) => (e.target.src = getFullImageUrl(null))}
                 />
-                <p className="contributor-name" title={data.title}>
-                  {data.title.length > 30 ? `${data.title.slice(0, 27)}...` : data.title}
-                </p>
+                <p className="contributor-name">{data.title}</p>
                 <p className="contributor-stat">{statLabel}: {statValue}</p>
                 <Link to={linkTo} className="contributor-link">Xem chi tiết</Link>
               </>
@@ -337,11 +244,9 @@ function Home() {
                   src={getFullImageUrl(data.avatarUrl)}
                   alt={data.fullName || 'User Avatar'}
                   className="contributor-avatar"
-                  onError={(e) => { e.target.src = '/avatars/defaultavatar.png'; }}
+                  onError={(e) => (e.target.src = '/avatars/defaultavatar.png')}
                 />
-                <p className="contributor-name" title={data.fullName || data.email}>
-                  {data.fullName || data.email}
-                </p>
+                <p className="contributor-name">{data.fullName || data.email}</p>
                 <p className="contributor-stat">{statLabel}: {statValue}</p>
               </>
             )}
@@ -350,67 +255,6 @@ function Home() {
       </div>
     );
   };
-
-
-  // const SchoolCard = ({ school }) => {
-  //   const cardRef = useRef(null);
-  //   const isVisible = useOnScreen(cardRef);
-
-  //   return (
-  //     <div ref={cardRef} className={`school-card-wrapper fade-in ${isVisible ? 'visible' : ''}`}>
-  //       <div className="school-card">
-  //         <img
-  //           src={getFullImageUrl(school.logoUrl)}
-  //           alt={school.name || 'School Logo'}
-  //           className="school-image"
-  //           onError={(e) => { e.target.src = '/default-school-logo.png'; }}
-  //         />
-  //         <div className="school-card-body">
-  //           <h5 className="school-name" title={school.name}>{school.name}</h5>
-  //           <p className="school-meta">
-  //             <span><span className="icon-people"></span> Sinh viên: {school.userCount || 0}</span>
-  //             <span><span className="icon-doc"></span> Bài đăng: {school.documentCount || 0}</span>
-  //           </p>
-  //           <a href={school.externalUrl} target="_blank" rel="noopener noreferrer" className="school-link">
-  //             Xem trang web
-  //           </a>
-  //         </div>
-  //       </div>
-  //     </div>
-  //   );
-  // };
-
-
-  const TopInterestDocumentItem = ({ doc, rank }) => {
-    return (
-      <li className="top-interest-item">
-        <span className="item-rank">{rank}</span>
-        <Link to={`/document/${doc.documentId}`} className="item-link">
-          <img
-            src={getFullImageUrl(doc.coverImageUrl)}
-            alt={doc.title || 'Cover'}
-            className="item-image"
-            onError={(e) => {
-              e.target.src = getFullImageUrl(null);
-            }}
-          />
-          <div className="item-info">
-            <h6 className="item-title" title={doc.title}>
-              {doc.title.length > 20 ? `${doc.title.slice(0, 17)}...` : doc.title}
-            </h6>
-            <div className="item-meta">
-                {doc.uploadedByUser?.email || doc.email || 'Ẩn danh'}
-              <span className="item-download">
-                <FontAwesomeIcon icon={faDownload} />
-                {doc.downloadCount}
-              </span>
-            </div>
-          </div>
-        </Link>
-      </li>
-    );
-  };
-
 
   const TopInterestDocumentsList = ({ documents, isLoading }) => {
     const renderContent = () => {
@@ -421,14 +265,30 @@ function Home() {
             <p className="loading-text-small">Đang tải...</p>
           </div>
         );
-
-      if (!documents || documents.length === 0)
-        return <p className="empty-text">Chưa có tài liệu nổi bật nào.</p>;
-
+      if (!documents?.length) return <p className="empty-text">Chưa có tài liệu nổi bật nào.</p>;
       return (
         <ul className="top-interest-list">
-          {documents.map((doc, index) => (
-            <TopInterestDocumentItem key={doc.documentId || index} doc={doc} rank={index + 1} />
+          {documents.map((doc, i) => (
+            <li key={doc.documentId || i} className="top-interest-item">
+              <span className="item-rank">{i + 1}</span>
+              <Link to={`/document/${doc.documentId}`} className="item-link">
+                <img
+                  src={getFullImageUrl(doc.coverImageUrl)}
+                  alt={doc.title}
+                  className="item-image"
+                  onError={(e) => (e.target.src = getFullImageUrl(null))}
+                />
+                <div className="item-info">
+                  <h6 className="item-title">{doc.title}</h6>
+                  <div className="item-meta">
+                    {doc.uploadedByUser?.email || doc.email || 'Ẩn danh'}
+                    <span className="item-download">
+                      <FontAwesomeIcon icon={faDownload} /> {doc.downloadCount}
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            </li>
           ))}
         </ul>
       );
@@ -438,15 +298,13 @@ function Home() {
       <div className="top-interest-documents-card">
         <div className="top-interest-header">
           <h5 className="top-interest-title">
-            <FontAwesomeIcon icon={faChartLine} />
-            Tài liệu được quan tâm nhiều
+            <FontAwesomeIcon icon={faChartLine} /> Tài liệu được quan tâm nhiều
           </h5>
         </div>
         <div className="top-interest-body">{renderContent()}</div>
       </div>
     );
   };
-
 
   return (
     <div className="home-root">
@@ -461,14 +319,16 @@ function Home() {
             <div className="search-filter-group">
               <div className="search-wrapper">
                 <div className="search-group">
-                  <FontAwesomeIcon icon={faMagnifyingGlass} className='icon-search' />
-
+                  <FontAwesomeIcon icon={faMagnifyingGlass} className="icon-search" />
                   <input
                     type="text"
                     className="search-input"
                     placeholder="Tìm kiếm tài liệu..."
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onChange={(e) => {
+                      setSearchTerm(e.target.value);
+                      if (currentPage !== 1) setCurrentPage(1);
+                    }}
                   />
                 </div>
               </div>
@@ -483,31 +343,10 @@ function Home() {
                 >
                   <option value="">Tất cả danh mục</option>
                   {categories.length > 0
-                    ? categories.map((category) => (
-                      <option key={category.categoryId} value={category.categoryId}>
-                        {category.name}
-                      </option>
-                    ))
+                    ? categories.map((c) => (
+                        <option key={c.categoryId} value={c.categoryId}>{c.name}</option>
+                      ))
                     : <option disabled>Không có danh mục</option>}
-                </select>
-              </div>
-              <div className="filter-wrapper">
-                <select
-                  className="select-filter"
-                  value={selectedSchool}
-                  onChange={(e) => {
-                    setSelectedSchool(e.target.value);
-                    setCurrentPage(1);
-                  }}
-                >
-                  <option value="">Tất cả trường</option>
-                  {schools.length > 0
-                    ? schools.map((school) => (
-                      <option key={school.schoolId} value={school.schoolId}>
-                        {school.name}
-                      </option>
-                    ))
-                    : <option disabled>Không có trường</option>}
                 </select>
               </div>
             </div>
@@ -520,13 +359,14 @@ function Home() {
                 isLoading={loadingTopInterest}
               />
             </aside>
+
             <main className="main-area">
               {loading ? (
                 <div className="loading-view">
                   <div className="spinner-custom"></div>
                   <p className="loading-text">Đang tải tài liệu...</p>
                 </div>
-              ) : documents.length > 0 ? (
+              ) : documents.length ? (
                 <>
                   <div className="documents-grid">
                     {documents.slice(0, 10).map((doc) => (
@@ -535,18 +375,10 @@ function Home() {
                   </div>
                   {totalPages > 1 && (
                     <div className="pagination-section">
-                      <button
-                        className="btn-page"
-                        onClick={handlePrevPage}
-                        disabled={currentPage === 1}
-                      >
+                      <button className="btn-page" onClick={handlePrevPage} disabled={currentPage === 1}>
                         ‹ Trang trước
                       </button>
-                      <button
-                        className="btn-page"
-                        onClick={handleNextPage}
-                        disabled={currentPage === totalPages}
-                      >
+                      <button className="btn-page" onClick={handleNextPage} disabled={currentPage === totalPages}>
                         Trang tiếp ›
                       </button>
                     </div>
@@ -565,26 +397,6 @@ function Home() {
             <span className="divider-text">✨ Cộng đồng ✨</span>
           </div>
 
-          {/* <div className="section-title text-center">
-            <h2 className="main-title">Các trường đại học đã tham gia</h2>
-          </div>
-
-          {schools.length > 0 ? (
-            <div className="schools-grid">
-              {schools.map((school) => (
-                <SchoolCard key={school.schoolId} school={school} />
-              ))}
-            </div>
-          ) : (
-            <div className="empty-view">
-              <FontAwesomeIcon icon={faSchool} size="2x" />
-
-              <p>Không có trường đại học nào để hiển thị.</p>
-            </div>
-          )} */}
-
-
-
           <div className="text-center">
             <h2 className="main-title">Bảng xếp hạng nổi bật</h2>
           </div>
@@ -597,15 +409,6 @@ function Home() {
                 icon={<FontAwesomeIcon icon={faCommentDots} />}
                 statLabel="Số bình luận"
                 statValue={topCommenter?.commentCount}
-              />
-            </div>
-            <div className="contrib-box">
-              <ContributorColumn
-                title="Người điểm cao nhất"
-                data={topPointsUser}
-                icon={<FontAwesomeIcon icon={faStar} />}
-                statLabel="Điểm"
-                statValue={topPointsUser?.points}
               />
             </div>
             <div className="contrib-box">

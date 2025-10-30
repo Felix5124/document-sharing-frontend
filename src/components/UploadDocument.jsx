@@ -13,7 +13,6 @@ function UploadDocument() {
       Title: '',
       Description: '',
       CategoryId: '',
-      PointsRequired: 0,
       Tags: [],
       File: null,
       CoverImage: null,
@@ -26,7 +25,6 @@ function UploadDocument() {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('user'));
   const userId = user?.userId;
-  const schoolId = user?.schoolId;
 
   const coverImageFile = watch('CoverImage');
   const currentTags = watch('Tags');
@@ -37,13 +35,7 @@ function UploadDocument() {
       navigate('/login');
       return;
     }
-    if (!schoolId || schoolId === 0) {
-      toast.error('Bạn phải xác nhận trường học trước khi đăng bài.', {
-        toastId: 'no-school-error',
-      });
-      navigate('/profile');
-    }
-  }, [userId, schoolId, navigate]);
+  }, [userId, navigate]);
 
   useEffect(() => {
     const fetchCategoriesData = async () => {
@@ -95,8 +87,7 @@ function UploadDocument() {
     formData.append('Description', data.Description || '');
     formData.append('CategoryId', parseInt(data.CategoryId, 10).toString());
     formData.append('UploadedBy', userId.toString());
-    formData.append('PointsRequired', (data.PointsRequired || 0).toString());
-    formData.append('SchoolId', schoolId.toString());
+  // points and school removed: do not append PointsRequired or SchoolId
 
     if (data.File && data.File.length > 0) {
       const selectedFile = data.File[0];
@@ -147,7 +138,7 @@ function UploadDocument() {
     }
   };
 
-  if (!userId || !schoolId || schoolId === 0) {
+  if (!userId) {
     return null;
   }
 
@@ -266,21 +257,7 @@ function UploadDocument() {
           )}
 
 
-          <div className="form-group">
-            <label className="form-label">Điểm yêu cầu</label>
-            <div className="input-wrapper">
-              <div className="input-icon"><FontAwesomeIcon icon={faStar} /></div>
-              <input
-                type="number"
-                className="form-input"
-                {...register('PointsRequired', {
-                  required: 'Vui lòng nhập điểm',
-                  min: { value: 0, message: 'Điểm không được nhỏ hơn 0' },
-                })}
-              />
-            </div>
-            {errors.PointsRequired && <p className="error-text">{errors.PointsRequired.message}</p>}
-          </div>
+          {/* Points feature removed */}
 
 
           <div className="form-group">
