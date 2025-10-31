@@ -204,3 +204,44 @@
     margin: 0 auto 20px;
   }
 }
+/* ==== VIP BADGE ==== */
+.vip-badge-profile {
+  position: absolute;
+  bottom: 35px;
+  right: 65px;
+  background: linear-gradient(45deg, #ffd700, #ffb300, #ffe066);
+  color: #1f2937;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 6px 12px;
+  border-radius: 20px;
+  box-shadow: 0 0 6px rgba(255, 200, 0, 0.6);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  animation: vipPulse 2s infinite;
+}
+
+.vip-badge-profile svg {
+  color: #1f2937;
+}
+
+@keyframes vipPulse {
+  0% { box-shadow: 0 0 6px rgba(255, 215, 0, 0.5); transform: scale(1); }
+  50% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.9); transform: scale(1.05); }
+  100% { box-shadow: 0 0 6px rgba(255, 215, 0, 0.5); transform: scale(1); }
+}
+.avatar-img.vip {
+  border: 2px solid transparent;
+  background-image: linear-gradient(#fff, #fff),
+    linear-gradient(90deg, #ffd700, #ffb300, #ffe066);
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  animation: vipBorder 3s linear infinite;
+}
+
+@keyframes vipBorder {
+  0% { filter: drop-shadow(0 0 2px #ffdf00); }
+  50% { filter: drop-shadow(0 0 6px #ffb300); }
+  100% { filter: drop-shadow(0 0 2px #ffdf00); }
+}

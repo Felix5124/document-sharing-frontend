@@ -143,9 +143,15 @@ function Profile() {
                       : '../src/assets/images/anh.png')
                 }
                 alt="Avatar"
-                className="avatar-img"
+                className={`avatar-img ${userData.isVip ? 'vip' : ''}`}
                 onError={(e) => (e.target.src = '/default-avatar.png')}
               />
+              {userData.isVip && (
+                <div className="vip-badge-profile">
+                  <FontAwesomeIcon icon={faAward} /> VIP
+                </div>
+              )}
+
               <div className="avatar-upload">
                 <FontAwesomeIcon icon={faCamera} />
                 <input

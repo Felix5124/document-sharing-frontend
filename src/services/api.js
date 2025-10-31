@@ -229,3 +229,15 @@ export const sendChatbotQuery = (data) =>
   apiClient.post("/chatbot/query", data);
 
 export default apiClient;
+// --- API cho VIP ---
+export const subscribeVip = (data) =>
+  apiClient.post("/VipSubscriptions/subscribe", data);
+
+export const getUserVipSubscriptions = (userId) =>
+  apiClient.get(`/VipSubscriptions/user/${userId}`);
+
+export const getActiveVipSubscription = (userId) =>
+  apiClient.get(`/VipSubscriptions/user/${userId}/active`);
+
+export const checkAndUpdateExpiredSubscriptions = () =>
+  apiClient.post("/VipSubscriptions/check-expiry");

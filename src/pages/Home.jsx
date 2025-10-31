@@ -204,8 +204,8 @@ function Home() {
                 : doc.description || 'Không có mô tả.'}
             </p>
             <div className="document-meta">
-              <div className="meta-author" title={doc.email || 'Không xác định'}>
-                <FontAwesomeIcon icon={faUser} /> {doc.email || 'Không xác định'}
+              <div className="meta-author" title={doc.fullName || 'Không xác định'}>
+                <FontAwesomeIcon icon={faUser} /> {doc.fullName || 'Không xác định'}
               </div>
               <div className="meta-date">
                 <FontAwesomeIcon icon={faCalendarDays} />{' '}
@@ -281,7 +281,7 @@ function Home() {
                 <div className="item-info">
                   <h6 className="item-title">{doc.title}</h6>
                   <div className="item-meta">
-                    {doc.uploadedByUser?.email || doc.email || 'Ẩn danh'}
+                    {doc.uploadedByUser?.fullName || doc.fullName || 'Ẩn danh'}
                     <span className="item-download">
                       <FontAwesomeIcon icon={faDownload} /> {doc.downloadCount}
                     </span>
@@ -298,7 +298,7 @@ function Home() {
       <div className="top-interest-documents-card">
         <div className="top-interest-header">
           <h5 className="top-interest-title">
-            <FontAwesomeIcon icon={faChartLine} /> Tài liệu được quan tâm nhiều
+            <FontAwesomeIcon icon={faChartLine} /> Tài liệu được quan tâm
           </h5>
         </div>
         <div className="top-interest-body">{renderContent()}</div>

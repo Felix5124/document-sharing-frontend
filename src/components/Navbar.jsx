@@ -163,6 +163,28 @@ function Navbar() {
                           <FontAwesomeIcon icon={faHeart} />
                         </Link>
                       </li>
+                      <li className="navbar-item">
+                        <Link
+                          className={`navbar-link avatar-link ${user?.isVip ? 'vip' : ''} ${location.pathname === '/profile' ? 'active' : ''
+                            }`}
+                          to="/profile"
+                          onClick={() => setMenuOpen(false)}
+                        >
+                          <img
+                            src={
+                              user?.avatarUrl
+                                ? `https://localhost:7013${user.avatarUrl}`
+                                : "/default-avatar.png"
+                            }
+                            alt="User Avatar"
+                            className={`navbar-avatar ${user?.isVip ? 'vip-avatar' : ''}`}
+                            onError={(e) => (e.target.src = "/default-avatar.png")}
+                          />
+                          {user?.isVip && <span className="vip-badge">⭐</span>}
+                        </Link>
+                      </li>
+
+
                     </>
                   )}
 
@@ -173,15 +195,6 @@ function Navbar() {
 
                     {menuOpen && (
                       <ul className="dropdown-menu">
-                        <li>
-                          <Link
-                            className={`drop-menu-btn ${location.pathname === '/profile' ? 'active' : ''}`}
-                            to="/profile"
-                            onClick={() => setMenuOpen(false)}
-                          >
-                            <FontAwesomeIcon icon={faUser} /> Hồ sơ
-                          </Link>
-                        </li>
                         <li>
                           <Link
                             className={`drop-menu-btn ${location.pathname === '/upgrade-account' ? 'active' : ''}`}
