@@ -188,6 +188,21 @@ function Navbar() {
                     </>
                   )}
 
+                  {user.isAdmin && (
+                    <>
+                      <li className="navbar-item">
+                        <Link
+                          className={`navbar-link ${location.pathname === '/admin' ? 'active' : ''}`}
+                          to="/admin"
+                          onClick={() => setMenuOpen(false)}
+                          title="Admin Dashboard"
+                        >
+                          <FontAwesomeIcon icon={faGears} />
+                        </Link>
+                      </li>
+                    </>
+                  )}
+
                   <li className="navbar-item dropdown" ref={dropdownRef}>
                     <button className="navbar-link dropdown-toggle" onClick={toggleMenu}>
                       <FontAwesomeIcon icon={faBars} />

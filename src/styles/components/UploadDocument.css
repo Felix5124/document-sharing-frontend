@@ -1,4 +1,24 @@
+/* UploadDocument.css */
 
+/* Upload Container */
+.upload-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 48px 24px;
+  min-height: calc(100vh - 80px);
+}
+
+/* Upload Card */
+.upload-card {
+  background: linear-gradient(180deg, #ffffff 0%, #f9fafb 100%);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
 
 .upload-card:hover {
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
@@ -32,8 +52,7 @@
   animation: bounce 2s ease-in-out infinite;
 }
 @keyframes bounce {
-  0%,
-  100% {
+  0%,100% {
     transform: translateY(0);
   }
   50% {
@@ -46,27 +65,13 @@
   margin-bottom: 28px;
   animation: fadeInUp 0.5s ease-out both;
 }
-.upload-container .form-group:nth-child(1) {
-  animation-delay: 0.1s;
-}
-.upload-container .form-group:nth-child(2) {
-  animation-delay: 0.2s;
-}
-.upload-container .form-group:nth-child(3) {
-  animation-delay: 0.3s;
-}
-.upload-container .form-group:nth-child(4) {
-  animation-delay: 0.4s;
-}
-.upload-container .form-group:nth-child(5) {
-  animation-delay: 0.5s;
-}
-.upload-container .form-group:nth-child(6) {
-  animation-delay: 0.6s;
-}
-.upload-container .form-group:nth-child(7) {
-  animation-delay: 0.7s;
-}
+.upload-container .form-group:nth-child(1) { animation-delay: 0.1s; }
+.upload-container .form-group:nth-child(2) { animation-delay: 0.2s; }
+.upload-container .form-group:nth-child(3) { animation-delay: 0.3s; }
+.upload-container .form-group:nth-child(4) { animation-delay: 0.4s; }
+.upload-container .form-group:nth-child(5) { animation-delay: 0.5s; }
+.upload-container .form-group:nth-child(6) { animation-delay: 0.6s; }
+.upload-container .form-group:nth-child(7) { animation-delay: 0.7s; }
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -145,7 +150,7 @@
   transition: all 0.3s ease;
   animation: tagSlideIn 0.3s ease-out;
 }
-.tag-input-row {
+.tag-input-row{
   display: flex;
   flex-direction: column;
 }
@@ -373,12 +378,8 @@
   margin-left: 10px;
 }
 @keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 /* Success upload indicator */
@@ -386,13 +387,7 @@
   animation: successPulse 0.6s ease-out;
 }
 @keyframes successPulse {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.02);
-  }
-  100% {
-    transform: scale(1);
-  }
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
 }
