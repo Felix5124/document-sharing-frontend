@@ -206,31 +206,44 @@ function DocumentDetail() {
   const performDownload = async () => {
     try {
       const response = await downloadDocument(id, user.userId);
-      const blob = new Blob([response.data], { type: `application/${doc.fileType || 'octet-stream'}` });
-      const url = window.URL.createObjectURL(blob);
+      
+      // Backend trả JSON với url và fileName
+      const { url, fileName } = response.data;
+      
+      if (!url) {
+        setErrorMessage('Không thể lấy URL tải xuống từ server.');
+        setShowErrorModal(true);
+        return;
+      }
+      
+      // Download file từ SAS URL
+      const fileResponse = await fetch(url);
+      if (!fileResponse.ok) {
+        throw new Error(`Không thể tải file: ${fileResponse.status} ${fileResponse.statusText}`);
+      }
+      
+      const blob = await fileResponse.blob();
+      
+      // Tạo download link
+      const downloadUrl = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `${doc.title || 'document'}.${doc.fileType || 'bin'}`);
+      link.href = downloadUrl;
+      link.setAttribute('download', fileName || `${doc.title || 'document'}.${doc.fileType || 'bin'}`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      window.URL.revokeObjectURL(downloadUrl);
+      
       setDoc((prevDoc) => ({
         ...prevDoc,
         downloadCount: (prevDoc.downloadCount || 0) + 1,
       }));
     } catch (error) {
       let message = 'Đã xảy ra lỗi khi tải tài liệu.';
-      if (error.response?.data instanceof Blob) {
-        const text = await error.response.data.text();
-        try {
-          const parsed = JSON.parse(text);
-          message = parsed.message || text || message;
-        } catch {
-          message = text || message;
-        }
-      } else if (error.response?.data) {
+      if (error.response?.data) {
         message = error.response.data.message || error.response.data.toString() || message;
+      } else if (error.message) {
+        message = error.message;
       }
       setErrorMessage(message);
       setShowErrorModal(true);
@@ -265,39 +278,33 @@ function DocumentDetail() {
       return;
     }
     try {
-      const response = await previewDocument(id, { responseType: 'arraybuffer' });
-      if (response.data instanceof ArrayBuffer) {
-        const blob = new Blob([response.data], { type: 'application/pdf' });
-        const url = window.URL.createObjectURL(blob);
-        setPdfData(url);
+      const response = await previewDocument(id);
+      
+      // Backend trả JSON với url
+      if (response.data && response.data.url) {
+        const { url } = response.data;
+        
+        // Fetch file từ SAS URL
+        const fileResponse = await fetch(url);
+        if (!fileResponse.ok) {
+          throw new Error(`Không thể tải file preview: ${fileResponse.status} ${fileResponse.statusText}`);
+        }
+        
+        const arrayBuffer = await fileResponse.arrayBuffer();
+        
+        // Tạo blob URL cho PDF viewer
+        const blob = new Blob([arrayBuffer], { type: 'application/pdf' });
+        const pdfUrl = window.URL.createObjectURL(blob);
+        setPdfData(pdfUrl);
         setIsPreviewOpen(true);
       } else {
-        const text = new TextDecoder().decode(response.data);
-        const json = JSON.parse(text);
-        setErrorMessage(json.Message || 'Không thể xem trước: Định dạng response không hợp lệ.');
+        setErrorMessage('Không thể lấy URL xem trước từ server.');
         setShowErrorModal(true);
-        setPdfData(null);
       }
     } catch (error) {
       let msg = 'Không thể xem trước tài liệu.';
-      if (error.response && error.response.data) {
-        try {
-          if (error.response.data instanceof ArrayBuffer) {
-            const decodedError = new TextDecoder().decode(error.response.data);
-            if (decodedError.trim().startsWith('{')) {
-              const jsonError = JSON.parse(decodedError);
-              msg = jsonError.Message || jsonError.message || msg;
-            } else {
-              msg = decodedError.substring(0, 200) + "...";
-            }
-          } else if (typeof error.response.data === 'object' && error.response.data.Message) {
-            msg = error.response.data.Message;
-          } else if (typeof error.response.data === 'string') {
-            msg = error.response.data;
-          }
-        } catch {
-          // Ignore JSON parsing errors for error response
-        }
+      if (error.response?.data?.message) {
+        msg = error.response.data.message;
       } else if (error.message) {
         msg = error.message;
       }

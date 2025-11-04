@@ -121,10 +121,9 @@ export const searchDocuments = (params) => {
 export const downloadDocument = (id, userId) =>
   apiClient.get(`/documents/${id}/download`, {
     params: { userId },
-    responseType: "blob",
   });
 export const previewDocument = (id) =>
-  apiClient.get(`/documents/${id}/preview`, { responseType: "arraybuffer" });
+  apiClient.get(`/documents/${id}/preview`);
 export const getUploadCount = (userId) =>
   apiClient.get("/documents/upload-count", { params: { userId } });
 export const getRelatedDocuments = (documentId, count = 4) => {
