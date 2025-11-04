@@ -179,7 +179,7 @@ export const deleteNotification = (notificationId) =>
 
 // --- API cho theo dõi ---
 export const getUserFollowing = (userId) =>
-  apiClient.get("/follows", { params: { userId } });
+  apiClient.get("/follows/following", { params: { userId } });
 export const getUserFollows = (followedUserId) =>
   apiClient.get("/follows/followers", { params: { followedUserId } });
 export const follow = (data) => apiClient.post("/follows", data);

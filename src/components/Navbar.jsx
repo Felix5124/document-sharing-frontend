@@ -18,6 +18,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { getUserNotifications } from '../services/api';
 import logo from '../assets/images/logoweb.png';
+import { getFullAvatarUrl } from '../utils/avatarUtils';
 
 function Navbar() {
   const navigate = useNavigate();
@@ -171,14 +172,10 @@ function Navbar() {
                           onClick={() => setMenuOpen(false)}
                         >
                           <img
-                            src={
-                              user?.avatarUrl
-                                ? `https://localhost:7013${user.avatarUrl}`
-                                : "/default-avatar.png"
-                            }
+                            src={getFullAvatarUrl(user?.avatarUrl || user?.AvatarUrl || null)}
                             alt="User Avatar"
                             className={`navbar-avatar ${user?.isVip ? 'vip-avatar' : ''}`}
-                            onError={(e) => (e.target.src = "/default-avatar.png")}
+                            onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = getFullAvatarUrl(null); }}
                           />
                           {user?.isVip && <span className="vip-badge">⭐</span>}
                         </Link>

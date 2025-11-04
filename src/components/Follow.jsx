@@ -4,9 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { AuthContext } from '../context/AuthContext';
 import { getUserFollowing, getUserFollows, unfollow } from '../services/api';
+import { getFullAvatarUrl } from '../utils/avatarUtils';
 import '../styles/components/Follow.css';
-
-const STATIC_BASE_URL = import.meta.env.VITE_STATIC_BASE_URL;
 
 function Follow() {
   const { user } = useContext(AuthContext);
@@ -27,7 +26,16 @@ function Follow() {
     setLoadingFollowing(true);
     try {
       const response = await getUserFollowing(user.userId);
-      const data = Array.isArray(response.data) ? response.data : [];
+      const dataRaw = Array.isArray(response.data) ? response.data : (response.data?.$values || []);
+      // Normalize to expected shape
+      const data = dataRaw.map(item => ({
+        followId: item.followId,
+        userId: item.userId,
+        followedUserId: item.followedUserId,
+        fullName: item.fullName || item.followedUserFullName,
+        email: item.email || item.followedUserEmail,
+        avatarUrl: item.avatarUrl || item.followedUserAvatarUrl,
+      }));
       setFollowing(data);
     } catch (error) {
       if (error.response?.status === 401) {
@@ -105,14 +113,8 @@ function Follow() {
     }
   };
 
-  const getAvatarUrl = (avatarUrl, fullName) => {
-    if (avatarUrl && avatarUrl !== '/avatars/defaultavatar.png') {
-      const baseUrl = STATIC_BASE_URL || 'https://localhost:7013'; // Fallback nếu STATIC_BASE_URL undefined
-      const url = `${baseUrl}${avatarUrl}`;
-      return url;
-    }
-    return `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=1a73e8&color=fff`;
-  };
+  // Sử dụng ảnh đại diện thật từ hệ thống; không tạo ảnh từ bên thứ ba
+  const safeAvatar = (relativeOrAbsoluteUrl) => getFullAvatarUrl(relativeOrAbsoluteUrl);
 
   return (
     <div className="all-container">
@@ -136,17 +138,19 @@ function Follow() {
                   <div className="follow-card-content">
                     <div className="follow-avatar">
                       <img
-                        src={getAvatarUrl(follow.followedUserAvatarUrl, follow.followedUserFullName)}
-                        alt={follow.followedUserFullName}
+                        src={safeAvatar(follow.avatarUrl)}
+                        alt={follow.fullName}
                         className="avatar-img"
                         onError={(e) => {
-                          e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(follow.followedUserFullName)}&background=1a73e8&color=fff`;
+                          // Fallback về ảnh mặc định nội bộ
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = getFullAvatarUrl('');
                         }}
                       />
                     </div>
                     <div className="follow-info">
-                      <p className="follow-name">{follow.followedUserFullName}</p>
-                      <p className="follow-email">{follow.followedUserEmail}</p>
+                      <p className="follow-name">{follow.fullName}</p>
+                      <p className="follow-email">{follow.email}</p>
                     </div>
                     <button
                       className="unfollow-button"
@@ -186,11 +190,13 @@ function Follow() {
                       <div className="follow-card-content">
                         <div className="follow-avatar">
                           <img
-                            src={getAvatarUrl(follower.avatarUrl, follower.fullName)}
+                            src={safeAvatar(follower.avatarUrl)}
                             alt={follower.fullName}
                             className="avatar-img"
                             onError={(e) => {
-                              e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(follower.fullName)}&background=1a73e8&color=fff`;
+                              // Fallback về ảnh mặc định nội bộ
+                              e.currentTarget.onerror = null;
+                              e.currentTarget.src = getFullAvatarUrl('');
                             }}
                           />
                         </div>

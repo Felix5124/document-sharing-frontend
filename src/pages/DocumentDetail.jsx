@@ -19,6 +19,7 @@ import { AuthContext } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 import { useEffect, useState, useContext } from 'react';
 import { getFullImageUrl } from '../utils/imageUtils';
+import { getFullAvatarUrl } from '../utils/avatarUtils';
 import '../config/pdfConfig';
 import { formatFileSize } from '../utils/fileUtils';
 import StarRatingDisplay from '../components/DocumentDetail/StarRatingDisplay';
@@ -165,6 +166,8 @@ function DocumentDetail() {
         CreatedAt: item.createdAt,
         UserId: item.userId,
         UserEmail: item.userEmail || 'Ẩn danh',
+        UserFullName: item.userFullName || null,
+        AvatarUrl: item.avatarUrl || null,
       }));
       setComments(fetchedComments);
     } catch {
@@ -796,10 +799,18 @@ function DocumentDetail() {
                         <div className="comment-header">
                           <div className="comment-author">
                             <div className="author-avatar">
-                              <span className="icon-person-circle"></span>
+                              <img
+                                src={getFullAvatarUrl(cmt.AvatarUrl)}
+                                alt={cmt.UserFullName || cmt.UserEmail || 'User avatar'}
+                                style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover' }}
+                                onError={(e) => {
+                                  e.currentTarget.onerror = null;
+                                  e.currentTarget.src = getFullAvatarUrl(null);
+                                }}
+                              />
                             </div>
                             <div className="author-info-comment">
-                              <div className="author-name-comment">{cmt.UserEmail}</div>
+                              <div className="author-name-comment">{cmt.UserFullName || cmt.UserEmail}</div>
                               <div className="comment-date">
                                 {cmt.CreatedAt ? new Date(cmt.CreatedAt).toLocaleString('vi-VN') : 'N/A'}
                               </div>

@@ -26,10 +26,11 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 import '../styles/pages/Profile.css';
+import { getFullAvatarUrl } from '../utils/avatarUtils';
 
 function Profile() {
   const navigate = useNavigate();
-  const { user } = useContext(AuthContext);
+  const { user, updateUserContext } = useContext(AuthContext);
   const [userData, setUserData] = useState(null);
   const [uploads, setUploads] = useState([]);
   const [downloads, setDownloads] = useState([]);
@@ -74,10 +75,13 @@ function Profile() {
     try {
       if (avatarFile) {
         const avatarResponse = await uploadAvatar(user.userId, avatarFile);
+        const newAvatarUrl = avatarResponse.data.avatarUrl; // SAS URL
         setUserData((prev) => ({
           ...prev,
-          avatarUrl: avatarResponse.data.avatarUrl
+          avatarUrl: newAvatarUrl
         }));
+        // Cập nhật ngay Context để Navbar phản ánh lập tức
+        updateUserContext({ avatarUrl: newAvatarUrl });
       }
 
       const updateData = {
@@ -88,6 +92,10 @@ function Profile() {
       toast.success('Cập nhật hồ sơ thành công.');
       const userResponse = await getUser(user.userId);
       setUserData(userResponse.data);
+      // Đồng bộ lại Context (phòng trường hợp BE trả thêm field khác)
+      if (userResponse?.data?.avatarUrl) {
+        updateUserContext({ avatarUrl: userResponse.data.avatarUrl });
+      }
       setAvatarFile(null);
     } catch (error) {
       console.error('Update error:', error.response?.data || error.message);
@@ -138,13 +146,11 @@ function Profile() {
                 src={
                   avatarFile
                     ? URL.createObjectURL(avatarFile)
-                    : (userData.avatarUrl
-                      ? `https://localhost:7013${userData.avatarUrl}`
-                      : '../src/assets/images/anh.png')
+                    : getFullAvatarUrl(userData.avatarUrl || userData.AvatarUrl || null)
                 }
                 alt="Avatar"
                 className={`avatar-img ${userData.isVip ? 'vip' : ''}`}
-                onError={(e) => (e.target.src = '/default-avatar.png')}
+                onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = getFullAvatarUrl(null); }}
               />
               {userData.isVip && (
                 <div className="vip-badge-profile">

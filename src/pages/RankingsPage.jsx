@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { getFullImageUrl } from '../utils/imageUtils';
+import { getFullAvatarUrl } from '../utils/avatarUtils';
 import { toast } from 'react-toastify';
 import '../styles/pages/RankingsPage.css';
 
@@ -117,10 +118,10 @@ function RankingsPage() {
                                 >
                                     <span className="ranking-card__position">#{index + 1}</span>
                                     <img
-                                        src={getFullImageUrl(itemType === "user" ? item.avatarUrl : item.coverImageUrl)}
+                                        src={itemType === "user" ? getFullAvatarUrl(item.avatarUrl) : getFullImageUrl(item.coverImageUrl)}
                                         alt={itemType === "user" ? item.fullName : item.title}
                                         className={`ranking-card__image ${itemType === "user" ? "ranking-card__image--avatar" : "ranking-card__image--document"}`}
-                                        onError={(e) => { e.target.onerror = null; e.target.src = getFullImageUrl(null); }}
+                                        onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = itemType === "user" ? getFullAvatarUrl(null) : getFullImageUrl(null); }}
                                     />
                                     <div className="ranking-card__info">
                                         <div className="ranking-card__name">{itemType === "user" ? item.fullName : item.title}</div>
@@ -159,37 +160,39 @@ function RankingsPage() {
     }
 
     return (
-        <main className="rankings-page">
-            <header className="rankings-page__header">
-                <h1 className="rankings-page__title">🏆 Bảng Xếp Hạng 🏆</h1>
-            </header>
-            
-            {/* Thanh điều hướng TAB */}
-            <div className="rankings-page__tabs">
-                {Object.keys(tabConfig).map((key) => (
-                    <button
-                        key={key}
-                        className={`rankings-page__tab-button ${activeTab === key ? 'rankings-page__tab-button--active' : ''}`}
-                        onClick={() => setActiveTab(key)}
-                    >
-                        {tabConfig[key].label}
-                    </button>
-                ))}
-            </div>
-
-            {/* Nội dung TAB */}
-            <div className="rankings-page__content">
-                {currentTabData && (
-                    <RankingList
-                        key={activeTab} // Thêm key để React re-render component khi tab thay đổi
-                        title={currentTabData.title}
-                        data={currentTabData.data}
-                        valueKey={currentTabData.valueKey}
-                        unit={currentTabData.unit}
-                        itemType={currentTabData.itemType}
-                        iconModifier={currentTabData.iconModifier}
-                    />
-                )}
+        <main className="all-container">
+            <div className="all-container-card">
+                <header className="rankings-page__header">
+                    <h1 className="rankings-page__title">🏆 Bảng Xếp Hạng 🏆</h1>
+                </header>
+                
+                {/* Thanh điều hướng TAB */}
+                <div className="rankings-page__tabs">
+                    {Object.keys(tabConfig).map((key) => (
+                        <button
+                            key={key}
+                            className={`rankings-page__tab-button ${activeTab === key ? 'rankings-page__tab-button--active' : ''}`}
+                            onClick={() => setActiveTab(key)}
+                        >
+                            {tabConfig[key].label}
+                        </button>
+                    ))}
+                </div>
+    
+                {/* Nội dung TAB */}
+                <div className="rankings-page__content">
+                    {currentTabData && (
+                        <RankingList
+                            key={activeTab} // Thêm key để React re-render component khi tab thay đổi
+                            title={currentTabData.title}
+                            data={currentTabData.data}
+                            valueKey={currentTabData.valueKey}
+                            unit={currentTabData.unit}
+                            itemType={currentTabData.itemType}
+                            iconModifier={currentTabData.iconModifier}
+                        />
+                    )}
+                </div>
             </div>
         </main>
     );

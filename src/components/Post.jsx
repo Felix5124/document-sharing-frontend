@@ -3,6 +3,7 @@ import { AuthContext } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 import { getPosts, createPost, getPostComments, addPostComment } from '../services/api';
 import '../styles/components/Post.css';
+import { getFullAvatarUrl } from '../utils/avatarUtils';
 
 const Post = () => {
   const { user } = useContext(AuthContext);
@@ -15,8 +16,8 @@ const Post = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await getPosts();
-        setPosts(response.data.$values || response.data);
+  const response = await getPosts();
+  setPosts(response.data?.$values || response.data || []);
       } catch (err) {
         setError('Không thể tải bài viết.');
         toast.error('Không thể tải bài viết.');
@@ -32,9 +33,10 @@ const Post = () => {
   const fetchComments = async (postId) => {
     try {
       const response = await getPostComments(postId);
+      const arr = response.data?.$values || response.data || [];
       setComments(prev => ({
         ...prev,
-        [postId]: response.data.$values || response.data,
+        [postId]: arr,
       }));
     } catch (err) {
       toast.error('Không thể tải bình luận.');
@@ -60,8 +62,8 @@ const Post = () => {
       return;
     }
     try {
-      const response = await createPost({ ...newPost, userId: user.userId });
-      setPosts([response.data, ...posts]);
+  const response = await createPost({ ...newPost, userId: user.userId });
+  setPosts([response.data, ...posts]);
       setNewPost({ title: '', content: '', userId: user.userId });
       toast.success('Đăng bài viết thành công!');
     } catch (err) {
@@ -150,13 +152,16 @@ const Post = () => {
             <div key={post.postId} className="post-card">
               <div className="post-header">
                 <img
-                  src={post.user?.avatarUrl ? `https://localhost:7013${post.user.avatarUrl}` : '/assets/images/default-avatar.png'}
-                  alt="Avatar"
+                  src={getFullAvatarUrl(post.user?.avatarUrl)}
+                  alt={post.user?.fullName || post.user?.email || 'Avatar'}
                   className="post-avatar"
-                  onError={e => (e.target.src = '/assets/images/default-avatar.png')}
+                  onError={e => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = getFullAvatarUrl(null);
+                  }}
                 />
                 <div className="post-user-info">
-                  <p className="post-user-email">{post.user?.email || 'Ẩn danh'}</p>
+                  <p className="post-user-email">{post.user?.fullName || post.user?.email || 'Ẩn danh'}</p>
                   <p className="post-date">{new Date(post.createdAt).toLocaleString('vi-VN')}</p>
                 </div>
               </div>
@@ -177,13 +182,16 @@ const Post = () => {
                     <div key={comment.postCommentId} className="comment-item">
                       <div className="comment-post-header">
                         <img
-                          src={comment.user?.avatarUrl ? `https://localhost:7013${comment.user.avatarUrl}` : '/assets/images/default-avatar.png'}
-                          alt="Avatar"
+                          src={getFullAvatarUrl(comment.user?.avatarUrl)}
+                          alt={comment.user?.fullName || comment.user?.email || 'Avatar'}
                           className="comment-avatar"
-                          onError={e => (e.target.src = '/assets/images/default-avatar.png')}
+                          onError={e => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = getFullAvatarUrl(null);
+                          }}
                         />
                         <div className="comment-user-info">
-                          <p className="comment-user-email">{comment.user?.email || 'Ẩn danh'}</p>
+                          <p className="comment-user-email">{comment.user?.fullName || comment.user?.email || 'Ẩn danh'}</p>
                           <p className="comment-content">{comment.content}</p>
                         </div>
                       </div>

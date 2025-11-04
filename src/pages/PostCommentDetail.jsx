@@ -4,6 +4,7 @@ import { getCommentsByDocument, addComment, getDocumentById } from '../services/
 import { toast } from 'react-toastify';
 import { AuthContext } from '../context/AuthContext';
 import '../styles/pages/PostCommentDetail.css';
+import { getFullAvatarUrl } from '../utils/avatarUtils';
 
 function PostCommentDetail() {
   const { id } = useParams();
@@ -46,13 +47,15 @@ function PostCommentDetail() {
       }
 
       const comments = data.map((item) => ({
-  CommentId: item.commentId,
-  Content: item.content,
-  Rating: item.rating != null ? parseInt(item.rating) : 0,
-  CreatedAt: item.createdAt,
-  UserId: item.userId,
-  UserEmail: item.userEmail || 'Ẩn danh',
-}));
+        CommentId: item.commentId,
+        Content: item.content,
+        Rating: item.rating != null ? parseInt(item.rating) : 0,
+        CreatedAt: item.createdAt,
+        UserId: item.userId,
+        UserEmail: item.userEmail || 'Ẩn danh',
+        UserFullName: item.userFullName || null,
+        AvatarUrl: item.avatarUrl || null,
+      }));
       console.log('Mapped comments:', comments);
       setComments(comments);
     } catch (error) {
@@ -129,10 +132,18 @@ function PostCommentDetail() {
           {Array.isArray(comments) && comments.length > 0 ? (
             comments.map((cmt, index) => (
               <div key={`comment-${cmt.CommentId}-${index}`} className="comment-item">
-                <div className="comment-header">
-                  <span className="comment-user">
-                    <span className="icon icon-person"></span>
-                    {cmt.UserEmail}
+                <div className="comment-header" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <img
+                    src={getFullAvatarUrl(cmt.AvatarUrl)}
+                    alt={cmt.UserFullName || cmt.UserEmail || 'User avatar'}
+                    style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover' }}
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = getFullAvatarUrl(null);
+                    }}
+                  />
+                  <span className="comment-user" style={{ fontWeight: 600 }}>
+                    {cmt.UserFullName || cmt.UserEmail}
                   </span>
                 </div>
                 <div className="comment-body">
