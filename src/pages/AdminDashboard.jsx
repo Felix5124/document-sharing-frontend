@@ -7,6 +7,7 @@ import AccountManagement from '../components/AccountManagement';
 import CategoryManagement from '../components/CategoryManagement';
 import DocumentManagement from '../components/DocumentManagement';
 import AdminStatistics from '../components/AdminStatistics';
+import ReportManagement from '../components/ReportManagement';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faFileCircleCheck,
@@ -14,7 +15,8 @@ import {
   faTags,
   faFileShield,
   faChartColumn,
-  faSchool
+  faSchool,
+  faExclamationTriangle
 } from '@fortawesome/free-solid-svg-icons';
 import '../styles/pages/AdminDashboard.css';
 
@@ -35,6 +37,8 @@ function AdminDashboard() {
         return 'Quản Lý Tài Liệu';
       case 'statistics':
         return 'Thống Kê Hệ Thống';
+      case 'report-management':
+        return 'Quản Lý Báo cáo';
       default:
         return '';
     }
@@ -85,6 +89,12 @@ function AdminDashboard() {
             >
               <FontAwesomeIcon icon={faChartColumn} className="nav-icon" /> Thống kê
             </button>
+            <button
+              className={`nav-button ${activeSection === 'report-management' ? 'active' : ''}`}
+              onClick={() => setActiveSection('report-management')}
+            >
+              <FontAwesomeIcon icon={faExclamationTriangle} className="nav-icon" /> Quản lý báo cáo
+            </button>
           </div>
         </div>
 
@@ -99,6 +109,7 @@ function AdminDashboard() {
             {activeSection === 'category-management' && <CategoryManagement />}
             {activeSection === 'document-management' && <DocumentManagement />}
             {activeSection === 'statistics' && <AdminStatistics />}
+            {activeSection === 'report-management' && <ReportManagement />}
           </div>
         </div>
       </div>

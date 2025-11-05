@@ -13,7 +13,7 @@ import {
   getRelatedDocuments
 } from '../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faDownload, faFolder, faFile, faDatabase, faCalendar, faTags, faArrowRight, faUser, faPaperPlane, faCommentDots, faPlusCircle, faFlag, faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faDownload, faFolder, faFile, faDatabase, faCalendar, faTags, faArrowRight, faUser, faPaperPlane, faCommentDots, faPlusCircle, faFlag, faCircleExclamation, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import { AuthContext } from '../context/AuthContext';
 import { toast } from 'react-toastify';
@@ -144,6 +144,9 @@ function DocumentDetail() {
   const fetchDocument = async () => {
     try {
       const response = await getDocumentById(id);
+      console.log('Document data:', response.data);
+      console.log('ApprovalStatus:', response.data.approvalStatus);
+      console.log('ReportCount:', response.data.reportCount);
       setDoc(response.data);
     } catch {
       setErrorMessage('Không thể tải thông tin tài liệu. Tài liệu có thể không tồn tại hoặc đã bị xóa.');
@@ -266,7 +269,9 @@ function DocumentDetail() {
     setPdfData(null);
     try {
       if (pdfData) window.URL.revokeObjectURL(pdfData);
-    } catch {}
+    } catch {
+      // Ignore URL revocation errors
+    }
   };
 
   const handlePreview = async () => {
@@ -441,9 +446,26 @@ function DocumentDetail() {
             {doc.approvalStatus === 'SemiApproved' && (
               <div className="status-banner semi-approved">
                 <FontAwesomeIcon icon={faCircleExclamation} />
-                <span>Tài liệu này đã qua kiểm tra tự động nhưng chưa được quản trị viên xác thực hoàn toàn.</span>
+                <span>Tài liệu này đã qua kiểm tra tự động nhưng chưa được cộng đồng xác thực hoàn toàn.</span>
               </div>
             )}
+            {doc.approvalStatus === 'Approved' && (
+              <div className="status-banner approved">
+                <FontAwesomeIcon icon={faCircleExclamation} />
+                <span>Tài liệu này đã được cộng đồng kiểm duyệt và xác thực.</span>
+              </div>
+            )}
+            {doc.approvalStatus === 'Pending' && (
+              <div className="status-banner pending">
+                <FontAwesomeIcon icon={faCircleExclamation} />
+                <span>Tài liệu này đang chờ được kiểm duyệt bởi quản trị viên.</span>
+              </div>
+            )}
+            {/* Debug: Hiển thị ApprovalStatus để kiểm tra */}
+            <div style={{display: 'none'}}>
+              Current ApprovalStatus: {doc.approvalStatus || 'undefined'}
+              Report Count: {doc.reportCount || 0}
+            </div>
             <div className="document-header-section">
               <div className="document-title-row">
                 <div className="document-title-wrapper">
@@ -553,6 +575,11 @@ function DocumentDetail() {
                 <div className="stats-item">
                   <FontAwesomeIcon icon={faFile} />
                   <span>{doc.fileType ? doc.fileType.toUpperCase() : 'N/A'}</span>
+                </div>
+                <div className="stats-separator">|</div>
+                <div className="stats-item">
+                  <FontAwesomeIcon icon={faExclamationTriangle} />
+                  <span>{doc.reportCount || 0} báo cáo</span>
                 </div>
               </div>
             </div>

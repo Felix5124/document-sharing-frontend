@@ -246,4 +246,6 @@ export const createReport = (data) => apiClient.post("/reports", data);
 
 // (Tùy chọn - Dành cho trang quản trị)
 export const getAllReports = () => apiClient.get("/reports");
+export const getProcessedReports = () => apiClient.get("/reports/processed");
 export const updateReportStatus = (id, status) => apiClient.put(`/reports/${id}/status`, { status });
+export const resetDocumentReports = (documentId) => apiClient.put(`/documents/${documentId}/reset-reports`);

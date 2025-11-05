@@ -387,11 +387,8 @@ textarea.form-control {
 /* ========================================
    STATUS BANNER & REPORT SECTION
    ======================================== */
-/* Status Banner for SemiApproved documents */
-.status-banner.semi-approved {
-  background-color: #fffbeb;
-  color: #b45309;
-  border: 1px solid #fde68a;
+/* Status Banner for document approval status */
+.status-banner {
   border-radius: 8px;
   padding: 12px;
   margin-bottom: 20px;
@@ -399,6 +396,24 @@ textarea.form-control {
   align-items: center;
   gap: 10px;
   font-weight: 500;
+}
+
+.status-banner.semi-approved {
+  background-color: #fffbeb;
+  color: #b45309;
+  border: 1px solid #fde68a;
+}
+
+.status-banner.approved {
+  background-color: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.status-banner.pending {
+  background-color: #f8fafc;
+  color: #475569;
+  border: 1px solid #e2e8f0;
 }
 
 /* Report Section */
@@ -410,19 +425,23 @@ textarea.form-control {
 }
 
 .report-button {
-  background: none;
-  border: 1px solid #d1d5db;
-  color: #6b7280;
-  padding: 6px 12px;
+  background: #dc2626;
+  border: 1px solid #dc2626;
+  color: white;
+  padding: 8px 16px;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;
   font-size: 0.9rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .report-button:hover {
-  background-color: #f3f4f6;
-  color: #111827;
+  background: #b91c1c;
+  border-color: #b91c1c;
 }
 
 /* ========================================
