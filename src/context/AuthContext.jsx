@@ -23,6 +23,17 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Cập nhật một phần thông tin user trong Context và localStorage
+  const updateUserContext = (partial) => {
+    setUser((prev) => {
+      const next = { ...(prev || {}), ...(partial || {}) };
+      try {
+        localStorage.setItem('user', JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+  };
+
   const contextLogout = async (showToast = true) => {
     try {
       await firebaseSignOut(auth);
@@ -115,7 +126,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, token, login: contextLogin, logout: contextLogout, isLoading }}>
+    <AuthContext.Provider value={{ user, token, login: contextLogin, logout: contextLogout, isLoading, updateUserContext }}>
       {children}
     </AuthContext.Provider>
   );

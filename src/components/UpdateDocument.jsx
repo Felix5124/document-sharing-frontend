@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import api, { getDocumentById, updateDocument, getCategories } from '../services/api';
+import { getDocumentById, updateDocument, getCategories } from '../services/api';
+import { getFullImageUrl } from '../utils/imageUtils';
 import '../styles/components/UpdateDocument.css';
 
 function UpdateDocument() {
@@ -41,7 +42,7 @@ function UpdateDocument() {
         setValue('Title', docData.Title || docData.title || '');
         setValue('Description', docData.Description || docData.description || '');
         setValue('CategoryId', docData.CategoryId || docData.categoryId || '');
-  setValue('UploadedBy', docData.UploadedBy || docData.uploadedBy || '');
+        setValue('UploadedBy', docData.UploadedBy || docData.uploadedBy || '');
 
         if (docData.tags && Array.isArray(docData.tags)) {
           const initialTags = docData.tags.map(tag => ({
@@ -52,7 +53,7 @@ function UpdateDocument() {
         } else {
           setValue('Tags', []);
         }
-        
+
         const cats = catResponse.data.$values || catResponse.data || [];
         setCategories(Array.isArray(cats) ? cats : []);
 
@@ -61,11 +62,12 @@ function UpdateDocument() {
           : 'Chưa có file';
         setFileName(fileNameFromUrl);
 
-        if (docData.CoverImageUrl) {
-          setCurrentCoverImageUrl(`${api.defaults.baseURL.replace('/api', '')}/${docData.CoverImageUrl}`);
+        if (docData.CoverImageUrl && docData.CoverImageUrl.trim() !== '') {
+          setCurrentCoverImageUrl(getFullImageUrl(docData.CoverImageUrl));
         } else {
-          setCurrentCoverImageUrl(`${api.defaults.baseURL.replace('/api', '')}/ImageCovers/cat.jpg`);
+          setCurrentCoverImageUrl(getFullImageUrl(null));
         }
+
 
         setLoading(false);
       } catch (error) {
@@ -150,7 +152,7 @@ function UpdateDocument() {
       }
       formData.append('UploadedBy', uploadedBy.toString());
 
-  // points removed: do not append PointsRequired
+      // points removed: do not append PointsRequired
 
       if (data.File && data.File.length > 0) {
         const selectedFile = data.File[0];
@@ -223,7 +225,7 @@ function UpdateDocument() {
               <textarea
                 className="form-input"
                 {...register('Description')}
-                />
+              />
             </div>
           </div>
 

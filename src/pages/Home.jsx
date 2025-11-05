@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useRef as useReactRef } from 'react';
 import {
   searchDocuments,
   getCategories,
@@ -12,8 +12,10 @@ import bannerImage1 from '../assets/images/anhbg.jpg';
 import bannerImage2 from '../assets/images/anhbg2.jpg';
 import bannerImage3 from '../assets/images/anhbg3.jpg';
 import { getFullImageUrl } from '../utils/imageUtils';
+import { getFullAvatarUrl } from '../utils/avatarUtils';
 import useOnScreen from '../hooks/useOnScreen';
 import '../styles/pages/Home.css';
+import { useHomeCache } from '../context/HomeCacheContext';
 import {
   faMagnifyingGlass,
   faUser,
@@ -72,29 +74,39 @@ function Banner() {
 }
 
 function Home() {
-  const [documents, setDocuments] = useState([]);
+  const { cache, setCache } = useHomeCache();
+  const [documents, setDocuments] = useState(cache.documents || []);
   const [loading, setLoading] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [searchTerm, setSearchTerm] = useState(cache.searchTerm || '');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(cache.searchTerm || '');
+  const [selectedCategory, setSelectedCategory] = useState(cache.selectedCategory || '');
 
-  const [categories, setCategories] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [categories, setCategories] = useState(cache.categories || []);
+  const [currentPage, setCurrentPage] = useState(cache.currentPage || 1);
+  const [totalPages, setTotalPages] = useState(cache.totalPages || 1);
   const documentsPerPage = 10;
 
-  const [topCommenter, setTopCommenter] = useState(null);
-  const [topDownloadedDoc, setTopDownloadedDoc] = useState(null);
-  const [topInterestDocuments, setTopInterestDocuments] = useState([]);
+  const [topCommenter, setTopCommenter] = useState(cache.topCommenter || null);
+  const [topDownloadedDoc, setTopDownloadedDoc] = useState(cache.topDownloadedDoc || null);
+  const [topInterestDocuments, setTopInterestDocuments] = useState(cache.topInterestDocuments || []);
   const [loadingTopInterest, setLoadingTopInterest] = useState(false);
+  const skipInitialFetchRef = useRef(false);
+
+  // Hydrate from cache once
+  useEffect(() => {
+    if (cache && (cache.documents?.length || cache.categories?.length || cache.topCommenter || cache.topDownloadedDoc || cache.topInterestDocuments?.length)) {
+      skipInitialFetchRef.current = true; // prevent first fetches
+    }
+  }, []);
 
   const fetchCategories = async () => {
     try {
       const res = await getCategories();
       const data = res.data;
-      if (Array.isArray(data)) setCategories(data);
-      else if (data?.$values) setCategories(data.$values);
-      else setCategories([]);
+      let list = [];
+      if (Array.isArray(data)) list = data; else if (data?.$values) list = data.$values; else list = [];
+      setCategories(list);
+      setCache(prev => ({ ...prev, categories: list }));
     } catch {
       toast.error('Không thể tải danh mục.');
     }
@@ -106,6 +118,7 @@ function Home() {
       const params = {
         Keyword: debouncedSearchTerm || undefined,
         CategoryId: selectedCategory ? parseInt(selectedCategory) : undefined,
+        // sortBy theo backend: 'newest' | 'popular' | default (title)
         SortBy: 'newest',
         Page: currentPage,
         PageSize: documentsPerPage,
@@ -114,11 +127,22 @@ function Home() {
       const { documents: docs = [], total = 0 } = res.data;
       const approvedDocs = docs.filter((d) => d.isApproved && !d.isLock);
       setDocuments(approvedDocs);
-      setTotalPages(Math.ceil(total / documentsPerPage));
+      const pages = Math.ceil(total / documentsPerPage);
+      setTotalPages(pages);
+      setCache(prev => ({
+        ...prev,
+        documents: approvedDocs,
+        totalPages: pages,
+        searchTerm: debouncedSearchTerm,
+        selectedCategory,
+        currentPage,
+        hydratedAt: Date.now(),
+      }));
     } catch {
       toast.error('Không thể tải tài liệu.');
       setDocuments([]);
       setTotalPages(1);
+      setCache(prev => ({ ...prev, documents: [], totalPages: 1 }));
     } finally {
       setLoading(false);
     }
@@ -141,11 +165,17 @@ function Home() {
 
       const topInterestRes = await getTopDownloadedDocumentsList(5);
       let topInterestData = topInterestRes.data;
-      if (Array.isArray(topInterestData?.$values))
+      if (Array.isArray(topInterestData?.$values)) {
         setTopInterestDocuments(topInterestData.$values);
-      else if (Array.isArray(topInterestData))
+      } else if (Array.isArray(topInterestData)) {
         setTopInterestDocuments(topInterestData);
-      else setTopInterestDocuments([]);
+      } else setTopInterestDocuments([]);
+      setCache(prev => ({
+        ...prev,
+        topCommenter: commenterData,
+        topDownloadedDoc: topDocData,
+        topInterestDocuments: Array.isArray(topInterestData?.$values) ? topInterestData.$values : (Array.isArray(topInterestData) ? topInterestData : []),
+      }));
     } catch {
       toast.error('Không thể tải dữ liệu bảng xếp hạng.');
       setTopInterestDocuments([]);
@@ -160,19 +190,56 @@ function Home() {
   }, [searchTerm]);
 
   useEffect(() => {
-    fetchDocuments();
+    if (skipInitialFetchRef.current) {
+      // Skip one run để không fetch lại ngay sau khi hydrate từ cache
+      skipInitialFetchRef.current = false;
+      return;
+    }
+
+    // Nếu bộ lọc/từ khóa/trang thay đổi so với cache → luôn fetch mới
+    const paramsChanged =
+      (cache.searchTerm || '') !== (debouncedSearchTerm || '') ||
+      (cache.selectedCategory || '') !== (selectedCategory || '') ||
+      (cache.currentPage || 1) !== (currentPage || 1);
+
+    // Cache quá cũ thì cũng refetch
+    const cacheTooOld = Date.now() - (cache.hydratedAt || 0) > 60000; // 60 giây
+
+    if (paramsChanged || !cache.hydratedAt || cacheTooOld) {
+      fetchDocuments();
+    }
   }, [debouncedSearchTerm, selectedCategory, currentPage]);
 
+
   useEffect(() => {
-    fetchCategories();
-    fetchHomePageData();
+    const needsCategories = !(cache?.categories?.length);
+    const needsHomeData = !(cache?.topCommenter || cache?.topDownloadedDoc || (cache?.topInterestDocuments?.length));
+    if (needsCategories) fetchCategories();
+    if (needsHomeData) fetchHomePageData();
   }, []);
 
+  const scrollToGridTop = () => {
+    // Cuộn mượt lên đầu khu vực danh sách tài liệu
+    try {
+      const el = document.querySelector('.main-area');
+      if (el) {
+        const top = el.getBoundingClientRect().top + window.pageYOffset - 12;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
+    } catch {}
+  };
+
   const handleNextPage = () => {
-    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+    if (currentPage < totalPages) {
+      scrollToGridTop();
+      setCurrentPage(currentPage + 1);
+    }
   };
   const handlePrevPage = () => {
-    if (currentPage > 1) setCurrentPage(currentPage - 1);
+    if (currentPage > 1) {
+      scrollToGridTop();
+      setCurrentPage(currentPage - 1);
+    }
   };
 
   const DocumentCard = ({ doc }) => {
@@ -241,10 +308,10 @@ function Home() {
             ) : (
               <>
                 <img
-                  src={getFullImageUrl(data.avatarUrl)}
+                  src={getFullAvatarUrl(data.avatarUrl)}
                   alt={data.fullName || 'User Avatar'}
                   className="contributor-avatar"
-                  onError={(e) => (e.target.src = '/avatars/defaultavatar.png')}
+                  onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = getFullAvatarUrl(null); }}
                 />
                 <p className="contributor-name">{data.fullName || data.email}</p>
                 <p className="contributor-stat">{statLabel}: {statValue}</p>
@@ -344,8 +411,8 @@ function Home() {
                   <option value="">Tất cả danh mục</option>
                   {categories.length > 0
                     ? categories.map((c) => (
-                        <option key={c.categoryId} value={c.categoryId}>{c.name}</option>
-                      ))
+                      <option key={c.categoryId} value={c.categoryId}>{c.name}</option>
+                    ))
                     : <option disabled>Không có danh mục</option>}
                 </select>
               </div>
@@ -361,17 +428,17 @@ function Home() {
             </aside>
 
             <main className="main-area">
-              {loading ? (
-                <div className="loading-view">
-                  <div className="spinner-custom"></div>
-                  <p className="loading-text">Đang tải tài liệu...</p>
-                </div>
-              ) : documents.length ? (
+              {documents.length ? (
                 <>
-                  <div className="documents-grid">
+                  <div className={`documents-grid ${loading ? 'is-loading' : 'is-loaded'}`}>
                     {documents.slice(0, 10).map((doc) => (
                       <DocumentCard key={doc.documentId} doc={doc} />
                     ))}
+                    {loading && (
+                      <div className="grid-loading-overlay" aria-hidden="true">
+                        <div className="spinner-custom"></div>
+                      </div>
+                    )}
                   </div>
                   {totalPages > 1 && (
                     <div className="pagination-section">
@@ -384,6 +451,11 @@ function Home() {
                     </div>
                   )}
                 </>
+              ) : loading ? (
+                <div className="loading-view">
+                  <div className="spinner-custom"></div>
+                  <p className="loading-text">Đang tải tài liệu...</p>
+                </div>
               ) : (
                 <div className="empty-view">
                   <FontAwesomeIcon icon={faCircleExclamation} size="2x" />

@@ -121,10 +121,9 @@ export const searchDocuments = (params) => {
 export const downloadDocument = (id, userId) =>
   apiClient.get(`/documents/${id}/download`, {
     params: { userId },
-    responseType: "blob",
   });
 export const previewDocument = (id) =>
-  apiClient.get(`/documents/${id}/preview`, { responseType: "arraybuffer" });
+  apiClient.get(`/documents/${id}/preview`);
 export const getUploadCount = (userId) =>
   apiClient.get("/documents/upload-count", { params: { userId } });
 export const getRelatedDocuments = (documentId, count = 4) => {
@@ -179,7 +178,7 @@ export const deleteNotification = (notificationId) =>
 
 // --- API cho theo dõi ---
 export const getUserFollowing = (userId) =>
-  apiClient.get("/follows", { params: { userId } });
+  apiClient.get("/follows/following", { params: { userId } });
 export const getUserFollows = (followedUserId) =>
   apiClient.get("/follows/followers", { params: { followedUserId } });
 export const follow = (data) => apiClient.post("/follows", data);

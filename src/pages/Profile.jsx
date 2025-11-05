@@ -8,7 +8,9 @@ import {
   getUploadCount,
   uploadAvatar,
   deleteDocument,
-  getDownloads
+  getDownloads,
+  getUserFollowing,
+  getUserFollows
 } from '../services/api';
 import { toast } from 'react-toastify';
 import Achievements from '../components/Achievements';
@@ -26,15 +28,18 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 import '../styles/pages/Profile.css';
+import { getFullAvatarUrl } from '../utils/avatarUtils';
 
 function Profile() {
   const navigate = useNavigate();
-  const { user } = useContext(AuthContext);
+  const { user, updateUserContext } = useContext(AuthContext);
   const [userData, setUserData] = useState(null);
   const [uploads, setUploads] = useState([]);
   const [downloads, setDownloads] = useState([]);
   const [uploadCount, setUploadCount] = useState(0);
   const [downloadCount, setDownloadCount] = useState(0);
+  const [followingCount, setFollowingCount] = useState(0);
+  const [followersCount, setFollowersCount] = useState(0);
   const [avatarFile, setAvatarFile] = useState(null);
   // schools removed
   const { register, handleSubmit, formState: { errors } } = useForm();
@@ -42,16 +47,26 @@ function Profile() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [userResponse, uploadResponse, downloadResponse] = await Promise.all([
+        const [userResponse, uploadResponse, downloadResponse, followingResp, followersResp] = await Promise.all([
           getUser(user.userId),
           getUploadCount(user.userId),
           getDownloads(user.userId),
+          getUserFollowing(user.userId),
+          getUserFollows(user.userId),
         ]);
         setUserData(userResponse.data);
         setUploads(uploadResponse.data.uploads);
         setUploadCount(uploadResponse.data.uploadCount);
         setDownloads(downloadResponse.data);
         setDownloadCount(downloadResponse.data.length);
+
+        // Normalize following/followers arrays and set counts
+        let followingData = followingResp.data;
+        if (Array.isArray(followingData?.$values)) followingData = followingData.$values;
+        let followersData = followersResp.data;
+        if (Array.isArray(followersData?.$values)) followersData = followersData.$values;
+        setFollowingCount(Array.isArray(followingData) ? followingData.length : 0);
+        setFollowersCount(Array.isArray(followersData) ? followersData.length : 0);
       } catch (error) {
         console.error('Fetch error:', error.response?.data || error.message);
         if (error.response?.status === 401) {
@@ -74,10 +89,13 @@ function Profile() {
     try {
       if (avatarFile) {
         const avatarResponse = await uploadAvatar(user.userId, avatarFile);
+        const newAvatarUrl = avatarResponse.data.avatarUrl; // SAS URL
         setUserData((prev) => ({
           ...prev,
-          avatarUrl: avatarResponse.data.avatarUrl
+          avatarUrl: newAvatarUrl
         }));
+        // Cập nhật ngay Context để Navbar phản ánh lập tức
+        updateUserContext({ avatarUrl: newAvatarUrl });
       }
 
       const updateData = {
@@ -88,6 +106,10 @@ function Profile() {
       toast.success('Cập nhật hồ sơ thành công.');
       const userResponse = await getUser(user.userId);
       setUserData(userResponse.data);
+      // Đồng bộ lại Context (phòng trường hợp BE trả thêm field khác)
+      if (userResponse?.data?.avatarUrl) {
+        updateUserContext({ avatarUrl: userResponse.data.avatarUrl });
+      }
       setAvatarFile(null);
     } catch (error) {
       console.error('Update error:', error.response?.data || error.message);
@@ -138,13 +160,11 @@ function Profile() {
                 src={
                   avatarFile
                     ? URL.createObjectURL(avatarFile)
-                    : (userData.avatarUrl
-                      ? `https://localhost:7013${userData.avatarUrl}`
-                      : '../src/assets/images/anh.png')
+                    : getFullAvatarUrl(userData.avatarUrl || userData.AvatarUrl || null)
                 }
                 alt="Avatar"
                 className={`avatar-img ${userData.isVip ? 'vip' : ''}`}
-                onError={(e) => (e.target.src = '/default-avatar.png')}
+                onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = getFullAvatarUrl(null); }}
               />
               {userData.isVip && (
                 <div className="vip-badge-profile">
@@ -192,20 +212,9 @@ function Profile() {
                   />
                 </div>
               </div>
-
-              {/* School and points removed from profile */}
-
-              <div className="form-group">
-                <label className="form-label">Cấp độ</label>
-                <div className="input-wrapper">
-                  <FontAwesomeIcon icon={faAward} className="input-icon" />
-                  <input
-                    type="text"
-                    className="form-input"
-                    value={userData.level}
-                    disabled
-                  />
-                </div>
+              <div className='profile-follow-stats'>
+                <p>Đang theo dõi : {followingCount} người</p>
+                <p>Người theo dõi : {followersCount} người</p>
               </div>
 
               <button type="submit" className="submit-button">
