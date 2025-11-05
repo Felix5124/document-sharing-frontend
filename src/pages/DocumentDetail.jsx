@@ -13,7 +13,7 @@ import {
   getRelatedDocuments
 } from '../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faDownload, faFolder, faFile, faDatabase, faCalendar, faTags, faArrowRight, faUser, faPaperPlane, faCommentDots, faPlusCircle } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faDownload, faFolder, faFile, faDatabase, faCalendar, faTags, faArrowRight, faUser, faPaperPlane, faCommentDots, faPlusCircle, faFlag, faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
 
 import { AuthContext } from '../context/AuthContext';
 import { toast } from 'react-toastify';
@@ -27,6 +27,7 @@ import StarRatingInput from '../components/DocumentDetail/StarRatingInput';
 import CustomModal from '../components/DocumentDetail/CustomModal';
 import CustomButton from '../components/DocumentDetail/CustomButton';
 import CustomForm, { FormGroup, FormLabel, FormControl } from '../components/DocumentDetail/CustomForm';
+import ReportModal from '../components/ReportModal';
 import '../styles/pages/DocumentDetail.css';
 
 
@@ -53,6 +54,7 @@ function DocumentDetail() {
   const [relatedDocsByCategory, setRelatedDocsByCategory] = useState([]);
   const [relatedDocsByTag, setRelatedDocsByTag] = useState([]);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
 
 
   useEffect(() => {
@@ -435,6 +437,13 @@ function DocumentDetail() {
         {/* === MAIN CONTENT SECTION === */}
         <div className="layout-grid main-content-section">
           <div className="layout-column full-width">
+            {/* THÊM MỚI: Banner thông báo */}
+            {doc.approvalStatus === 'SemiApproved' && (
+              <div className="status-banner semi-approved">
+                <FontAwesomeIcon icon={faCircleExclamation} />
+                <span>Tài liệu này đã qua kiểm tra tự động nhưng chưa được quản trị viên xác thực hoàn toàn.</span>
+              </div>
+            )}
             <div className="document-header-section">
               <div className="document-title-row">
                 <div className="document-title-wrapper">
@@ -514,6 +523,16 @@ function DocumentDetail() {
 
                 {/* points badge removed */}
               </div>
+      
+              {/* Thêm nút báo cáo */}
+              {user && (
+                <div className="report-section">
+                  <button className="report-button" onClick={() => setShowReportModal(true)}>
+                    <FontAwesomeIcon icon={faFlag} /> Báo cáo vi phạm
+                  </button>
+                </div>
+              )}
+      
               <div className="document-stats-row">
                 <div className="stats-item">
                   {totalRatedComments > 0 ? (
@@ -921,6 +940,16 @@ function DocumentDetail() {
       >
         {errorMessage}
       </CustomModal>
+
+      {/* Render Report Modal */}
+      {doc && user && (
+        <ReportModal
+          show={showReportModal}
+          onHide={() => setShowReportModal(false)}
+          documentId={doc.documentId}
+          userId={user.userId}
+        />
+      )}
     </div>
   );
 }

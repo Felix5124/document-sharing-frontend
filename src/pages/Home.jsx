@@ -255,6 +255,10 @@ function Home() {
               className="document-card-image"
               onError={(e) => (e.target.src = getFullImageUrl(null))}
             />
+            {/* THÊM MỚI: Nhãn trạng thái */}
+            {doc.approvalStatus === 'SemiApproved' && (
+              <span className="status-label semi-approved">Chưa kiểm duyệt</span>
+            )}
           </div>
           <div className="document-card-body">
             <div className="document-card-header">

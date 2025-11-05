@@ -67,8 +67,15 @@ function DocumentManagement() {
         <td className="download-count">{doc.downloadCount}</td>
         <td>
           <div className="status-container">
-            <span className={`status-badge ${doc.isApproved ? 'status-approved' : 'status-pending'}`}>
-              {doc.isApproved ? 'Đã duyệt' : 'Chưa duyệt'}
+            <span className={`status-badge status-${doc.approvalStatus?.toLowerCase()}`}>
+              {
+                {
+                  'Approved': 'Đã duyệt',
+                  'SemiApproved': 'Chưa kiểm duyệt',
+                  'Pending': 'Đang chờ',
+                  'Rejected': 'Bị từ chối'
+                }[doc.approvalStatus] || 'Không xác định'
+              }
             </span>
           </div>
         </td>

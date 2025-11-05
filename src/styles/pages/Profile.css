@@ -253,3 +253,9 @@
   margin-top: 10px;
   justify-content: space-around;
 }
+
+/* Status text colors for document approval status */
+.status-text.approved { color: #059669; font-weight: bold; }
+.status-text.semi-approved { color: #d97706; font-weight: bold; }
+.status-text.pending { color: #6b7280; }
+.status-text.rejected { color: #dc2626; font-weight: bold; }
