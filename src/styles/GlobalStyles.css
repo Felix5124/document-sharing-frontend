@@ -231,7 +231,9 @@ body {
 
 /* Empty State - shared across pages */
 .empty-state {
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 30px 24px;
   border: 1px solid #d1d5db;
   background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
@@ -292,12 +294,12 @@ body {
 }
 .admin-table th:nth-child(1),
 .admin-table td:nth-child(1) {
-  width: 25%;
+  width: 12%;
 }
 
 .admin-table th:nth-child(2),
 .admin-table td:nth-child(2) {
-  width: 15%;
+  width: 5%;
 }
 
 .admin-table th:nth-child(3),
@@ -323,6 +325,7 @@ body {
 }
 
 .admin-table-wrapper {
+  width: 100%;
   overflow-x: auto;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);

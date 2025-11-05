@@ -93,7 +93,6 @@ function DocumentApproval() {
         </div>
       ) : (
         <div className="empty-state">
-          <FontAwesomeIcon icon={faFolderOpen} className="empty-icon" />
           <p>Không có tài liệu chờ duyệt.</p>
         </div>
       )}

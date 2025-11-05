@@ -23,12 +23,6 @@ function AdminDashboard() {
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState('document-approval');
 
-  console.log(
-    '%c[AdminDashboard] Component Rendered/Mounting. User from context:',
-    'color: purple; font-weight: bold;',
-    user ? { userId: user.userId, isAdmin: user.isAdmin, email: user.email } : null
-  );
-
   const getSectionTitle = () => {
     switch (activeSection) {
       case 'document-approval':
@@ -52,8 +46,6 @@ function AdminDashboard() {
     );
     return null;
   }
-  console.log('[AdminDashboard] User is admin. Rendering dashboard content.');
-
   return (
     <div className="all-container ">
       <div className='admin-container-card'>

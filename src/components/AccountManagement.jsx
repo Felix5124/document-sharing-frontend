@@ -41,8 +41,8 @@ function AccountManagement() {
   };
 
   const handleLockUnlock = async (userId, isLocked) => {
+    const newLockedStatus = !isLocked;
     try {
-      const newLockedStatus = !isLocked;
       await lockUser(userId, newLockedStatus);
       toast.success(newLockedStatus ? 'Khóa tài khoản thành công.' : 'Mở khóa tài khoản thành công.');
       fetchUsers();

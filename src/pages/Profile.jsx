@@ -8,7 +8,9 @@ import {
   getUploadCount,
   uploadAvatar,
   deleteDocument,
-  getDownloads
+  getDownloads,
+  getUserFollowing,
+  getUserFollows
 } from '../services/api';
 import { toast } from 'react-toastify';
 import Achievements from '../components/Achievements';
@@ -36,6 +38,8 @@ function Profile() {
   const [downloads, setDownloads] = useState([]);
   const [uploadCount, setUploadCount] = useState(0);
   const [downloadCount, setDownloadCount] = useState(0);
+  const [followingCount, setFollowingCount] = useState(0);
+  const [followersCount, setFollowersCount] = useState(0);
   const [avatarFile, setAvatarFile] = useState(null);
   // schools removed
   const { register, handleSubmit, formState: { errors } } = useForm();
@@ -43,16 +47,26 @@ function Profile() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [userResponse, uploadResponse, downloadResponse] = await Promise.all([
+        const [userResponse, uploadResponse, downloadResponse, followingResp, followersResp] = await Promise.all([
           getUser(user.userId),
           getUploadCount(user.userId),
           getDownloads(user.userId),
+          getUserFollowing(user.userId),
+          getUserFollows(user.userId),
         ]);
         setUserData(userResponse.data);
         setUploads(uploadResponse.data.uploads);
         setUploadCount(uploadResponse.data.uploadCount);
         setDownloads(downloadResponse.data);
         setDownloadCount(downloadResponse.data.length);
+
+        // Normalize following/followers arrays and set counts
+        let followingData = followingResp.data;
+        if (Array.isArray(followingData?.$values)) followingData = followingData.$values;
+        let followersData = followersResp.data;
+        if (Array.isArray(followersData?.$values)) followersData = followersData.$values;
+        setFollowingCount(Array.isArray(followingData) ? followingData.length : 0);
+        setFollowersCount(Array.isArray(followersData) ? followersData.length : 0);
       } catch (error) {
         console.error('Fetch error:', error.response?.data || error.message);
         if (error.response?.status === 401) {
@@ -198,20 +212,9 @@ function Profile() {
                   />
                 </div>
               </div>
-
-              {/* School and points removed from profile */}
-
-              <div className="form-group">
-                <label className="form-label">Cấp độ</label>
-                <div className="input-wrapper">
-                  <FontAwesomeIcon icon={faAward} className="input-icon" />
-                  <input
-                    type="text"
-                    className="form-input"
-                    value={userData.level}
-                    disabled
-                  />
-                </div>
+              <div className='profile-follow-stats'>
+                <p>Đang theo dõi : {followingCount} người</p>
+                <p>Người theo dõi : {followersCount} người</p>
               </div>
 
               <button type="submit" className="submit-button">

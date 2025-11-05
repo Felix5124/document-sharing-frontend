@@ -112,6 +112,25 @@
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 0px;
+  position: relative;
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 200ms ease, transform 200ms ease, filter 200ms ease;
+}
+
+.documents-grid.is-loading {
+  opacity: 0.35;
+  filter: blur(0.5px);
+  transform: translateY(4px);
+}
+
+.grid-loading-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none; /* Không chặn click vào phân trang */
 }
 
 /* DocumentCard các style */

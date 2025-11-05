@@ -245,3 +245,11 @@
   50% { filter: drop-shadow(0 0 6px #ffb300); }
   100% { filter: drop-shadow(0 0 2px #ffdf00); }
 }
+.profile-follow-stats{
+  display: flex;
+  font-size: 0.9rem;
+  color: #333;
+  gap: 20px;
+  margin-top: 10px;
+  justify-content: space-around;
+}

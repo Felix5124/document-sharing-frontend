@@ -118,6 +118,7 @@ function Home() {
       const params = {
         Keyword: debouncedSearchTerm || undefined,
         CategoryId: selectedCategory ? parseInt(selectedCategory) : undefined,
+        // sortBy theo backend: 'newest' | 'popular' | default (title)
         SortBy: 'newest',
         Page: currentPage,
         PageSize: documentsPerPage,
@@ -190,15 +191,21 @@ function Home() {
 
   useEffect(() => {
     if (skipInitialFetchRef.current) {
-      // Skip one run để không fetch lại sau khi load cache
+      // Skip one run để không fetch lại ngay sau khi hydrate từ cache
       skipInitialFetchRef.current = false;
       return;
     }
 
+    // Nếu bộ lọc/từ khóa/trang thay đổi so với cache → luôn fetch mới
+    const paramsChanged =
+      (cache.searchTerm || '') !== (debouncedSearchTerm || '') ||
+      (cache.selectedCategory || '') !== (selectedCategory || '') ||
+      (cache.currentPage || 1) !== (currentPage || 1);
+
+    // Cache quá cũ thì cũng refetch
     const cacheTooOld = Date.now() - (cache.hydratedAt || 0) > 60000; // 60 giây
 
-    if (!cache.hydratedAt || cacheTooOld) {
-      // Cache rỗng hoặc đã cũ → fetch lại
+    if (paramsChanged || !cache.hydratedAt || cacheTooOld) {
       fetchDocuments();
     }
   }, [debouncedSearchTerm, selectedCategory, currentPage]);
@@ -211,11 +218,28 @@ function Home() {
     if (needsHomeData) fetchHomePageData();
   }, []);
 
+  const scrollToGridTop = () => {
+    // Cuộn mượt lên đầu khu vực danh sách tài liệu
+    try {
+      const el = document.querySelector('.main-area');
+      if (el) {
+        const top = el.getBoundingClientRect().top + window.pageYOffset - 12;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
+    } catch {}
+  };
+
   const handleNextPage = () => {
-    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+    if (currentPage < totalPages) {
+      scrollToGridTop();
+      setCurrentPage(currentPage + 1);
+    }
   };
   const handlePrevPage = () => {
-    if (currentPage > 1) setCurrentPage(currentPage - 1);
+    if (currentPage > 1) {
+      scrollToGridTop();
+      setCurrentPage(currentPage - 1);
+    }
   };
 
   const DocumentCard = ({ doc }) => {
@@ -404,17 +428,17 @@ function Home() {
             </aside>
 
             <main className="main-area">
-              {loading ? (
-                <div className="loading-view">
-                  <div className="spinner-custom"></div>
-                  <p className="loading-text">Đang tải tài liệu...</p>
-                </div>
-              ) : documents.length ? (
+              {documents.length ? (
                 <>
-                  <div className="documents-grid">
+                  <div className={`documents-grid ${loading ? 'is-loading' : 'is-loaded'}`}>
                     {documents.slice(0, 10).map((doc) => (
                       <DocumentCard key={doc.documentId} doc={doc} />
                     ))}
+                    {loading && (
+                      <div className="grid-loading-overlay" aria-hidden="true">
+                        <div className="spinner-custom"></div>
+                      </div>
+                    )}
                   </div>
                   {totalPages > 1 && (
                     <div className="pagination-section">
@@ -427,6 +451,11 @@ function Home() {
                     </div>
                   )}
                 </>
+              ) : loading ? (
+                <div className="loading-view">
+                  <div className="spinner-custom"></div>
+                  <p className="loading-text">Đang tải tài liệu...</p>
+                </div>
               ) : (
                 <div className="empty-view">
                   <FontAwesomeIcon icon={faCircleExclamation} size="2x" />
