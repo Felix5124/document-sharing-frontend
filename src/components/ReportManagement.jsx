@@ -307,21 +307,6 @@ function ReportManagement() {
                         </span>
                       </div>
                     </div>
-                    <div className="report-status">
-                      <span className="status-badge pending">Có báo cáo</span>
-                    </div>
-                  </div>
-
-                  <div className="report-card-body">
-                    <div className="report-summary">
-                      <strong>Tổng số báo cáo:</strong> {documentReport.reportCount}
-                    </div>
-                    <div className="document-info">
-                      <strong>ID tài liệu:</strong> {documentReport.documentId}
-                    </div>
-                    <div className="report-explanation">
-                      <small>Tài liệu này đang có {documentReport.reportCount} báo cáo cần xem xét</small>
-                    </div>
                   </div>
 
                   <div className="report-card-actions">
@@ -365,18 +350,6 @@ function ReportManagement() {
                     </div>
                   </div>
 
-                  <div className="report-card-body">
-                    <div className="report-summary">
-                      <strong>Tổng số báo cáo:</strong> {documentReport.reportCount}
-                    </div>
-                    <div className="document-info">
-                      <strong>ID tài liệu:</strong> {documentReport.documentId}
-                    </div>
-                    <div className="report-explanation">
-                      <small>Tài liệu này đã được xử lý với trạng thái: {documentReport.status === 'Resolved' ? 'Đã xử lý' : 'Từ chối'}</small>
-                    </div>
-                  </div>
-
                   <div className="report-card-actions">
                     <button
                       className="btn-action"
@@ -397,7 +370,7 @@ function ReportManagement() {
         <div className="report-detail-modal">
           <div className="modal-content">
             <div className="modal-header">
-              <h4>Chi tiết Báo cáo - {selectedReport.documentTitle}</h4>
+              <h4 className='upload-title'>Chi tiết báo cáo</h4>
               <button
                 className="close-btn"
                 onClick={() => setShowReportDetail(false)}
@@ -410,7 +383,6 @@ function ReportManagement() {
               <div className="document-summary">
                 <h5>Tài liệu: {selectedReport.documentTitle}</h5>
                 <p><strong>Tổng số báo cáo:</strong> {selectedReport.reportCount}</p>
-                <p><strong>ID tài liệu:</strong> {selectedReport.documentId}</p>
               </div>
 
               <div className="action-section">

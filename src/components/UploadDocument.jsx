@@ -1,11 +1,12 @@
 import { useForm } from 'react-hook-form';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { uploadDocument, getCategories } from '../services/api';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import '../styles/components/UploadDocument.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeading, faParagraph, faFolder, faStar, faPaperclip, faImage, faTags, faCloudArrowUp } from '../utils/icons';
+import { AuthContext } from '../context/AuthContext';
 
 function UploadDocument() {
   const { register, handleSubmit, formState: { errors }, reset, watch, setValue } = useForm({
@@ -23,7 +24,7 @@ function UploadDocument() {
   const [previewCover, setPreviewCover] = useState(null);
   const [tagInputText, setTagInputText] = useState('');
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem('user'));
+  const { user } = useContext(AuthContext);
   const userId = user?.userId;
 
   const coverImageFile = watch('CoverImage');
@@ -87,7 +88,7 @@ function UploadDocument() {
     formData.append('Description', data.Description || '');
     formData.append('CategoryId', parseInt(data.CategoryId, 10).toString());
     formData.append('UploadedBy', userId.toString());
-  // points and school removed: do not append PointsRequired or SchoolId
+    // points and school removed: do not append PointsRequired or SchoolId
 
     if (data.File && data.File.length > 0) {
       const selectedFile = data.File[0];

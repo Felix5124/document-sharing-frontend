@@ -144,7 +144,7 @@ function Profile() {
     }
   };
 
-  if (!userData) return <div>Đang tải...</div>;
+  if (!userData) return <div className="loading-display">Đang tải...</div>;
 
   return (
     <div className="all-container">

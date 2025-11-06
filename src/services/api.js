@@ -13,12 +13,29 @@ const apiClient = axios.create({
   },
 });
 
+// Helper: get token from sessionStorage; migrate from localStorage if found
+const getSessionToken = () => {
+  try {
+    let token = sessionStorage.getItem('token');
+    if (!token) {
+      const legacy = localStorage.getItem('token');
+      if (legacy) {
+        sessionStorage.setItem('token', legacy);
+        localStorage.removeItem('token');
+        token = legacy;
+      }
+    }
+    return token;
+  } catch {
+    return null;
+  }
+};
+
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = getSessionToken();
 
     if (token) {
-      console.log("Token exists.");
       // Original conditions:
       const condition1 = config.url && config.url.startsWith(API_BASE_URL) && !config.headers.Authorization;
       const condition2 = (!config.url || !config.url.startsWith('http')) && config.baseURL === API_BASE_URL && !config.headers.Authorization; // Corrected this slightly from your original for relative paths
@@ -28,10 +45,8 @@ apiClient.interceptors.request.use(
       } else if (condition2) {
         config.headers.Authorization = `Bearer ${token}`;
       } else {
-        //console.warn("Interceptor: Token exists, but conditions to add header NOT MET.");
+        // Conditions to set Authorization header not met (rare path)
       }
-    } else {
-      //console.warn("Interceptor: No token found in localStorage.");
     }
     return config;
   },

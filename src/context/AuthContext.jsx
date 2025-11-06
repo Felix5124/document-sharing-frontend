@@ -16,19 +16,24 @@ export const AuthProvider = ({ children }) => {
     if (userData && typeof userData === 'object' && idToken && typeof idToken === 'string') {
       setUser(userData);
       setToken(idToken);
-      localStorage.setItem('user', JSON.stringify(userData));
-      localStorage.setItem('token', idToken);
+      try {
+        sessionStorage.setItem('user', JSON.stringify(userData));
+        sessionStorage.setItem('token', idToken);
+        // cleanup any legacy localStorage for multi-account isolation
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+      } catch {}
     } else {
       console.error('Dữ liệu đăng nhập không hợp lệ:', { userData, idToken });
     }
   };
 
-  // Cập nhật một phần thông tin user trong Context và localStorage
+  // Cập nhật một phần thông tin user trong Context và sessionStorage
   const updateUserContext = (partial) => {
     setUser((prev) => {
       const next = { ...(prev || {}), ...(partial || {}) };
       try {
-        localStorage.setItem('user', JSON.stringify(next));
+        sessionStorage.setItem('user', JSON.stringify(next));
       } catch {}
       return next;
     });
@@ -48,8 +53,13 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setUser(null);
       setToken(null);
-      localStorage.removeItem('user');
-      localStorage.removeItem('token');
+      try {
+        sessionStorage.removeItem('user');
+        sessionStorage.removeItem('token');
+        // cleanup any legacy keys
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+      } catch {}
       setIsLoading(false);
       setIsProcessing(false);
     }
@@ -115,14 +125,36 @@ export const AuthProvider = ({ children }) => {
       } else if (!firebaseUser) {
         setUser(null);
         setToken(null);
-        localStorage.removeItem('user');
-        localStorage.removeItem('token');
+        try {
+          sessionStorage.removeItem('user');
+          sessionStorage.removeItem('token');
+          localStorage.removeItem('user');
+          localStorage.removeItem('token');
+        } catch {}
         setIsProcessing(false);
       }
       setIsLoading(false);
     });
 
     return () => unsubscribe();
+  }, []);
+
+  // One-time migration for existing sessions: move user/token from localStorage to sessionStorage
+  useEffect(() => {
+    try {
+      const sessToken = sessionStorage.getItem('token');
+      const legacyToken = localStorage.getItem('token');
+      if (!sessToken && legacyToken) {
+        sessionStorage.setItem('token', legacyToken);
+        localStorage.removeItem('token');
+      }
+      const sessUser = sessionStorage.getItem('user');
+      const legacyUser = localStorage.getItem('user');
+      if (!sessUser && legacyUser) {
+        sessionStorage.setItem('user', legacyUser);
+        localStorage.removeItem('user');
+      }
+    } catch {}
   }, []);
 
   return (
