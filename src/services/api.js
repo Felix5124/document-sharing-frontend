@@ -122,6 +122,11 @@ export const downloadDocument = (id, userId) =>
   apiClient.get(`/documents/${id}/download`, {
     params: { userId },
   });
+
+export const adminDownloadDocument = (id, userId) =>
+  apiClient.get(`/documents/${id}/admin-download`, {
+    params: { userId },
+  });
 export const previewDocument = (id) =>
   apiClient.get(`/documents/${id}/preview`);
 export const getUploadCount = (userId) =>

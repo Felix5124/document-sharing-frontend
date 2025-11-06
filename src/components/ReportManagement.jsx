@@ -1,21 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faExclamationTriangle,
   faCheckCircle,
   faTimesCircle,
-  faLock,
-  faUnlock,
-  faTrash,
   faEye,
   faFileAlt,
-  faCog
+  faCog,
+  faFileDownload 
 } from '@fortawesome/free-solid-svg-icons';
-import { getAllReports, updateReportStatus as apiUpdateReportStatus, lockDocument, resetDocumentReports, approveDocument as apiApproveDocument, getProcessedReports } from '../services/api';
+import { AuthContext } from '../context/AuthContext';
+import { getAllReports, updateReportStatus as apiUpdateReportStatus, lockDocument, resetDocumentReports, getProcessedReports, adminDownloadDocument } from '../services/api';
 import '../styles/components/ReportManagement.css';
 
 function ReportManagement() {
+  const { user } = useContext(AuthContext); 
   const [reports, setReports] = useState([]);
   const [processedReports, setProcessedReports] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -98,33 +98,80 @@ function ReportManagement() {
     }
   };
 
-  // Update report status and handle document approval if rejected
-  const updateReportStatus = async (status) => {
+  // Handle rejecting reports - means the document is innocent, reset status and report count
+  const handleRejectReports = async () => {
+    if (!selectedReport) return;
     try {
-      // Mark all reports for this document as the selected status
+      // "Từ chối" báo cáo nghĩa là tài liệu vô tội, reset lại trạng thái và số báo cáo
+      await resetDocumentReports(selectedReport.documentId);
+      toast.success('Đã từ chối báo cáo, khôi phục trạng thái và reset lượt tải về 0.'); // <<< CẬP NHẬT NỘI DUNG THÔNG BÁO
+
+      // Cập nhật trạng thái của từng báo cáo sang "Rejected"
       for (const report of selectedReport.reports) {
-        await apiUpdateReportStatus(report.reportId, status);
+        await apiUpdateReportStatus(report.reportId, 'Rejected');
+      }
+
+      // Cập nhật UI
+      fetchReports(); // Tải lại danh sách chờ xử lý
+      fetchProcessedReports(); // Tải lại lịch sử
+      setShowReportDetail(false);
+    } catch (error) {
+      toast.error('Lỗi khi từ chối báo cáo.');
+      console.error('Error rejecting reports:', error);
+    }
+  };
+
+  // Handle resolving reports - means the document has issues -> Lock the document
+  const handleResolveReports = async () => {
+    if (!selectedReport) return;
+    try {
+      // Hành động này sẽ gọi API để khóa tài liệu
+      await lockDocument(selectedReport.documentId, true);
+
+      // Cập nhật trạng thái các báo cáo liên quan
+      for (const report of selectedReport.reports) {
+        await apiUpdateReportStatus(report.reportId, 'Resolved');
       }
       
-      // If rejected, automatically approve the document
-      if (status === 'Rejected') {
-        await approveDocument(selectedReport.documentId);
-        toast.success('Đã từ chối báo cáo và tự động duyệt tài liệu.');
-      } else {
-        toast.success('Đã đánh dấu tất cả báo cáo là Đã xử lý.');
-      }
+      // SỬA LẠI THÔNG BÁO CHO ĐÚNG
+      toast.success('Đã xử lý báo cáo và khóa tài liệu thành công.');
       
-      // Remove the document from the reports list since it's been processed
-      setReports(prevReports =>
-        prevReports.filter(report => report.documentId !== selectedReport.documentId)
-      );
-      
-      // Add to processed reports history
+      fetchReports();
       fetchProcessedReports();
       setShowReportDetail(false);
     } catch (error) {
-      console.error('Error updating report status:', error);
-      toast.error('Lỗi khi cập nhật trạng thái báo cáo.');
+      toast.error('Lỗi khi xử lý báo cáo.');
+      console.error('Error resolving reports:', error);
+    }
+  };
+
+  // Tạo hàm `handleDownloadDocument`:
+  const handleDownloadDocument = async (documentId, documentTitle, fileType) => {
+    if (!user) {
+      toast.error("Không tìm thấy thông tin admin.");
+      return;
+    }
+    try {
+      toast.info("Đang chuẩn bị file để tải xuống...");
+      const response = await adminDownloadDocument(documentId, user.userId);
+      const { url, fileName } = response.data;
+
+      const fileResponse = await fetch(url);
+      if (!fileResponse.ok) throw new Error("Không thể tải file từ link.");
+
+      const blob = await fileResponse.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.setAttribute('download', fileName || `${documentTitle}.${fileType}`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(downloadUrl);
+      toast.success("Tải file thành công!");
+    } catch (error) {
+      console.error("Lỗi khi tải tài liệu:", error);
+      toast.error("Không thể tải tài liệu để xem xét.");
     }
   };
 
@@ -140,64 +187,15 @@ function ReportManagement() {
     }
   };
 
-  // Unlock document
-  const handleUnlockDocument = async (documentId) => {
-    try {
-      await lockDocument(documentId, false);
-      toast.success('Đã mở khóa tài liệu.');
-      fetchReports(); // Refresh list
-    } catch (error) {
-      console.error('Error unlocking document:', error);
-      toast.error('Lỗi khi mở khóa tài liệu.');
-    }
-  };
 
-  // Reset document report count
-  const resetDocumentReportCount = async (documentId) => {
-    try {
-      await resetDocumentReports(documentId);
-      toast.success('Đã reset số lượng báo cáo.');
-      fetchReports(); // Refresh list
-    } catch (error) {
-      console.error('Error resetting report count:', error);
-      toast.error('Lỗi khi reset số lượng báo cáo.');
-    }
-  };
+  // SỬA LẠI: Thêm một useEffect mới để tải dữ liệu ban đầu
+  useEffect(() => {
+    // Tải cả hai danh sách khi component được mount lần đầu
+    fetchReports();
+    fetchProcessedReports();
+  }, []); // Mảng rỗng đảm bảo nó chỉ chạy một lần
 
-  // Approve document
-  const approveDocument = async (documentId) => {
-    try {
-      await apiApproveDocument(documentId);
-      toast.success('Đã duyệt tài liệu.');
-    } catch (error) {
-      console.error('Error approving document:', error);
-      toast.error('Lỗi khi duyệt tài liệu.');
-    }
-  };
-
-  // Delete document
-  const deleteDocument = async (documentId) => {
-    if (!window.confirm('Bạn có chắc chắn muốn xóa tài liệu này vĩnh viễn?')) {
-      return;
-    }
-
-    try {
-      const response = await fetch(`/api/Documents/${documentId}`, {
-        method: 'DELETE'
-      });
-
-      if (response.ok) {
-        toast.success('Đã xóa tài liệu.');
-        fetchReports(); // Refresh list
-      } else {
-        toast.error('Không thể xóa tài liệu.');
-      }
-    } catch (error) {
-      console.error('Error deleting document:', error);
-      toast.error('Lỗi khi xóa tài liệu.');
-    }
-  };
-
+  // Giữ lại useEffect cũ để tải lại khi chuyển tab (tùy chọn, nhưng tốt)
   useEffect(() => {
     if (activeTab === 'pending') {
       fetchReports();
@@ -418,49 +416,27 @@ function ReportManagement() {
               <div className="action-section">
                 <h5>Hành động Quản trị</h5>
                 <div className="action-buttons-grid">
-                  <button
-                    className="btn-view-details"
-                    onClick={toggleIndividualReports}
-                  >
-                    <FontAwesomeIcon icon={faEye} />
-                    {showIndividualReports ? 'Ẩn chi tiết' : 'Xem chi tiết'} ({selectedReport.reportCount} báo cáo)
+                  <button className="btn-view-details" onClick={toggleIndividualReports}>
+                      <FontAwesomeIcon icon={faEye} />
+                      {showIndividualReports ? 'Ẩn chi tiết' : 'Xem các báo cáo'} ({selectedReport.reportCount})
                   </button>
+
+                  {/* NÚT TẢI XUỐNG MỚI */}
                   <button
-                    className="btn-resolve"
-                    onClick={() => updateReportStatus('Resolved')}
+                      className="btn-view" // Sử dụng class màu xanh
+                      onClick={() => handleDownloadDocument(selectedReport.documentId, selectedReport.documentTitle, selectedReport.reports[0]?.document?.fileType || 'bin')}
                   >
-                    <FontAwesomeIcon icon={faCheckCircle} /> Đã xử lý
+                      <FontAwesomeIcon icon={faFileDownload} />
+                      Tải tài liệu
                   </button>
-                  <button
-                    className="btn-reject"
-                    onClick={() => updateReportStatus('Rejected')}
-                  >
-                    <FontAwesomeIcon icon={faTimesCircle} /> Từ chối
+
+                  <button className="btn-resolve" onClick={handleResolveReports}>
+                      <FontAwesomeIcon icon={faCheckCircle} /> Xử lý & Khóa
                   </button>
-                  <button
-                    className="btn-lock"
-                    onClick={() => handleLockDocument(selectedReport.documentId)}
-                  >
-                    <FontAwesomeIcon icon={faLock} /> Khóa tài liệu
+                  <button className="btn-reject" onClick={handleRejectReports}>
+                      <FontAwesomeIcon icon={faTimesCircle} /> Từ chối báo cáo
                   </button>
-                  <button
-                    className="btn-unlock"
-                    onClick={() => handleUnlockDocument(selectedReport.documentId)}
-                  >
-                    <FontAwesomeIcon icon={faUnlock} /> Mở khóa
-                  </button>
-                  <button
-                    className="btn-reset"
-                    onClick={() => resetDocumentReportCount(selectedReport.documentId)}
-                  >
-                    <FontAwesomeIcon icon={faFileAlt} /> Reset báo cáo
-                  </button>
-                  <button
-                    className="btn-delete"
-                    onClick={() => deleteDocument(selectedReport.documentId)}
-                  >
-                    <FontAwesomeIcon icon={faTrash} /> Xóa tài liệu
-                  </button>
+                  {/* ĐÃ XÓA CÁC NÚT THỪA */}
                 </div>
               </div>
 
@@ -492,13 +468,33 @@ function ReportManagement() {
                           <div className="action-buttons">
                             <button
                               className="btn-resolve"
-                              onClick={() => updateReportStatus(report.reportId, 'Resolved')}
+                              onClick={async () => {
+                                try {
+                                  await apiUpdateReportStatus(report.reportId, 'Resolved');
+                                  toast.success('Đã đánh dấu báo cáo là Đã xử lý.');
+                                  fetchReports();
+                                  fetchProcessedReports();
+                                } catch (error) {
+                                  console.error('Error updating report status:', error);
+                                  toast.error('Lỗi khi cập nhật trạng thái báo cáo.');
+                                }
+                              }}
                             >
                               <FontAwesomeIcon icon={faCheckCircle} /> Đã xử lý
                             </button>
                             <button
                               className="btn-reject"
-                              onClick={() => updateReportStatus(report.reportId, 'Rejected')}
+                              onClick={async () => {
+                                try {
+                                  await apiUpdateReportStatus(report.reportId, 'Rejected');
+                                  toast.success('Đã từ chối báo cáo.');
+                                  fetchReports();
+                                  fetchProcessedReports();
+                                } catch (error) {
+                                  console.error('Error updating report status:', error);
+                                  toast.error('Lỗi khi cập nhật trạng thái báo cáo.');
+                                }
+                              }}
                             >
                               <FontAwesomeIcon icon={faTimesCircle} /> Từ chối
                             </button>

@@ -44,14 +44,18 @@ function DocumentManagement() {
     }
   };
 
-  const handleLockUnlock = async (id, isLocked) => {
+  const handleLockUnlock = async (id, currentStatus) => {
+    // Logic mới: Xác định hành động dựa trên trạng thái hiện tại
+    const isLockingAction = currentStatus !== 'Suspended';
+    const actionText = isLockingAction ? 'khóa' : 'mở khóa';
+
     try {
-      await lockDocument(id, !isLocked);
-      toast.success(`Tài liệu đã được ${isLocked ? 'mở khóa' : 'khóa'} thành công!`);
-      fetchDocuments();
+      await lockDocument(id, isLockingAction);
+      toast.success(`Tài liệu đã được ${actionText} thành công!`);
+      fetchDocuments(); // Tải lại danh sách để cập nhật giao diện
     } catch (error) {
-      console.error(`Error ${isLocked ? 'unlocking' : 'locking'} document:`, error);
-      toast.error(`Không thể ${isLocked ? 'mở khóa' : 'khóa'} tài liệu.`);
+      console.error(`Error ${actionText} document:`, error);
+      toast.error(`Không thể ${actionText} tài liệu.`);
     }
   };
 
@@ -60,6 +64,12 @@ function DocumentManagement() {
     const rowRef = useRef(null);
     const isVisible = useOnScreen(rowRef);
 
+    // XÁC ĐỊNH LẠI TRẠNG THÁI NÚT BẤM VÀ TÊN GỌI
+    const isSuspended = doc.approvalStatus === 'Suspended';
+    const buttonText = isSuspended ? 'Mở khóa' : 'Khóa'; // Tên gọi đúng
+    const buttonIcon = isSuspended ? faLockOpen : faLock;
+    const buttonClass = isSuspended ? 'unlock-button' : 'lock-button';
+
     return (
       <tr ref={rowRef} className={`fade-in ${isVisible ? 'visible' : ''}`}>
         <td>{doc.title}</td>
@@ -67,13 +77,15 @@ function DocumentManagement() {
         <td className="download-count">{doc.downloadCount}</td>
         <td>
           <div className="status-container">
+            {/* CẬP NHẬT LOGIC HIỂN THỊ TRẠNG THÁI */}
             <span className={`status-badge status-${doc.approvalStatus?.toLowerCase()}`}>
               {
                 {
                   'Approved': 'Đã duyệt',
                   'SemiApproved': 'Chưa kiểm duyệt',
                   'Pending': 'Đang chờ',
-                  'Rejected': 'Bị từ chối'
+                  'Rejected': 'Bị từ chối',
+                  'Suspended': 'Bị tạm ngưng' // Thêm trạng thái mới
                 }[doc.approvalStatus] || 'Không xác định'
               }
             </span>
@@ -81,15 +93,13 @@ function DocumentManagement() {
         </td>
         <td>
           <div className="action-container">
+            {/* CẬP NHẬT NÚT KHÓA/MỞ KHÓA */}
             <button
-              className={`action-button ${doc.isLock ? 'unlock-button' : 'lock-button'} margin-right-sm`}
-              onClick={() => handleLockUnlock(doc.documentId, doc.isLock)}
+              className={`action-button ${buttonClass} margin-right-sm`}
+              onClick={() => handleLockUnlock(doc.documentId, doc.approvalStatus)}
             >
-              <FontAwesomeIcon
-                icon={doc.isLock ? faLockOpen : faLock}
-                className="icon-margin-right-sm"
-              />
-              {doc.isLock ? 'Mở khóa' : 'Khóa'}
+              <FontAwesomeIcon icon={buttonIcon} className="icon-margin-right-sm" />
+              {buttonText}
             </button>
 
             <button

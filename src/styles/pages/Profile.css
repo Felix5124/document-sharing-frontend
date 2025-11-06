@@ -259,3 +259,4 @@
 .status-text.semi-approved { color: #d97706; font-weight: bold; }
 .status-text.pending { color: #6b7280; }
 .status-text.rejected { color: #dc2626; font-weight: bold; }
+.status-text.suspended { color: #4b5563; font-weight: bold; }

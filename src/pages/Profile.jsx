@@ -247,7 +247,8 @@ function Profile() {
                           'Approved': 'Đã duyệt',
                           'SemiApproved': 'Chưa kiểm duyệt',
                           'Pending': 'Đang chờ',
-                          'Rejected': 'Bị từ chối'
+                          'Rejected': 'Bị từ chối',
+                          'Suspended': 'Bị tạm ngưng' // Thêm trạng thái mới
                         }[upload.approvalStatus] || 'Không xác định'
                       }
                     </span>

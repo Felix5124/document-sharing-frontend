@@ -79,6 +79,12 @@
   transform: scale(1.05);
 }
 
+.status-badge.status-suspended {
+  background: rgba(107, 114, 128, 0.1);
+  color: #4b5563;
+  border: 1px solid rgba(107, 114, 128, 0.2);
+}
+
 /* Action Container & Buttons */
 .action-container {
   display: flex;
