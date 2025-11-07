@@ -34,7 +34,16 @@ function DocumentManagement() {
   const handleDelete = async (id) => {
     if (window.confirm('Bạn có chắc chắn muốn xóa tài liệu này?')) {
       try {
-        await deleteDocument(id);
+        const target = documents.find(d => d.documentId === id);
+        console.log('[Admin/Delete] About to delete document:', {
+          id,
+          title: target?.title,
+          coverImageUrl: target?.coverImageUrl,
+          fileUrl: target?.fileUrl,
+          isApproved: target?.isApproved
+        });
+        const res = await deleteDocument(id);
+        console.log('[Admin/Delete] Backend response:', { status: res?.status, data: res?.data });
         toast.success('Xóa tài liệu thành công!');
         fetchDocuments();
       } catch (error) {
