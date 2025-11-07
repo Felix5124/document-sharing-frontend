@@ -1,6 +1,6 @@
 
 import { initializeApp } from "firebase/app";
-import { initializeAuth, browserSessionPersistence } from "firebase/auth";
+import { getAuth, setPersistence, browserSessionPersistence } from "firebase/auth";
 // import { getAnalytics } from "firebase/analytics";
 
 const firebaseConfig = {
@@ -18,8 +18,14 @@ const firebaseConfig = {
 //console.log("Firebase Auth Domain from Vite env:", import.meta.env.VITE_FIREBASE_AUTH_DOMAIN);
 
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
 // Ensure auth is session-scoped at initialization to avoid any race conditions
-const auth = initializeAuth(app, { persistence: browserSessionPersistence });
+setPersistence(auth, browserSessionPersistence)
+  .catch((error) => {
+    console.error("Firebase Persistence Error:", error);
+  });
+
 
 
 export { auth }; 
