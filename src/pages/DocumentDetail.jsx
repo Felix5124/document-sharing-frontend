@@ -13,7 +13,7 @@ import {
   getRelatedDocuments
 } from '../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faDownload, faFolder, faFile, faDatabase, faCalendar, faTags, faArrowRight, faUser, faPaperPlane, faCommentDots, faPlusCircle, faFlag, faCircleExclamation, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faDownload, faFolder, faFile, faDatabase, faCalendar, faTags, faArrowRight, faUser, faPaperPlane, faCommentDots, faPlusCircle, faFlag, faCircleExclamation, faExclamationTriangle, faClock, faLock, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 
 import { AuthContext } from '../context/AuthContext';
 import { toast } from 'react-toastify';
@@ -55,6 +55,7 @@ function DocumentDetail() {
   const [relatedDocsByTag, setRelatedDocsByTag] = useState([]);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
+  const [hasAlreadyReported, setHasAlreadyReported] = useState(false); // <-- STATE MỚI
 
 
   useEffect(() => {
@@ -143,11 +144,17 @@ function DocumentDetail() {
 
   const fetchDocument = async () => {
     try {
-      const response = await getDocumentById(id);
+      // --- THAY ĐỔI CÁCH GỌI API ---
+      const response = user
+        ? await getDocumentById(id, user.userId)
+        : await getDocumentById(id);
+      
       console.log('Document data:', response.data);
-      console.log('ApprovalStatus:', response.data.approvalStatus);
-      console.log('ReportCount:', response.data.reportCount);
       setDoc(response.data);
+      
+      // --- CẬP NHẬT STATE MỚI ---
+      setHasAlreadyReported(response.data.hasReported || false);
+
     } catch {
       setErrorMessage('Không thể tải thông tin tài liệu. Tài liệu có thể không tồn tại hoặc đã bị xóa.');
       setShowErrorModal(true);
@@ -457,8 +464,8 @@ function DocumentDetail() {
             )}
             {doc.approvalStatus === 'Pending' && (
               <div className="status-banner pending">
-                <FontAwesomeIcon icon={faCircleExclamation} />
-                <span>Tài liệu này đang chờ được kiểm duyệt bởi quản trị viên.</span>
+                <FontAwesomeIcon icon={faClock} />
+                <span>Tài liệu này đang chờ quản trị viên duyệt. Các hành động như tải xuống, bình luận và báo cáo tạm thời bị vô hiệu hóa.</span>
               </div>
             )}
             {/* Debug: Hiển thị ApprovalStatus để kiểm tra */}
@@ -524,6 +531,8 @@ function DocumentDetail() {
                     variant="outline-secondary"
                     onClick={handleDownload}
                     className="action-btn download-btn"
+                    disabled={doc.approvalStatus === 'Pending'}
+                    title={doc.approvalStatus === 'Pending' ? "Tài liệu đang chờ duyệt" : "Tải xuống tài liệu"}
                   >
                     <FontAwesomeIcon icon={faDownload} />
                     <div className="btn-content">
@@ -535,8 +544,15 @@ function DocumentDetail() {
                   <CustomButton
                     variant="primary"
                     onClick={handlePreview}
-                    disabled={doc.fileType?.toLowerCase() !== 'pdf'}
+                    disabled={doc.fileType?.toLowerCase() !== 'pdf' || doc.approvalStatus === 'Pending'}
                     className="action-btn preview-btn"
+                    title={
+                      doc.approvalStatus === 'Pending'
+                        ? "Tài liệu đang chờ duyệt"
+                        : doc.fileType?.toLowerCase() !== 'pdf'
+                        ? "Chỉ hỗ trợ xem trước file PDF"
+                        : "Xem Online"
+                    }
                   >
                     <FontAwesomeIcon icon={faEye} />
                     <span className="btn-text">Xem Online</span>
@@ -546,11 +562,23 @@ function DocumentDetail() {
                 {/* points badge removed */}
               </div>
       
-              {/* Thêm nút báo cáo */}
+              {/* --- THAY ĐỔI LOGIC NÚT BÁO CÁO --- */}
               {user && (
                 <div className="report-section">
-                  <button className="report-button" onClick={() => setShowReportModal(true)}>
-                    <FontAwesomeIcon icon={faFlag} /> Báo cáo vi phạm
+                  <button
+                    className={`report-button ${hasAlreadyReported ? 'already-reported' : ''}`}
+                    onClick={() => !hasAlreadyReported && setShowReportModal(true)}
+                    disabled={doc.approvalStatus === 'Pending' || hasAlreadyReported}
+                    title={
+                      hasAlreadyReported
+                        ? "Bạn đã báo cáo tài liệu này"
+                        : doc.approvalStatus === 'Pending'
+                        ? "Không thể báo cáo tài liệu đang chờ duyệt"
+                        : "Báo cáo vi phạm"
+                    }
+                  >
+                    <FontAwesomeIcon icon={hasAlreadyReported ? faCheckCircle : faFlag} />
+                    {hasAlreadyReported ? 'Đã báo cáo' : 'Báo cáo vi phạm'}
                   </button>
                 </div>
               )}
@@ -793,6 +821,14 @@ function DocumentDetail() {
               </div>
 
               <div className="comment-form-card">
+                {/* === THAY ĐỔI 5: VÔ HIỆU HÓA FORM BÌNH LUẬN === */}
+                {doc.approvalStatus === 'Pending' && (
+                  <div className="form-disabled-overlay">
+                    <FontAwesomeIcon icon={faLock} />
+                    <span>Không thể bình luận khi tài liệu đang chờ duyệt</span>
+                  </div>
+                )}
+                
                 <div className="comment-form-header">
                   <h5>Chia sẻ đánh giá của bạn</h5>
                 </div>
@@ -804,6 +840,7 @@ function DocumentDetail() {
                         <StarRatingInput
                           rating={comment.Rating}
                           onChange={(rating) => setComment({ ...comment, Rating: rating })}
+                          disabled={doc.approvalStatus === 'Pending'}
                         />
                       </div>
                     </FormGroup>
@@ -820,8 +857,14 @@ function DocumentDetail() {
                           rows={4}
                           value={comment.Content}
                           onChange={(e) => setComment({ ...comment, Content: e.target.value })}
-                          placeholder={user ? "Chia sẻ ý kiến và đánh giá của bạn về tài liệu này..." : "Vui lòng đăng nhập để bình luận"}
-                          disabled={!user}
+                          placeholder={
+                            !user
+                              ? "Vui lòng đăng nhập để bình luận"
+                              : doc.approvalStatus === 'Pending'
+                              ? "Tài liệu đang chờ duyệt..."
+                              : "Chia sẻ ý kiến và đánh giá của bạn về tài liệu này..."
+                          }
+                          disabled={!user || doc.approvalStatus === 'Pending'}
                           className="comment-textarea"
                         />
                       </FormGroup>
@@ -834,7 +877,7 @@ function DocumentDetail() {
                     <CustomButton
                       type="submit"
                       variant="primary"
-                      disabled={!user || !comment.Content.trim()}
+                      disabled={!user || !comment.Content.trim() || doc.approvalStatus === 'Pending'}
                       className="submit-comment-btn"
                     >
                       <FontAwesomeIcon icon={faPaperPlane} />
@@ -975,6 +1018,8 @@ function DocumentDetail() {
           onHide={() => setShowReportModal(false)}
           documentId={doc.documentId}
           userId={user.userId}
+          // --- THÊM DÒNG NÀY ---
+          onReportSuccess={() => setHasAlreadyReported(true)}
         />
       )}
     </div>

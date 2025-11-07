@@ -95,7 +95,10 @@ export const uploadAvatar = (userId, file) => {
 
 // --- API cho tài liệu ---
 export const getDocuments = (params) => apiClient.get("/documents", { params });
-export const getDocumentById = (id) => apiClient.get(`/documents/${id}`);
+export const getDocumentById = (id, userId) => {
+  const params = userId ? { userId } : {};
+  return apiClient.get(`/documents/${id}`, { params });
+};
 export const uploadDocument = (data) =>
   apiClient.post("/documents/upload", data, {
     headers: { "Content-Type": "multipart/form-data" },
@@ -176,6 +179,7 @@ export const addPostComment = (data) => apiClient.post("/postcomments", data);
 
 // --- API cho quản trị ---
 export const getPendingDocuments = () => apiClient.get("/documents/pending");
+export const getSemiApprovedDocuments = () => apiClient.get("/documents/semiapproved");
 export const approveDocument = (id) =>
   apiClient.put(`/documents/${id}/approve`);
 export const lockDocument = (id, isLocked) =>

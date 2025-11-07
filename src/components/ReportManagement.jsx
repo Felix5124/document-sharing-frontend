@@ -175,17 +175,6 @@ function ReportManagement() {
     }
   };
 
-  // Lock document
-  const handleLockDocument = async (documentId) => {
-    try {
-      await lockDocument(documentId, true);
-      toast.success('Đã khóa tài liệu.');
-      fetchReports(); // Refresh list
-    } catch (error) {
-      console.error('Error locking document:', error);
-      toast.error('Lỗi khi khóa tài liệu.');
-    }
-  };
 
 
   // SỬA LẠI: Thêm một useEffect mới để tải dữ liệu ban đầu
@@ -402,13 +391,17 @@ function ReportManagement() {
                       Tải tài liệu
                   </button>
 
-                  <button className="btn-resolve" onClick={handleResolveReports}>
-                      <FontAwesomeIcon icon={faCheckCircle} /> Xử lý & Khóa
-                  </button>
-                  <button className="btn-reject" onClick={handleRejectReports}>
-                      <FontAwesomeIcon icon={faTimesCircle} /> Từ chối báo cáo
-                  </button>
-                  {/* ĐÃ XÓA CÁC NÚT THỪA */}
+                  {/* THÊM ĐIỀU KIỆN KIỂM TRA activeTab */}
+                  {activeTab === 'pending' && (
+                    <>
+                      <button className="btn-resolve" onClick={handleResolveReports}>
+                          <FontAwesomeIcon icon={faCheckCircle} /> Xử lý & Khóa
+                      </button>
+                      <button className="btn-reject" onClick={handleRejectReports}>
+                          <FontAwesomeIcon icon={faTimesCircle} /> Từ chối báo cáo
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -434,44 +427,6 @@ function ReportManagement() {
                         )}
                         <p><strong>Người báo cáo:</strong> {report.reporterName || report.reporterEmail || 'Không xác định'}</p>
                         <p><strong>ID người báo cáo:</strong> {report.reporterUserId}</p>
-                      </div>
-                      <div className="report-actions">
-                        {report.status === 'Pending' && (
-                          <div className="action-buttons">
-                            <button
-                              className="btn-resolve"
-                              onClick={async () => {
-                                try {
-                                  await apiUpdateReportStatus(report.reportId, 'Resolved');
-                                  toast.success('Đã đánh dấu báo cáo là Đã xử lý.');
-                                  fetchReports();
-                                  fetchProcessedReports();
-                                } catch (error) {
-                                  console.error('Error updating report status:', error);
-                                  toast.error('Lỗi khi cập nhật trạng thái báo cáo.');
-                                }
-                              }}
-                            >
-                              <FontAwesomeIcon icon={faCheckCircle} /> Đã xử lý
-                            </button>
-                            <button
-                              className="btn-reject"
-                              onClick={async () => {
-                                try {
-                                  await apiUpdateReportStatus(report.reportId, 'Rejected');
-                                  toast.success('Đã từ chối báo cáo.');
-                                  fetchReports();
-                                  fetchProcessedReports();
-                                } catch (error) {
-                                  console.error('Error updating report status:', error);
-                                  toast.error('Lỗi khi cập nhật trạng thái báo cáo.');
-                                }
-                              }}
-                            >
-                              <FontAwesomeIcon icon={faTimesCircle} /> Từ chối
-                            </button>
-                          </div>
-                        )}
                       </div>
                     </div>
                   ))}

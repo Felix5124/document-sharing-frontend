@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import { createReport } from '../services/api';
 import '../styles/components/ReportModal.css';
 
-function ReportModal({ show, onHide, documentId, userId }) {
+function ReportModal({ show, onHide, documentId, userId, onReportSuccess }) {
   const [reason, setReason] = useState('');
   const [details, setDetails] = useState('');
   const [loading, setLoading] = useState(false);
@@ -23,11 +23,25 @@ function ReportModal({ show, onHide, documentId, userId }) {
         details,
       });
       toast.success('Cảm ơn bạn đã gửi báo cáo. Chúng tôi sẽ xem xét sớm nhất có thể.');
-      onHide(); // Tự động đóng modal sau khi gửi thành công
+      
+      // --- GỌI HÀM CALLBACK SAU KHI THÀNH CÔNG ---
+      if (onReportSuccess) {
+        onReportSuccess();
+      }
+      
+      onHide(); // Đóng modal
       setReason(''); // Reset form
       setDetails('');
-    } catch {
-      toast.error('Gửi báo cáo thất bại. Vui lòng thử lại.');
+    } catch (error) { // --- SỬA LẠI LOGIC BẮT LỖI 409 ---
+      if (error.response && error.response.status === 409) {
+        toast.error('Bạn đã báo cáo tài liệu này rồi.');
+        // Cũng gọi callback để đảm bảo UI đồng bộ
+        if (onReportSuccess) {
+          onReportSuccess();
+        }
+      } else {
+        toast.error('Gửi báo cáo thất bại. Vui lòng thử lại.');
+      }
     } finally {
       setLoading(false);
     }
