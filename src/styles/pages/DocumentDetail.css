@@ -1157,3 +1157,49 @@ textarea.form-control {
   background: #4b5563; /* Xám đậm hơn khi hover */
   border-color: #4b5563;
 }
+
+/* ========================================
+   ERROR DISPLAY STYLES
+   ======================================== */
+.error-display-card {
+  text-align: center;
+  padding: 40px 20px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  margin: 40px auto;
+}
+
+.error-icon {
+  color: #ef4444; /* Màu đỏ */
+  margin-bottom: 20px;
+}
+
+.error-display-card h3 {
+  font-size: 1.5rem;
+  color: #111827;
+  margin-bottom: 10px;
+}
+
+.error-display-card p {
+  color: #6b7280;
+  margin-bottom: 25px;
+  line-height: 1.6;
+}
+
+.back-to-home-btn {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.back-to-home-btn:hover {
+  background-color: #2563eb;
+}

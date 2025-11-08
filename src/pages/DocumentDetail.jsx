@@ -37,6 +37,8 @@ function DocumentDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
+  const [loadingState, setLoadingState] = useState('loading'); // Các giá trị có thể là: 'loading', 'success', 'error'
+  const [errorMessage, setErrorMessage] = useState('');
   const [doc, setDoc] = useState(null);
   const [comments, setComments] = useState([]);
   const [comment, setComment] = useState({ Content: '', Rating: 5 });
@@ -46,7 +48,6 @@ function DocumentDetail() {
   const [loadingFollow, setLoadingFollow] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
   const [numPages, setNumPages] = useState(null);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [averageRating, setAverageRating] = useState(0);
@@ -69,9 +70,15 @@ function DocumentDetail() {
     setTotalRatedComments(0);
     setIsFollowing(false);
     setFollowId(null); // Reset follow ID
+    
+    // --- BẮT ĐẦU THAY ĐỔI ---
+    // Chỉ fetch dữ liệu khi có ID và thông tin user đã sẵn sàng (hoặc user là null cho khách)
+    // Việc thêm `user` vào dependency array sẽ tự động gọi lại fetchDocument khi user được xác thực.
     fetchDocument();
-    fetchComments();
-  }, [id]);
+    // --- KẾT THÚC THAY ĐỔI ---
+
+    fetchComments(); // fetchComments có thể chạy độc lập
+  }, [id, user]); // THAY ĐỔI QUAN TRỌNG: Thêm `user` vào dependency array
 
   // Lock body scroll when preview modal is open
   useEffect(() => {
@@ -143,6 +150,7 @@ function DocumentDetail() {
 
 
   const fetchDocument = async () => {
+    setLoadingState('loading'); // Bắt đầu với trạng thái loading
     try {
       // --- THAY ĐỔI CÁCH GỌI API ---
       const response = user
@@ -154,10 +162,14 @@ function DocumentDetail() {
       
       // --- CẬP NHẬT STATE MỚI ---
       setHasAlreadyReported(response.data.hasReported || false);
-
-    } catch {
-      setErrorMessage('Không thể tải thông tin tài liệu. Tài liệu có thể không tồn tại hoặc đã bị xóa.');
-      setShowErrorModal(true);
+      setLoadingState('success'); // Chuyển sang trạng thái thành công
+    } catch (error) {
+      if (error.response && error.response.status === 404) {
+        setErrorMessage('Tài liệu bạn tìm kiếm không tồn tại, đã bị xóa, hoặc đã bị khóa bởi quản trị viên.');
+      } else {
+        setErrorMessage('Đã xảy ra lỗi khi tải dữ liệu. Vui lòng thử lại sau.');
+      }
+      setLoadingState('error'); // Chuyển sang trạng thái lỗi
       setDoc(null);
     }
   };
@@ -408,7 +420,29 @@ function DocumentDetail() {
     setNumPages(loadedNumPages);
   };
 
-  if (!doc) return <div className="loading-container"><h4>Đang tải...</h4><div className="loading-spinner" role="status"></div></div>;
+  if (loadingState === 'loading') {
+    return (
+      <div className="loading-container">
+        <h4>Đang tải...</h4>
+        <div className="loading-spinner" role="status"></div>
+      </div>
+    );
+  }
+
+  if (loadingState === 'error') {
+    return (
+      <div className="all-container">
+        <div className="error-display-card">
+          <FontAwesomeIcon icon={faExclamationTriangle} size="3x" className="error-icon" />
+          <h3>Không thể truy cập tài liệu</h3>
+          <p>{errorMessage}</p>
+          <button onClick={() => navigate('/')} className="back-to-home-btn">
+            Quay về trang chủ
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const MAX_INITIAL_LINES = 3;
   const MAX_CHARS_WHEN_FEW_LINES = 220;

@@ -269,7 +269,8 @@ export const checkAndUpdateExpiredSubscriptions = () =>
 export const createReport = (data) => apiClient.post("/reports", data);
 
 // (Tùy chọn - Dành cho trang quản trị)
-export const getAllReports = () => apiClient.get("/reports");
-export const getProcessedReports = () => apiClient.get("/reports/processed");
+export const getAllReports = (params) => apiClient.get("/reports", { params });
+export const getProcessedReports = (params) => apiClient.get("/reports/processed", { params });
 export const updateReportStatus = (id, status) => apiClient.put(`/reports/${id}/status`, { status });
 export const resetDocumentReports = (documentId) => apiClient.put(`/documents/${documentId}/reset-reports`);
+export const getReportsByDocumentId = (documentId) => apiClient.get(`/reports/document/${documentId}`);

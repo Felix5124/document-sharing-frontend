@@ -11,48 +11,65 @@ import {
   faFileDownload 
 } from '@fortawesome/free-solid-svg-icons';
 import { AuthContext } from '../context/AuthContext';
-import { getAllReports, updateReportStatus as apiUpdateReportStatus, lockDocument, resetDocumentReports, getProcessedReports, adminDownloadDocument } from '../services/api';
+import { getAllReports, updateReportStatus as apiUpdateReportStatus, lockDocument, resetDocumentReports, getProcessedReports, adminDownloadDocument, getReportsByDocumentId } from '../services/api';
 import '../styles/components/ReportManagement.css';
 
 function ReportManagement() {
-  const { user } = useContext(AuthContext); 
+  const { user } = useContext(AuthContext);
   const [reports, setReports] = useState([]);
   const [processedReports, setProcessedReports] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedReport, setSelectedReport] = useState(null);
+  const [selectedReportGroup, setSelectedReportGroup] = useState(null);
   const [showReportDetail, setShowReportDetail] = useState(false);
   const [showIndividualReports, setShowIndividualReports] = useState(false);
+  const [individualReports, setIndividualReports] = useState([]); // <-- Thêm state mới
+  const [isLoadingDetails, setIsLoadingDetails] = useState(false); // Thêm state loading cho chi tiết
   const [activeTab, setActiveTab] = useState('pending'); // 'pending' or 'history'
 
-  // Fetch all reports
+  // State mới cho truy vấn
+  const [queryParams, setQueryParams] = useState({
+    pageNumber: 1,
+    pageSize: 10,
+    reason: '',
+    sortBy: 'newest',
+  });
+
+  // State mới cho dữ liệu phân trang
+  const [pagination, setPagination] = useState({
+    pageNumber: 1,
+    totalPages: 1,
+    totalCount: 0,
+  });
+  const [pendingCount, setPendingCount] = useState(0);
+  const [processedCount, setProcessedCount] = useState(0);
+
+  // State cho danh sách các lý do báo cáo (để lọc)
+  const reportReasons = [
+    "Nội dung không phù hợp",
+    "Spam hoặc quảng cáo",
+    "Vi phạm bản quyền",
+    "Chứa mã độc/virus",
+    "Khác"
+  ];
+
+  // Cập nhật hàm fetch dữ liệu
   const fetchReports = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const response = await getAllReports();
-      const data = response.data || response;
+      // API giờ đây nhận tham số
+      const response = await getAllReports(queryParams);
+      const data = response.data;
       
-      // Nhóm các báo cáo theo tài liệu
-      const groupedReports = data.reduce((acc, report) => {
-        if (!acc[report.documentId]) {
-          acc[report.documentId] = {
-            documentId: report.documentId,
-            documentTitle: report.documentTitle,
-            reports: [],
-            reportCount: 0,
-            latestReportDate: report.reportedAt
-          };
-        }
-        acc[report.documentId].reports.push(report);
-        acc[report.documentId].reportCount++;
-        if (new Date(report.reportedAt) > new Date(acc[report.documentId].latestReportDate)) {
-          acc[report.documentId].latestReportDate = report.reportedAt;
-        }
-        return acc;
-      }, {});
+      setReports(data.items || []); // Dữ liệu nằm trong 'items'
+      setPagination({
+        pageNumber: data.pageNumber,
+        totalPages: data.totalPages,
+        totalCount: data.totalCount,
+      });
       
-      // Chuyển đổi thành mảng và sắp xếp theo số lượng báo cáo giảm dần
-      const groupedArray = Object.values(groupedReports).sort((a, b) => b.reportCount - a.reportCount);
-      setReports(groupedArray);
+      setPendingCount(data.totalCount || 0);
+
+
     } catch (error) {
       console.error('Error fetching reports:', error);
       toast.error('Lỗi khi tải danh sách báo cáo.');
@@ -64,34 +81,16 @@ function ReportManagement() {
   // Fetch processed reports for history tab
   const fetchProcessedReports = async () => {
     try {
-      const response = await getProcessedReports();
-      const data = response.data || response;
+      const response = await getProcessedReports(queryParams);
+      const data = response.data;
       
-      // Nhóm các báo cáo đã xử lý theo tài liệu
-      const groupedReports = data.reduce((acc, report) => {
-        if (!acc[report.documentId]) {
-          acc[report.documentId] = {
-            documentId: report.documentId,
-            documentTitle: report.documentTitle,
-            reports: [],
-            reportCount: 0,
-            latestReportDate: report.reportedAt,
-            status: report.status
-          };
-        }
-        acc[report.documentId].reports.push(report);
-        acc[report.documentId].reportCount++;
-        if (new Date(report.reportedAt) > new Date(acc[report.documentId].latestReportDate)) {
-          acc[report.documentId].latestReportDate = report.reportedAt;
-        }
-        return acc;
-      }, {});
-      
-      // Chuyển đổi thành mảng và sắp xếp theo ngày báo cáo mới nhất
-      const groupedArray = Object.values(groupedReports).sort((a, b) =>
-        new Date(b.latestReportDate) - new Date(a.latestReportDate)
-      );
-      setProcessedReports(groupedArray);
+      setProcessedReports(data.items || []); // Dữ liệu nằm trong 'items'
+      setPagination({
+        pageNumber: data.pageNumber,
+        totalPages: data.totalPages,
+        totalCount: data.totalCount,
+      });
+      setProcessedCount(data.totalCount || 0);
     } catch (error) {
       console.error('Error fetching processed reports:', error);
       toast.error('Lỗi khi tải lịch sử báo cáo.');
@@ -100,14 +99,16 @@ function ReportManagement() {
 
   // Handle rejecting reports - means the document is innocent, reset status and report count
   const handleRejectReports = async () => {
-    if (!selectedReport) return;
+    if (!selectedReportGroup) return;
     try {
       // "Từ chối" báo cáo nghĩa là tài liệu vô tội, reset lại trạng thái và số báo cáo
-      await resetDocumentReports(selectedReport.documentId);
-      toast.success('Đã từ chối báo cáo, khôi phục trạng thái và reset lượt tải về 0.'); // <<< CẬP NHẬT NỘI DUNG THÔNG BÁO
+      await resetDocumentReports(selectedReportGroup.documentId);
+      
+      // <<< CẬP NHẬT LẠI NỘI DUNG THÔNG BÁO
+      toast.success('Đã từ chối báo cáo và khôi phục trạng thái tài liệu.');
 
       // Cập nhật trạng thái của từng báo cáo sang "Rejected"
-      for (const report of selectedReport.reports) {
+      for (const report of individualReports) {
         await apiUpdateReportStatus(report.reportId, 'Rejected');
       }
 
@@ -123,13 +124,13 @@ function ReportManagement() {
 
   // Handle resolving reports - means the document has issues -> Lock the document
   const handleResolveReports = async () => {
-    if (!selectedReport) return;
+    if (!selectedReportGroup) return;
     try {
       // Hành động này sẽ gọi API để khóa tài liệu
-      await lockDocument(selectedReport.documentId, true);
+      await lockDocument(selectedReportGroup.documentId, true);
 
       // Cập nhật trạng thái các báo cáo liên quan
-      for (const report of selectedReport.reports) {
+      for (const report of individualReports) {
         await apiUpdateReportStatus(report.reportId, 'Resolved');
       }
       
@@ -177,30 +178,80 @@ function ReportManagement() {
 
 
 
-  // SỬA LẠI: Thêm một useEffect mới để tải dữ liệu ban đầu
-  useEffect(() => {
-    // Tải cả hai danh sách khi component được mount lần đầu
-    fetchReports();
-    fetchProcessedReports();
-  }, []); // Mảng rỗng đảm bảo nó chỉ chạy một lần
+  // Các hàm xử lý sự kiện thay đổi filter, sort, page
+  const handleSortChange = (e) => {
+    setQueryParams(prev => ({ ...prev, sortBy: e.target.value, pageNumber: 1 }));
+  };
 
-  // Giữ lại useEffect cũ để tải lại khi chuyển tab (tùy chọn, nhưng tốt)
+  const handleReasonChange = (e) => {
+    setQueryParams(prev => ({ ...prev, reason: e.target.value, pageNumber: 1 }));
+  };
+
+  const handlePageChange = (newPage) => {
+    if (newPage > 0 && newPage <= pagination.totalPages) {
+      setQueryParams(prev => ({ ...prev, pageNumber: newPage }));
+    }
+  };
+
+  useEffect(() => {
+    const fetchInitialCounts = async () => {
+      try {
+        // Lấy số lượng báo cáo đang chờ
+        const pendingRes = await getAllReports({ pageNumber: 1, pageSize: 1 });
+        setPendingCount(pendingRes.data.totalCount || 0);
+
+        // Lấy số lượng báo cáo đã xử lý
+        const processedRes = await getProcessedReports({ pageNumber: 1, pageSize: 1 });
+        setProcessedCount(processedRes.data.totalCount || 0);
+      } catch (error) {
+        console.error("Failed to fetch initial counts:", error);
+      }
+    };
+    
+    fetchInitialCounts();
+  }, []);
+  // useEffect để gọi lại API khi queryParams thay đổi
   useEffect(() => {
     if (activeTab === 'pending') {
       fetchReports();
     } else {
       fetchProcessedReports();
     }
-  }, [activeTab]);
+  }, [queryParams, activeTab]);
+
+  // Tải dữ liệu ban đầu
+  useEffect(() => {
+    fetchReports();
+    fetchProcessedReports();
+  }, []);
 
   const handleViewReport = (documentReport) => {
-    setSelectedReport(documentReport);
+    setSelectedReportGroup(documentReport); // Lưu trữ dữ liệu nhóm
     setShowReportDetail(true);
-    setShowIndividualReports(false); // Reset khi mở modal mới
+    setShowIndividualReports(false); // Reset lại khi mở modal
+    setIndividualReports([]); // Xóa dữ liệu cũ
   };
 
-  const toggleIndividualReports = () => {
-    setShowIndividualReports(!showIndividualReports);
+  // Sửa hàm toggleIndividualReports để fetch dữ liệu
+  const toggleIndividualReports = async () => {
+    if (showIndividualReports) {
+      setShowIndividualReports(false);
+      return;
+    }
+
+    if (!selectedReportGroup) return;
+
+    setIsLoadingDetails(true);
+    try {
+      const response = await getReportsByDocumentId(selectedReportGroup.documentId);
+      setIndividualReports(response.data || []);
+      setShowIndividualReports(true);
+    } catch (error) {
+      toast.error("Không thể tải chi tiết các báo cáo.");
+      console.error('Error fetching individual reports:', error);
+    } finally {
+      setIsLoadingDetails(false);
+    }
   };
 
   const getStatusBadge = (status) => {
@@ -261,14 +312,35 @@ function ReportManagement() {
           className={`tab-button ${activeTab === 'pending' ? 'active' : ''}`}
           onClick={() => setActiveTab('pending')}
         >
-          <FontAwesomeIcon icon={faExclamationTriangle} /> Báo cáo chờ xử lý ({reports.length})
+          <FontAwesomeIcon icon={faExclamationTriangle} /> Báo cáo chờ xử lý ({pendingCount})
         </button>
         <button
           className={`tab-button ${activeTab === 'history' ? 'active' : ''}`}
           onClick={() => setActiveTab('history')}
         >
-          <FontAwesomeIcon icon={faFileAlt} /> Lịch sử báo cáo ({processedReports.length})
+          <FontAwesomeIcon icon={faFileAlt} /> Lịch sử báo cáo ({processedCount})
         </button>
+      </div>
+
+      {/* === KHU VỰC LỌC VÀ SẮP XẾP MỚI === */}
+      <div className="report-controls">
+        <div className="control-group">
+          <label htmlFor="reason-filter">Lọc theo lý do:</label>
+          <select id="reason-filter" value={queryParams.reason} onChange={handleReasonChange}>
+            <option value="">Tất cả lý do</option>
+            {reportReasons.map(reason => (
+              <option key={reason} value={reason}>{reason}</option>
+            ))}
+          </select>
+        </div>
+        <div className="control-group">
+          <label htmlFor="sort-by">Sắp xếp theo:</label>
+          <select id="sort-by" value={queryParams.sortBy} onChange={handleSortChange}>
+            <option value="newest">Mới nhất</option>
+            <option value="oldest">Cũ nhất</option>
+            <option value="most_reported">Nhiều báo cáo nhất</option>
+          </select>
+        </div>
       </div>
 
       <div className="reports-list">
@@ -354,8 +426,27 @@ function ReportManagement() {
         )}
       </div>
 
+      {/* === KHU VỰC PHÂN TRANG MỚI === */}
+      {pagination.totalPages > 1 && (
+        <div className="pagination-controls">
+          <button
+            onClick={() => handlePageChange(queryParams.pageNumber - 1)}
+            disabled={queryParams.pageNumber <= 1}>
+            Trang trước
+          </button>
+          <span>
+            Trang {pagination.pageNumber} / {pagination.totalPages}
+          </span>
+          <button
+            onClick={() => handlePageChange(queryParams.pageNumber + 1)}
+            disabled={queryParams.pageNumber >= pagination.totalPages}>
+            Trang sau
+          </button>
+        </div>
+      )}
+
       {/* Report Detail Modal */}
-      {showReportDetail && selectedReport && (
+      {showReportDetail && selectedReportGroup && (
         <div className="report-detail-modal">
           <div className="modal-content">
             <div className="modal-header">
@@ -370,22 +461,22 @@ function ReportManagement() {
             
             <div className="modal-body">
               <div className="document-summary">
-                <h5>Tài liệu: {selectedReport.documentTitle}</h5>
-                <p><strong>Tổng số báo cáo:</strong> {selectedReport.reportCount}</p>
+                <h5>Tài liệu: {selectedReportGroup.documentTitle}</h5>
+                <p><strong>Tổng số báo cáo:</strong> {selectedReportGroup.reportCount}</p>
               </div>
 
               <div className="action-section">
                 <h5>Hành động Quản trị</h5>
                 <div className="action-buttons-grid">
-                  <button className="btn-view-details" onClick={toggleIndividualReports}>
+                  <button className="btn-view-details" onClick={toggleIndividualReports} disabled={isLoadingDetails}>
                       <FontAwesomeIcon icon={faEye} />
-                      {showIndividualReports ? 'Ẩn chi tiết' : 'Xem các báo cáo'} ({selectedReport.reportCount})
+                      {isLoadingDetails ? 'Đang tải...' : (showIndividualReports ? 'Ẩn chi tiết' : `Xem các báo cáo (${selectedReportGroup.reportCount})`)}
                   </button>
 
                   {/* NÚT TẢI XUỐNG MỚI */}
                   <button
                       className="btn-view" // Sử dụng class màu xanh
-                      onClick={() => handleDownloadDocument(selectedReport.documentId, selectedReport.documentTitle, selectedReport.reports[0]?.document?.fileType || 'bin')}
+                      onClick={() => handleDownloadDocument(selectedReportGroup.documentId, selectedReportGroup.documentTitle, 'pdf')}
                   >
                       <FontAwesomeIcon icon={faFileDownload} />
                       Tải tài liệu
@@ -408,7 +499,8 @@ function ReportManagement() {
               {showIndividualReports && (
                 <div className="individual-reports">
                   <h5>Danh sách báo cáo riêng lẻ:</h5>
-                  {selectedReport.reports.map((report) => (
+                  {/* SỬA LẠI ĐỂ DÙNG STATE MỚI */}
+                  {individualReports.map((report) => (
                     <div key={report.reportId} className={`individual-report ${getPriorityColor(report.status)}`}>
                       <div className="report-header">
                         <div className="report-meta">
