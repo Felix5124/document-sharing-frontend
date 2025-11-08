@@ -8,8 +8,7 @@ import {
   faLock,
   faLockOpen,
   faTrash,
-  faFileCircleXmark,
-  faFileShield
+  faFileCircleXmark
 } from '@fortawesome/free-solid-svg-icons';
 
 function DocumentManagement() {
@@ -84,6 +83,9 @@ function DocumentManagement() {
         <td>{doc.title}</td>
         <td>{doc.email || 'Không xác định'}</td>
         <td className="download-count">{doc.downloadCount}</td>
+        {/* === BẮT ĐẦU THAY ĐỔI === */}
+        <td className="download-count">{doc.uniqueDownloadCount ?? 0}</td>
+        {/* === KẾT THÚC THAY ĐỔI === */}
         <td>
           <div className="status-container">
             {/* CẬP NHẬT LOGIC HIỂN THỊ TRẠNG THÁI */}
@@ -142,6 +144,9 @@ function DocumentManagement() {
                 <th>Tiêu đề</th>
                 <th>Người đăng</th>
                 <th>Lượt tải</th>
+                {/* === BẮT ĐẦU THAY ĐỔI === */}
+                <th>Lượt tải thực tế</th>
+                {/* === KẾT THÚC THAY ĐỔI === */}
                 <th>Trạng thái</th>
                 <th>Hành động</th>
               </tr>
