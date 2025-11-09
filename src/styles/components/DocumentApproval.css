@@ -57,29 +57,7 @@
 }
 
 /* Action Buttons */
-.action-button {
-  background-color: #6c757d;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  font-size: 0.9rem;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  text-decoration: none;
-  gap: 8px;
-  position: relative;
-  overflow: hidden;
-}
 
-.action-button:hover {
-  background-color: #5c636a;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
 
 .action-button::before {
   content: "";

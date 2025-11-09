@@ -41,38 +41,16 @@
   transform: translateY(0);
 }
 
-.action-button {
-  background-color: #6c757d;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  font-size: 0.9rem;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  text-decoration: none;
-  gap: 6px;
-}
-
-.action-button:hover {
-  background-color: #5c636a;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
 .btn-cate {
   margin-top: 20px;
 }
 .edit-button {
-  background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
 }
 
 .edit-button:hover {
-  background: linear-gradient(90deg, #d97706 0%, #b45309 100%);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+  box-shadow: 0 4px 12px rgba(176, 255, 169, 0.3);
 }
 
 .delete-button {
@@ -105,7 +83,9 @@
   letter-spacing: 0.5px;
 }
 
-.admin-table tr { transition: all 0.3s ease; }
+.admin-table tr {
+  transition: all 0.3s ease;
+}
 
 /* Empty State moved to GlobalStyles.css */
 

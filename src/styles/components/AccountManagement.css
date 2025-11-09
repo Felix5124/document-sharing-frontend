@@ -11,23 +11,6 @@
   color: #059669;
 }
 
-/* Nút hành động */
-.action-button {
-  background-color: #6c757d;
-  color: white;
-  border: none;
-  padding: 6px 10px;
-  border-radius: 4px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  font-size: 0.85rem;
-  transition: background-color 0.2s ease;
-}
-
-.action-button:hover {
-  background-color: #5c636a;
-}
 
 /* Nút lock */
 .lock-button {

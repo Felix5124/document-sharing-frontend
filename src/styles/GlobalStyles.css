@@ -4,7 +4,7 @@
 :root {
   --color-text-navbar: #ffffff;
   --color-text: #1f2937;
-  --color-hover: #e5adad;
+  --color-hover: #3feab4; /* xanh đậm của gradient */
   --color-subtitle: #6b7280;
   --color-background-card: #e5e7eb;
   --color-button: #13b2a1;
@@ -288,7 +288,7 @@ body {
 }
 .admin-table td {
   padding: 12px 16px;
-  font-size: 0.95rem;
+  font-size: 0.8rem;
   line-height: 1.2;
   border-bottom: 1px solid #e5e7eb;
 }
@@ -313,7 +313,7 @@ body {
 }
 .admin-table th:nth-child(5),
 .admin-table td:nth-child(5) {
-  width: 30%;
+  width: 20%;
 }
 
 .admin-table tr {
@@ -330,6 +330,5 @@ body {
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   background: #ffffff;
-  margin-top: 24px;
   position: relative;
 }

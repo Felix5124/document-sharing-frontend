@@ -2,17 +2,7 @@
 
 /* Admin Section - Specialized for Document Management */
 
-
-.icon-margin-right-sm {
-  margin-right: 0.25rem;
-}
-
-.margin-right-sm {
-  margin-right: 0.5rem;
-}
-
 /* Admin Table Wrapper */
-
 @keyframes shimmer {
   0% {
     background-position: -200% 0;
@@ -88,7 +78,6 @@
 /* Action Container & Buttons */
 .action-container {
   display: flex;
-  gap: 8px;
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
@@ -98,16 +87,16 @@
   background-color: #6c757d;
   color: white;
   border: none;
-  padding: 8px 16px;
+  padding: 4px 8px;
   border-radius: 6px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  font-size: 0.85rem;
+  font-size: 0.7rem;
   font-weight: 500;
   transition: all 0.3s ease;
   text-decoration: none;
-  gap: 6px;
+  gap: 3px;
   position: relative;
   overflow: hidden;
 }
