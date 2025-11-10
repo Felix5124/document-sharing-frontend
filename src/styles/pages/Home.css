@@ -734,3 +734,29 @@
 .icon-calendar {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='currentColor' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h.5A1.5 1.5 0 0 1 15 2.5v11A1.5 1.5 0 0 1 13.5 15h-11A1.5 1.5 0 0 1 1 13.5v-11A1.5 1.5 0 0 1 2.5 1H3v-.5a.5.5 0 0 1 .5-.5zM2 4v9.5a.5.5 0 0 0 .5.5H13.5a.5.5 0 0 0 .5-.5V4H2z'/%3E%3C/svg%3E");
 }
+
+/* Status labels for document approval status */
+.status-label {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  backdrop-filter: blur(2px);
+  z-index: 10;
+}
+
+.status-label.semi-approved {
+  background-color: rgba(245, 159, 11, 0.85); /* Màu cam */
+}
+
+.status-label.approved {
+  background-color: rgba(34, 197, 94, 0.85); /* Màu xanh lá */
+}
+
+.status-label.pending {
+  background-color: rgba(156, 163, 175, 0.85); /* Màu xám */
+}

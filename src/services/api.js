@@ -13,12 +13,29 @@ const apiClient = axios.create({
   },
 });
 
+// Helper: get token from sessionStorage; migrate from localStorage if found
+const getSessionToken = () => {
+  try {
+    let token = sessionStorage.getItem('token');
+    if (!token) {
+      const legacy = localStorage.getItem('token');
+      if (legacy) {
+        sessionStorage.setItem('token', legacy);
+        localStorage.removeItem('token');
+        token = legacy;
+      }
+    }
+    return token;
+  } catch {
+    return null;
+  }
+};
+
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = getSessionToken();
 
     if (token) {
-      console.log("Token exists.");
       // Original conditions:
       const condition1 = config.url && config.url.startsWith(API_BASE_URL) && !config.headers.Authorization;
       const condition2 = (!config.url || !config.url.startsWith('http')) && config.baseURL === API_BASE_URL && !config.headers.Authorization; // Corrected this slightly from your original for relative paths
@@ -28,10 +45,8 @@ apiClient.interceptors.request.use(
       } else if (condition2) {
         config.headers.Authorization = `Bearer ${token}`;
       } else {
-        //console.warn("Interceptor: Token exists, but conditions to add header NOT MET.");
+        // Conditions to set Authorization header not met (rare path)
       }
-    } else {
-      //console.warn("Interceptor: No token found in localStorage.");
     }
     return config;
   },
@@ -80,7 +95,10 @@ export const uploadAvatar = (userId, file) => {
 
 // --- API cho tài liệu ---
 export const getDocuments = (params) => apiClient.get("/documents", { params });
-export const getDocumentById = (id) => apiClient.get(`/documents/${id}`);
+export const getDocumentById = (id, userId) => {
+  const params = userId ? { userId } : {};
+  return apiClient.get(`/documents/${id}`, { params });
+};
 export const uploadDocument = (data) =>
   apiClient.post("/documents/upload", data, {
     headers: { "Content-Type": "multipart/form-data" },
@@ -122,6 +140,11 @@ export const downloadDocument = (id, userId) =>
   apiClient.get(`/documents/${id}/download`, {
     params: { userId },
   });
+
+export const adminDownloadDocument = (id, userId) =>
+  apiClient.get(`/documents/${id}/admin-download`, {
+    params: { userId },
+  });
 export const previewDocument = (id) =>
   apiClient.get(`/documents/${id}/preview`);
 export const getUploadCount = (userId) =>
@@ -156,6 +179,7 @@ export const addPostComment = (data) => apiClient.post("/postcomments", data);
 
 // --- API cho quản trị ---
 export const getPendingDocuments = () => apiClient.get("/documents/pending");
+export const getSemiApprovedDocuments = () => apiClient.get("/documents/semiapproved");
 export const approveDocument = (id) =>
   apiClient.put(`/documents/${id}/approve`);
 export const lockDocument = (id, isLocked) =>
@@ -240,3 +264,13 @@ export const getActiveVipSubscription = (userId) =>
 
 export const checkAndUpdateExpiredSubscriptions = () =>
   apiClient.post("/VipSubscriptions/check-expiry");
+
+// --- API cho Báo cáo Vi phạm ---
+export const createReport = (data) => apiClient.post("/reports", data);
+
+// (Tùy chọn - Dành cho trang quản trị)
+export const getAllReports = (params) => apiClient.get("/reports", { params });
+export const getProcessedReports = (params) => apiClient.get("/reports/processed", { params });
+export const updateReportStatus = (id, status) => apiClient.put(`/reports/${id}/status`, { status });
+export const resetDocumentReports = (documentId) => apiClient.put(`/documents/${documentId}/reset-reports`);
+export const getReportsByDocumentId = (documentId) => apiClient.get(`/reports/document/${documentId}`);

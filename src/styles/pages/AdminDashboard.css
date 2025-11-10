@@ -1,7 +1,6 @@
-
 /* Admin Header */
-.admin-container-card{
-    width: 100%;
+.admin-container-card {
+  width: 100%;
   max-width: 1000px;
   background-color: #ffffff;
   border: 1px solid #dee2e6;
@@ -84,7 +83,7 @@
 
 /* Admin Navigation */
 .admin-nav {
-  width: 80%;
+  width: 100%;
   display: flex;
   justify-content: space-between; /* chia đều khoảng cách giữa các nút */
   align-items: center; /* căn giữa theo chiều dọc */
@@ -98,7 +97,7 @@
   animation: fadeInUp 0.6s ease-out 0.2s;
   animation-fill-mode: both;
 }
-.admin-navi{
+.admin-navi {
   width: 100%;
   display: flex;
   align-items: center;
@@ -120,8 +119,8 @@
   display: inline-flex;
   align-items: center;
   padding: 10px;
-  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
   border: 1px solid #d1d5db;
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
   border-radius: 10px;
   font-size: 0.8rem;
   font-weight: 600;
@@ -132,7 +131,6 @@
   overflow: hidden;
 }
 
-
 .nav-button:hover::before {
   left: 100%;
 }
@@ -141,7 +139,6 @@
   background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
   transform: translateY(-3px);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-  border-color: #4b5eaa;
 }
 
 .nav-button i {
@@ -156,8 +153,7 @@
 
 /* Active Navigation Button */
 .nav-button.active {
-  background: linear-gradient(135deg, #4b5eaa 0%, #2a3f8a 100%);
-  border-color: #4b5eaa;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: #ffffff;
   box-shadow: 0 6px 20px rgba(75, 94, 170, 0.4);
   transform: translateY(-3px);
@@ -221,7 +217,6 @@
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-
 /* Section Body */
 .section-body {
   padding: 20px;
@@ -252,11 +247,6 @@
   box-shadow: 0 2px 6px rgba(5, 150, 105, 0.2);
 }
 
-/* Focus Styles for Accessibility */
-.nav-button:focus {
-  outline: 3px solid #818cf8;
-  outline-offset: 2px;
-}
 
 /* Loading State */
 .admin-container.loading {

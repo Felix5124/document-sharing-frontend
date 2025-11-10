@@ -1,80 +1,87 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useContext } from 'react';
-import { getPendingDocuments, approveDocument } from '../services/api';
+import { getSemiApprovedDocuments, approveDocument } from '../services/api';
 import { toast } from 'react-toastify';
 import { AuthContext } from '../context/AuthContext';
 import useOnScreen from '../hooks/useOnScreen';
-// ⬆️ Add to top of DocumentApproval.jsx
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheckCircle, faFileCircleCheck, faFolderOpen } from '@fortawesome/free-solid-svg-icons';
-
+import { faCheckCircle, faFolderOpen } from '@fortawesome/free-solid-svg-icons';
 import '../styles/components/DocumentApproval.css';
 
 function DocumentApproval() {
   const { user } = useContext(AuthContext);
-  const [pendingDocs, setPendingDocs] = useState([]);
+  const [docsToVerify, setDocsToVerify] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!user || !user.isAdmin) {
+    if (user?.isAdmin) {
+      fetchDocsToVerify();
+    } else {
       navigate('/');
-      return;
     }
-    fetchPendingDocs();
   }, [navigate, user]);
 
-  const fetchPendingDocs = async () => {
+  const fetchDocsToVerify = async () => {
     try {
-      const response = await getPendingDocuments();
+      const response = await getSemiApprovedDocuments();
       let data = response.data;
-      if (Array.isArray(data.$values)) {
+      if (Array.isArray(data?.$values)) {
         data = data.$values;
       }
-      setPendingDocs(data);
-    } catch (error) {
-      toast.error('Không thể tải tài liệu chờ duyệt.', { toastId: 'pending-docs-error' });
+      setDocsToVerify(data || []);
+    } catch {
+      toast.error('Không thể tải tài liệu cần xác thực.', { toastId: 'verify-docs-error' });
     }
   };
 
   const handleApprove = async (id) => {
     try {
       await approveDocument(id);
-      toast.success('Tài liệu đã được duyệt.');
-      fetchPendingDocs();
-    } catch (error) {
+      toast.success('Tài liệu đã được duyệt thành công!');
+      fetchDocsToVerify();
+    } catch {
       toast.error('Duyệt tài liệu thất bại.');
     }
   };
 
-  // Component cho Table Row với hiệu ứng fade-in
   const DocumentRow = ({ doc }) => {
     const rowRef = useRef(null);
     const isVisible = useOnScreen(rowRef);
 
     return (
       <tr ref={rowRef} className={`fade-in ${isVisible ? 'visible' : ''}`}>
-        <td>{doc.title}</td>
-        <td>{doc.description}</td>
         <td>
           <button
-            className="action-button approve-button"
-            onClick={() => handleApprove(doc.documentId)}
+            type="button"
+            className="link-like-btn document-title-btn"
+            onClick={() => navigate(`/document/${doc.documentId}`)}
+            title="Xem chi tiết tài liệu"
           >
-            <FontAwesomeIcon icon={faCheckCircle} className="icon-margin-right" /> Duyệt
+             <span className="title-text">{doc.title}</span>
           </button>
+        </td>
+        <td>
+          <div className="description-clamp">{doc.description}</div>
+        </td>
+        <td>
+          <div className='btn-center'>
+            <button
+              className="action-button approve-button"
+              onClick={() => handleApprove(doc.documentId)}
+            >
+              <FontAwesomeIcon icon={faCheckCircle} className="icon-margin-right" /> Duyệt
+            </button>
+          </div>
         </td>
       </tr>
     );
   };
-
-  if (!user || !user.isAdmin) {
-    return null;
-  }
+  
+  if (!user?.isAdmin) return null;
 
   return (
     <div className="admin-section">
-      {pendingDocs.length > 0 ? (
+      {docsToVerify.length > 0 ? (
         <div className="admin-table-wrapper">
           <table className="admin-table">
             <thead>
@@ -85,7 +92,7 @@ function DocumentApproval() {
               </tr>
             </thead>
             <tbody>
-              {pendingDocs.map((doc) => (
+              {docsToVerify.map((doc) => (
                 <DocumentRow key={doc.documentId} doc={doc} />
               ))}
             </tbody>
@@ -93,7 +100,8 @@ function DocumentApproval() {
         </div>
       ) : (
         <div className="empty-state">
-          <p>Không có tài liệu chờ duyệt.</p>
+          <FontAwesomeIcon icon={faFolderOpen} className="empty-icon" />
+          <p>Không có tài liệu nào cần xác thực.</p>
         </div>
       )}
     </div>

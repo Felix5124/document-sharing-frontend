@@ -105,13 +105,11 @@
   align-items: center;
 }
 
-
 .error-text {
   color: #ef4444;
   font-size: 0.875rem;
   margin-top: 4px;
 }
-
 
 .delete-button {
   background-color: #ff4d4f;
@@ -227,9 +225,18 @@
 }
 
 @keyframes vipPulse {
-  0% { box-shadow: 0 0 6px rgba(255, 215, 0, 0.5); transform: scale(1); }
-  50% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.9); transform: scale(1.05); }
-  100% { box-shadow: 0 0 6px rgba(255, 215, 0, 0.5); transform: scale(1); }
+  0% {
+    box-shadow: 0 0 6px rgba(255, 215, 0, 0.5);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.9);
+    transform: scale(1.05);
+  }
+  100% {
+    box-shadow: 0 0 6px rgba(255, 215, 0, 0.5);
+    transform: scale(1);
+  }
 }
 .avatar-img.vip {
   border: 2px solid transparent;
@@ -241,15 +248,48 @@
 }
 
 @keyframes vipBorder {
-  0% { filter: drop-shadow(0 0 2px #ffdf00); }
-  50% { filter: drop-shadow(0 0 6px #ffb300); }
-  100% { filter: drop-shadow(0 0 2px #ffdf00); }
+  0% {
+    filter: drop-shadow(0 0 2px #ffdf00);
+  }
+  50% {
+    filter: drop-shadow(0 0 6px #ffb300);
+  }
+  100% {
+    filter: drop-shadow(0 0 2px #ffdf00);
+  }
 }
-.profile-follow-stats{
+.profile-follow-stats {
   display: flex;
   font-size: 0.9rem;
   color: #333;
   gap: 20px;
   margin-top: 10px;
   justify-content: space-around;
+}
+.loading-display {
+  width: 100%;
+  height: 500px;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+/* Status text colors for document approval status */
+.status-text.approved {
+  color: #059669;
+  font-weight: bold;
+}
+.status-text.semi-approved {
+  color: #d97706;
+  font-weight: bold;
+}
+.status-text.pending {
+  color: #6b7280;
+}
+.status-text.rejected {
+  color: #dc2626;
+  font-weight: bold;
+}
+.status-text.suspended {
+  color: #4b5563;
+  font-weight: bold;
 }

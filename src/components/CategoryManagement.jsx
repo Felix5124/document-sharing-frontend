@@ -105,18 +105,20 @@ function CategoryManagement() {
         <td>{category.name}</td>
         <td>{category.type}</td>
         <td>
-          <button
-            className="action-button edit-button margin-right"
-            onClick={() => handleEditCategory(category)}
-          >
-            <FontAwesomeIcon icon={faPencilAlt} className="icon-margin-right" /> Sửa
-          </button>
-          <button
-            className="action-button delete-button"
-            onClick={() => handleDeleteCategory(category.categoryId)}
-          >
-            <FontAwesomeIcon icon={faTrash} className="icon-margin-right" /> Xóa
-          </button>
+          <div className='btn-center'>
+            <button
+              className="action-button edit-button margin-right"
+              onClick={() => handleEditCategory(category)}
+            >
+              <FontAwesomeIcon icon={faPencilAlt} className="icon-margin-right" /> Sửa
+            </button>
+            <button
+              className="action-button delete-button"
+              onClick={() => handleDeleteCategory(category.categoryId)}
+            >
+              <FontAwesomeIcon icon={faTrash} className="icon-margin-right" /> Xóa
+            </button>
+          </div>
         </td>
       </tr>
     );

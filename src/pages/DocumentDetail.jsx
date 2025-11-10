@@ -13,7 +13,7 @@ import {
   getRelatedDocuments
 } from '../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faDownload, faFolder, faFile, faDatabase, faCalendar, faTags, faArrowRight, faUser, faPaperPlane, faCommentDots, faPlusCircle } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faDownload, faFolder, faFile, faDatabase, faCalendar, faTags, faArrowRight, faUser, faPaperPlane, faCommentDots, faPlusCircle, faFlag, faCircleExclamation, faExclamationTriangle, faClock, faLock, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 
 import { AuthContext } from '../context/AuthContext';
 import { toast } from 'react-toastify';
@@ -27,6 +27,7 @@ import StarRatingInput from '../components/DocumentDetail/StarRatingInput';
 import CustomModal from '../components/DocumentDetail/CustomModal';
 import CustomButton from '../components/DocumentDetail/CustomButton';
 import CustomForm, { FormGroup, FormLabel, FormControl } from '../components/DocumentDetail/CustomForm';
+import ReportModal from '../components/ReportModal';
 import '../styles/pages/DocumentDetail.css';
 
 
@@ -36,6 +37,8 @@ function DocumentDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
+  const [loadingState, setLoadingState] = useState('loading'); // Các giá trị có thể là: 'loading', 'success', 'error'
+  const [errorMessage, setErrorMessage] = useState('');
   const [doc, setDoc] = useState(null);
   const [comments, setComments] = useState([]);
   const [comment, setComment] = useState({ Content: '', Rating: 5 });
@@ -45,7 +48,6 @@ function DocumentDetail() {
   const [loadingFollow, setLoadingFollow] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
   const [numPages, setNumPages] = useState(null);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [averageRating, setAverageRating] = useState(0);
@@ -53,6 +55,8 @@ function DocumentDetail() {
   const [relatedDocsByCategory, setRelatedDocsByCategory] = useState([]);
   const [relatedDocsByTag, setRelatedDocsByTag] = useState([]);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [hasAlreadyReported, setHasAlreadyReported] = useState(false); // <-- STATE MỚI
 
 
   useEffect(() => {
@@ -66,9 +70,15 @@ function DocumentDetail() {
     setTotalRatedComments(0);
     setIsFollowing(false);
     setFollowId(null); // Reset follow ID
+
+    // --- BẮT ĐẦU THAY ĐỔI ---
+    // Chỉ fetch dữ liệu khi có ID và thông tin user đã sẵn sàng (hoặc user là null cho khách)
+    // Việc thêm `user` vào dependency array sẽ tự động gọi lại fetchDocument khi user được xác thực.
     fetchDocument();
-    fetchComments();
-  }, [id]);
+    // --- KẾT THÚC THAY ĐỔI ---
+
+    fetchComments(); // fetchComments có thể chạy độc lập
+  }, [id, user]); // THAY ĐỔI QUAN TRỌNG: Thêm `user` vào dependency array
 
   // Lock body scroll when preview modal is open
   useEffect(() => {
@@ -140,12 +150,26 @@ function DocumentDetail() {
 
 
   const fetchDocument = async () => {
+    setLoadingState('loading'); // Bắt đầu với trạng thái loading
     try {
-      const response = await getDocumentById(id);
+      // --- THAY ĐỔI CÁCH GỌI API ---
+      const response = user
+        ? await getDocumentById(id, user.userId)
+        : await getDocumentById(id);
+
+      console.log('Document data:', response.data);
       setDoc(response.data);
-    } catch {
-      setErrorMessage('Không thể tải thông tin tài liệu. Tài liệu có thể không tồn tại hoặc đã bị xóa.');
-      setShowErrorModal(true);
+
+      // --- CẬP NHẬT STATE MỚI ---
+      setHasAlreadyReported(response.data.hasReported || false);
+      setLoadingState('success'); // Chuyển sang trạng thái thành công
+    } catch (error) {
+      if (error.response && error.response.status === 404) {
+        setErrorMessage('Tài liệu bạn tìm kiếm không tồn tại, đã bị xóa, hoặc đã bị khóa bởi quản trị viên.');
+      } else {
+        setErrorMessage('Đã xảy ra lỗi khi tải dữ liệu. Vui lòng thử lại sau.');
+      }
+      setLoadingState('error'); // Chuyển sang trạng thái lỗi
       setDoc(null);
     }
   };
@@ -206,24 +230,24 @@ function DocumentDetail() {
   const performDownload = async () => {
     try {
       const response = await downloadDocument(id, user.userId);
-      
+
       // Backend trả JSON với url và fileName
       const { url, fileName } = response.data;
-      
+
       if (!url) {
         setErrorMessage('Không thể lấy URL tải xuống từ server.');
         setShowErrorModal(true);
         return;
       }
-      
+
       // Download file từ SAS URL
       const fileResponse = await fetch(url);
       if (!fileResponse.ok) {
         throw new Error(`Không thể tải file: ${fileResponse.status} ${fileResponse.statusText}`);
       }
-      
+
       const blob = await fileResponse.blob();
-      
+
       // Tạo download link
       const downloadUrl = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -233,7 +257,7 @@ function DocumentDetail() {
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(downloadUrl);
-      
+
       setDoc((prevDoc) => ({
         ...prevDoc,
         downloadCount: (prevDoc.downloadCount || 0) + 1,
@@ -264,7 +288,9 @@ function DocumentDetail() {
     setPdfData(null);
     try {
       if (pdfData) window.URL.revokeObjectURL(pdfData);
-    } catch {}
+    } catch {
+      // Ignore URL revocation errors
+    }
   };
 
   const handlePreview = async () => {
@@ -279,19 +305,19 @@ function DocumentDetail() {
     }
     try {
       const response = await previewDocument(id);
-      
+
       // Backend trả JSON với url
       if (response.data && response.data.url) {
         const { url } = response.data;
-        
+
         // Fetch file từ SAS URL
         const fileResponse = await fetch(url);
         if (!fileResponse.ok) {
           throw new Error(`Không thể tải file preview: ${fileResponse.status} ${fileResponse.statusText}`);
         }
-        
+
         const arrayBuffer = await fileResponse.arrayBuffer();
-        
+
         // Tạo blob URL cho PDF viewer
         const blob = new Blob([arrayBuffer], { type: 'application/pdf' });
         const pdfUrl = window.URL.createObjectURL(blob);
@@ -394,7 +420,29 @@ function DocumentDetail() {
     setNumPages(loadedNumPages);
   };
 
-  if (!doc) return <div className="loading-container"><h4>Đang tải...</h4><div className="loading-spinner" role="status"></div></div>;
+  if (loadingState === 'loading') {
+    return (
+      <div className="loading-container">
+        <h4>Đang tải...</h4>
+        <div className="loading-spinner" role="status"></div>
+      </div>
+    );
+  }
+
+  if (loadingState === 'error') {
+    return (
+      <div className="all-container">
+        <div className="error-display-card">
+          <FontAwesomeIcon icon={faExclamationTriangle} size="3x" className="error-icon" />
+          <h3>Không thể truy cập tài liệu</h3>
+          <p>{errorMessage}</p>
+          <button onClick={() => navigate('/')} className="back-to-home-btn">
+            Quay về trang chủ
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const MAX_INITIAL_LINES = 3;
   const MAX_CHARS_WHEN_FEW_LINES = 220;
@@ -435,6 +483,30 @@ function DocumentDetail() {
         {/* === MAIN CONTENT SECTION === */}
         <div className="layout-grid main-content-section">
           <div className="layout-column full-width">
+            {/* THÊM MỚI: Banner thông báo */}
+            {doc.approvalStatus === 'SemiApproved' && (
+              <div className="status-banner semi-approved">
+                <FontAwesomeIcon icon={faCircleExclamation} />
+                <span>Tài liệu này đã qua kiểm tra tự động nhưng chưa được cộng đồng xác thực hoàn toàn.</span>
+              </div>
+            )}
+            {doc.approvalStatus === 'Approved' && (
+              <div className="status-banner approved">
+                <FontAwesomeIcon icon={faCircleExclamation} />
+                <span>Tài liệu này đã được cộng đồng kiểm duyệt và xác thực.</span>
+              </div>
+            )}
+            {doc.approvalStatus === 'Pending' && (
+              <div className="status-banner pending">
+                <FontAwesomeIcon icon={faClock} />
+                <span>Tài liệu này đang chờ quản trị viên duyệt. Các hành động như tải xuống, bình luận và báo cáo tạm thời bị vô hiệu hóa.</span>
+              </div>
+            )}
+            {/* Debug: Hiển thị ApprovalStatus để kiểm tra */}
+            <div style={{ display: 'none' }}>
+              Current ApprovalStatus: {doc.approvalStatus || 'undefined'}
+              Report Count: {doc.reportCount || 0}
+            </div>
             <div className="document-header-section">
               <div className="document-title-row">
                 <div className="document-title-wrapper">
@@ -445,44 +517,66 @@ function DocumentDetail() {
 
               <div className="document-meta-row">
                 <div className="author-info">
-                  <span className="author-label">Tác giả:</span>
-                  <span className="author-name">{doc.email || 'Ẩn danh'}</span>
-                  {user && user.userId !== doc.uploadedBy && doc.uploadedBy && (
-                    <CustomButton
-                      variant={isFollowing ? "success" : "outline-success"}
-                      size="sm"
-                      onClick={handleFollowAuthor}
-                      disabled={loadingFollow}
-                      className="follow-btn"
-                    >
-                      <span className={`follow-icon ${isFollowing ? 'icon-person-check' : 'icon-person-plus'}`}></span>
-                      {isFollowing ? 'Đã theo dõi' : loadingFollow ? 'Đang xử lý...' : 'Theo dõi'}
-                    </CustomButton>
+                  <div className="author-details">
+                    <span className="author-name">Tác giả :</span>
+                    <span className="author-name">{doc.email || 'Ẩn danh'}</span>
+                    {user && user.userId !== doc.uploadedBy && doc.uploadedBy && (
+                      <CustomButton
+                        variant={isFollowing ? "success" : "outline-success"}
+                        size="sm"
+                        onClick={handleFollowAuthor}
+                        disabled={loadingFollow}
+                        className="follow-btn"
+                      >
+                        <span className={`follow-icon ${isFollowing ? 'icon-person-check' : 'icon-person-plus'}`}></span>
+                        {isFollowing ? 'Đã theo dõi' : loadingFollow ? 'Đang xử lý...' : 'Theo dõi'}
+                      </CustomButton>
+                    )}
+                  </div>
+                  {/* --- THAY ĐỔI LOGIC NÚT BÁO CÁO --- */}
+                  {user && (
+                    <div>
+                      <button
+                        className={`report-button ${hasAlreadyReported ? 'already-reported' : ''}`}
+                        onClick={() => !hasAlreadyReported && setShowReportModal(true)}
+                        disabled={doc.approvalStatus === 'Pending' || hasAlreadyReported}
+                        title={
+                          hasAlreadyReported
+                            ? "Bạn đã báo cáo tài liệu này"
+                            : doc.approvalStatus === 'Pending'
+                              ? "Không thể báo cáo tài liệu đang chờ duyệt"
+                              : "Báo cáo vi phạm"
+                        }
+                      >
+                        <FontAwesomeIcon icon={hasAlreadyReported ? faCheckCircle : faFlag} />
+                        {hasAlreadyReported ? 'Đã báo cáo' : 'Báo cáo vi phạm'}
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>
               <div className="layout-grid top-section">
 
                 {/* === LEFT COLUMN: Cover Image & Actions === */}
-                        {/* Cover image as a single centered card (removed left/right columns) */}
-                        <div className="cover-card">
-                          <div className="cover-image-wrapper">
-                            <img
-                              src={getFullImageUrl(doc.coverImageUrl)}
-                              alt={doc.title}
-                              className="document-cover-image"
-                              onError={(e) => {
-                                e.target.onerror = null;
-                                e.target.src = getFullImageUrl(null);
-                              }}
-                            />
-                            <div className="cover-image-overlay">
-                              <div className="document-type-badge">
-                                {doc.fileType ? doc.fileType.toUpperCase() : 'FILE'}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                {/* Cover image as a single centered card (removed left/right columns) */}
+                <div className="cover-card">
+                  <div className="cover-image-wrapper">
+                    <img
+                      src={getFullImageUrl(doc.coverImageUrl)}
+                      alt={doc.title}
+                      className="document-cover-image"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = getFullImageUrl(null);
+                      }}
+                    />
+                    <div className="cover-image-overlay">
+                      <div className="document-type-badge">
+                        {doc.fileType ? doc.fileType.toUpperCase() : 'FILE'}
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
                 {/* Xóa khu vực xem trước cũ: hiển thị trong modal thay vì inline */}
 
@@ -493,6 +587,8 @@ function DocumentDetail() {
                     variant="outline-secondary"
                     onClick={handleDownload}
                     className="action-btn download-btn"
+                    disabled={doc.approvalStatus === 'Pending'}
+                    title={doc.approvalStatus === 'Pending' ? "Tài liệu đang chờ duyệt" : "Tải xuống tài liệu"}
                   >
                     <FontAwesomeIcon icon={faDownload} />
                     <div className="btn-content">
@@ -504,8 +600,15 @@ function DocumentDetail() {
                   <CustomButton
                     variant="primary"
                     onClick={handlePreview}
-                    disabled={doc.fileType?.toLowerCase() !== 'pdf'}
+                    disabled={doc.fileType?.toLowerCase() !== 'pdf' || doc.approvalStatus === 'Pending'}
                     className="action-btn preview-btn"
+                    title={
+                      doc.approvalStatus === 'Pending'
+                        ? "Tài liệu đang chờ duyệt"
+                        : doc.fileType?.toLowerCase() !== 'pdf'
+                          ? "Chỉ hỗ trợ xem trước file PDF"
+                          : "Xem Online"
+                    }
                   >
                     <FontAwesomeIcon icon={faEye} />
                     <span className="btn-text">Xem Online</span>
@@ -514,6 +617,9 @@ function DocumentDetail() {
 
                 {/* points badge removed */}
               </div>
+
+
+
               <div className="document-stats-row">
                 <div className="stats-item">
                   {totalRatedComments > 0 ? (
@@ -534,6 +640,11 @@ function DocumentDetail() {
                 <div className="stats-item">
                   <FontAwesomeIcon icon={faFile} />
                   <span>{doc.fileType ? doc.fileType.toUpperCase() : 'N/A'}</span>
+                </div>
+                <div className="stats-separator">|</div>
+                <div className="stats-item">
+                  <FontAwesomeIcon icon={faExclamationTriangle} />
+                  <span>{doc.reportCount || 0} báo cáo</span>
                 </div>
               </div>
             </div>
@@ -747,6 +858,14 @@ function DocumentDetail() {
               </div>
 
               <div className="comment-form-card">
+                {/* === THAY ĐỔI 5: VÔ HIỆU HÓA FORM BÌNH LUẬN === */}
+                {doc.approvalStatus === 'Pending' && (
+                  <div className="form-disabled-overlay">
+                    <FontAwesomeIcon icon={faLock} />
+                    <span>Không thể bình luận khi tài liệu đang chờ duyệt</span>
+                  </div>
+                )}
+
                 <div className="comment-form-header">
                   <h5>Chia sẻ đánh giá của bạn</h5>
                 </div>
@@ -758,6 +877,7 @@ function DocumentDetail() {
                         <StarRatingInput
                           rating={comment.Rating}
                           onChange={(rating) => setComment({ ...comment, Rating: rating })}
+                          disabled={doc.approvalStatus === 'Pending'}
                         />
                       </div>
                     </FormGroup>
@@ -774,8 +894,14 @@ function DocumentDetail() {
                           rows={4}
                           value={comment.Content}
                           onChange={(e) => setComment({ ...comment, Content: e.target.value })}
-                          placeholder={user ? "Chia sẻ ý kiến và đánh giá của bạn về tài liệu này..." : "Vui lòng đăng nhập để bình luận"}
-                          disabled={!user}
+                          placeholder={
+                            !user
+                              ? "Vui lòng đăng nhập để bình luận"
+                              : doc.approvalStatus === 'Pending'
+                                ? "Tài liệu đang chờ duyệt..."
+                                : "Chia sẻ ý kiến và đánh giá của bạn về tài liệu này..."
+                          }
+                          disabled={!user || doc.approvalStatus === 'Pending'}
                           className="comment-textarea"
                         />
                       </FormGroup>
@@ -788,7 +914,7 @@ function DocumentDetail() {
                     <CustomButton
                       type="submit"
                       variant="primary"
-                      disabled={!user || !comment.Content.trim()}
+                      disabled={!user || !comment.Content.trim() || doc.approvalStatus === 'Pending'}
                       className="submit-comment-btn"
                     >
                       <FontAwesomeIcon icon={faPaperPlane} />
@@ -921,6 +1047,18 @@ function DocumentDetail() {
       >
         {errorMessage}
       </CustomModal>
+
+      {/* Render Report Modal */}
+      {doc && user && (
+        <ReportModal
+          show={showReportModal}
+          onHide={() => setShowReportModal(false)}
+          documentId={doc.documentId}
+          userId={user.userId}
+          // --- THÊM DÒNG NÀY ---
+          onReportSuccess={() => setHasAlreadyReported(true)}
+        />
+      )}
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getDocuments, deleteDocument, lockDocument } from '../services/api';
 import { toast } from 'react-toastify';
 import useOnScreen from '../hooks/useOnScreen';
@@ -8,13 +9,13 @@ import {
   faLock,
   faLockOpen,
   faTrash,
-  faFileCircleXmark,
-  faFileShield
+  faFileCircleXmark
 } from '@fortawesome/free-solid-svg-icons';
 
 function DocumentManagement() {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const fetchDocuments = async () => {
     setLoading(true);
@@ -34,7 +35,16 @@ function DocumentManagement() {
   const handleDelete = async (id) => {
     if (window.confirm('Bạn có chắc chắn muốn xóa tài liệu này?')) {
       try {
-        await deleteDocument(id);
+        const target = documents.find(d => d.documentId === id);
+        console.log('[Admin/Delete] About to delete document:', {
+          id,
+          title: target?.title,
+          coverImageUrl: target?.coverImageUrl,
+          fileUrl: target?.fileUrl,
+          isApproved: target?.isApproved
+        });
+        const res = await deleteDocument(id);
+        console.log('[Admin/Delete] Backend response:', { status: res?.status, data: res?.data });
         toast.success('Xóa tài liệu thành công!');
         fetchDocuments();
       } catch (error) {
@@ -44,14 +54,18 @@ function DocumentManagement() {
     }
   };
 
-  const handleLockUnlock = async (id, isLocked) => {
+  const handleLockUnlock = async (id, currentStatus) => {
+    // Logic mới: Xác định hành động dựa trên trạng thái hiện tại
+    const isLockingAction = currentStatus !== 'Suspended';
+    const actionText = isLockingAction ? 'khóa' : 'mở khóa';
+
     try {
-      await lockDocument(id, !isLocked);
-      toast.success(`Tài liệu đã được ${isLocked ? 'mở khóa' : 'khóa'} thành công!`);
-      fetchDocuments();
+      await lockDocument(id, isLockingAction);
+      toast.success(`Tài liệu đã được ${actionText} thành công!`);
+      fetchDocuments(); // Tải lại danh sách để cập nhật giao diện
     } catch (error) {
-      console.error(`Error ${isLocked ? 'unlocking' : 'locking'} document:`, error);
-      toast.error(`Không thể ${isLocked ? 'mở khóa' : 'khóa'} tài liệu.`);
+      console.error(`Error ${actionText} document:`, error);
+      toast.error(`Không thể ${actionText} tài liệu.`);
     }
   };
 
@@ -60,29 +74,54 @@ function DocumentManagement() {
     const rowRef = useRef(null);
     const isVisible = useOnScreen(rowRef);
 
+    // XÁC ĐỊNH LẠI TRẠNG THÁI NÚT BẤM VÀ TÊN GỌI
+    const isSuspended = doc.approvalStatus === 'Suspended';
+    const buttonText = isSuspended ? 'Mở khóa' : 'Khóa'; // Tên gọi đúng
+    const buttonIcon = isSuspended ? faLockOpen : faLock;
+    const buttonClass = isSuspended ? 'unlock-button' : 'lock-button';
+
     return (
       <tr ref={rowRef} className={`fade-in ${isVisible ? 'visible' : ''}`}>
-        <td>{doc.title}</td>
+        <td>
+          <button
+            type="button"
+            className="link-like-btn document-title-btn title-clamp"
+            onClick={() => navigate(`/document/${doc.documentId}`)}
+            title="Xem chi tiết tài liệu"
+          >
+            <span className="title-text">{doc.title}</span>
+          </button>
+        </td>
         <td>{doc.email || 'Không xác định'}</td>
         <td className="download-count">{doc.downloadCount}</td>
+        {/* === BẮT ĐẦU THAY ĐỔI === */}
+        <td className="download-count">{doc.uniqueDownloadCount ?? 0}</td>
+        {/* === KẾT THÚC THAY ĐỔI === */}
         <td>
           <div className="status-container">
-            <span className={`status-badge ${doc.isApproved ? 'status-approved' : 'status-pending'}`}>
-              {doc.isApproved ? 'Đã duyệt' : 'Chưa duyệt'}
+            {/* CẬP NHẬT LOGIC HIỂN THỊ TRẠNG THÁI */}
+            <span className={`status-badge status-${doc.approvalStatus?.toLowerCase()}`}>
+              {
+                {
+                  'Approved': 'Đã duyệt',
+                  'SemiApproved': 'Chưa kiểm duyệt',
+                  'Pending': 'Đang chờ',
+                  'Rejected': 'Bị từ chối',
+                  'Suspended': 'Bị tạm ngưng' // Thêm trạng thái mới
+                }[doc.approvalStatus] || 'Không xác định'
+              }
             </span>
           </div>
         </td>
         <td>
           <div className="action-container">
+            {/* CẬP NHẬT NÚT KHÓA/MỞ KHÓA */}
             <button
-              className={`action-button ${doc.isLock ? 'unlock-button' : 'lock-button'} margin-right-sm`}
-              onClick={() => handleLockUnlock(doc.documentId, doc.isLock)}
+              className={`action-button ${buttonClass} margin-right-sm`}
+              onClick={() => handleLockUnlock(doc.documentId, doc.approvalStatus)}
             >
-              <FontAwesomeIcon
-                icon={doc.isLock ? faLockOpen : faLock}
-                className="icon-margin-right-sm"
-              />
-              {doc.isLock ? 'Mở khóa' : 'Khóa'}
+              <FontAwesomeIcon icon={buttonIcon} className="icon-margin-right-sm" />
+              {buttonText}
             </button>
 
             <button
@@ -116,6 +155,9 @@ function DocumentManagement() {
                 <th>Tiêu đề</th>
                 <th>Người đăng</th>
                 <th>Lượt tải</th>
+                {/* === BẮT ĐẦU THAY ĐỔI === */}
+                <th>Lượt tải thực tế</th>
+                {/* === KẾT THÚC THAY ĐỔI === */}
                 <th>Trạng thái</th>
                 <th>Hành động</th>
               </tr>

@@ -176,7 +176,7 @@ function App() {
 
 
         <ToastContainer
-          autoClose={1000}
+          autoClose={3000}
           pauseOnHover={true}
           pauseOnFocusLoss={false}
         />

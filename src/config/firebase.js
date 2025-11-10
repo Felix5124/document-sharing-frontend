@@ -1,5 +1,6 @@
+
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { getAuth, setPersistence, browserSessionPersistence } from "firebase/auth";
 // import { getAnalytics } from "firebase/analytics";
 
 const firebaseConfig = {
@@ -18,6 +19,13 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+
+// Ensure auth is session-scoped at initialization to avoid any race conditions
+setPersistence(auth, browserSessionPersistence)
+  .catch((error) => {
+    console.error("Firebase Persistence Error:", error);
+  });
+
 
 
 export { auth }; 

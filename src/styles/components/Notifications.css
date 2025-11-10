@@ -65,22 +65,6 @@
   animation: bellRing 2s ease-in-out infinite;
 }
 
-/* Utility classes */
-.icon-margin-right {
-  margin-right: 12px;
-}
-
-.icon-margin-right-sm {
-  margin-right: 0.25rem;
-}
-
-.margin-right-sm {
-  margin-right: 0.5rem;
-}
-
-.margin-bottom-sm {
-  margin-bottom: 0.5rem;
-}
 
 .flex-container {
   display: flex;

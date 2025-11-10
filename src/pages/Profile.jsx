@@ -144,7 +144,7 @@ function Profile() {
     }
   };
 
-  if (!userData) return <div>Đang tải...</div>;
+  if (!userData) return <div className="loading-display">Đang tải...</div>;
 
   return (
     <div className="all-container">
@@ -241,8 +241,16 @@ function Profile() {
                   <span style={{ flex: 1 }}>
                     {upload.title} ({upload.fileType}) - {upload.downloadCount} lượt tải -
                     Tải lên: {new Date(upload.uploadedAt).toLocaleString()} - Trạng thái:{' '}
-                    <span style={{ color: upload.isApproved ? 'green' : 'red' }}>
-                      {upload.isApproved ? 'Đã duyệt' : 'Chưa duyệt'}
+                    <span className={`status-text status-${upload.approvalStatus?.toLowerCase()}`}>
+                      {
+                        {
+                          'Approved': 'Đã duyệt',
+                          'SemiApproved': 'Chưa kiểm duyệt',
+                          'Pending': 'Đang chờ',
+                          'Rejected': 'Bị từ chối',
+                          'Suspended': 'Bị tạm ngưng' // Thêm trạng thái mới
+                        }[upload.approvalStatus] || 'Không xác định'
+                      }
                     </span>
                   </span>
                   <button

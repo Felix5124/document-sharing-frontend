@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useRef as useReactRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   searchDocuments,
   getCategories,
@@ -123,9 +123,16 @@ function Home() {
         Page: currentPage,
         PageSize: documentsPerPage,
       };
+      console.log('Fetching documents with params:', params);
       const res = await searchDocuments(params);
+      console.log('API Response:', res.data);
       const { documents: docs = [], total = 0 } = res.data;
-      const approvedDocs = docs.filter((d) => d.isApproved && !d.isLock);
+      console.log('Raw documents from API:', docs);
+      
+      // Chỉ hiển thị tài liệu đã được duyệt (Approved hoặc SemiApproved) và không bị khóa
+      const approvedDocs = docs.filter((d) => (d.approvalStatus === 'Approved' || d.approvalStatus === 'SemiApproved') && !d.isLock);
+      console.log('Filtered approved documents:', approvedDocs);
+      
       setDocuments(approvedDocs);
       const pages = Math.ceil(total / documentsPerPage);
       setTotalPages(pages);
@@ -138,7 +145,8 @@ function Home() {
         currentPage,
         hydratedAt: Date.now(),
       }));
-    } catch {
+    } catch (error) {
+      console.error('Error fetching documents:', error);
       toast.error('Không thể tải tài liệu.');
       setDocuments([]);
       setTotalPages(1);
@@ -226,7 +234,9 @@ function Home() {
         const top = el.getBoundingClientRect().top + window.pageYOffset - 12;
         window.scrollTo({ top, behavior: 'smooth' });
       }
-    } catch {}
+    } catch {
+      // Ignore scroll errors
+    }
   };
 
   const handleNextPage = () => {
@@ -255,6 +265,16 @@ function Home() {
               className="document-card-image"
               onError={(e) => (e.target.src = getFullImageUrl(null))}
             />
+            {/* THÊM MỚI: Nhãn trạng thái */}
+            {doc.approvalStatus === 'SemiApproved' && (
+              <span className="status-label semi-approved">Chưa kiểm duyệt</span>
+            )}
+            {doc.approvalStatus === 'Approved' && (
+              <span className="status-label approved">Đã kiểm duyệt</span>
+            )}
+            {doc.approvalStatus === 'Pending' && (
+              <span className="status-label pending">Đang chờ duyệt</span>
+            )}
           </div>
           <div className="document-card-body">
             <div className="document-card-header">
@@ -285,7 +305,7 @@ function Home() {
     );
   };
 
-  const ContributorColumn = ({ title, data, icon, statLabel, statValue, linkTo }) => {
+  const ContributorColumn = ({ title, data, statLabel, statValue, linkTo }) => {
     const ref = useRef(null);
     const isVisible = useOnScreen(ref);
     return (

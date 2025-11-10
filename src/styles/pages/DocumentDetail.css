@@ -129,6 +129,7 @@
 .btn-sm {
   padding: 0.25rem 0.5rem;
   font-size: 0.875rem;
+  cursor: pointer;
   line-height: 1.5;
   border-radius: 30px;
 }
@@ -385,6 +386,58 @@ textarea.form-control {
 }
 
 /* ========================================
+   STATUS BANNER & REPORT SECTION
+   ======================================== */
+/* Status Banner for document approval status */
+.status-banner {
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
+}
+
+.status-banner.semi-approved {
+  background-color: #fffbeb;
+  color: #b45309;
+  border: 1px solid #fde68a;
+}
+
+.status-banner.approved {
+  background-color: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.status-banner.pending {
+  background-color: #f8fafc;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+
+.report-button {
+  background: #dc2626;
+  border: 1px solid #dc2626;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.report-button:hover {
+  background: #b91c1c;
+  border-color: #b91c1c;
+}
+
+/* ========================================
    DOCUMENT INFO SECTION
    ======================================== */
 .document-header-section {
@@ -417,6 +470,7 @@ textarea.form-control {
 }
 .author-info {
   display: flex;
+  justify-content: space-between;
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
@@ -428,7 +482,7 @@ textarea.form-control {
 .author-name {
   color: #111827;
   font-weight: 600;
-  font-size: 0.7rem;
+  font-size: 0.85rem;
 }
 .follow-btn:hover {
   border-color: #0d9488;
@@ -1018,4 +1072,133 @@ textarea.form-control {
     text-align: center;
     gap: 0.5rem;
   }
+}
+
+/* === CSS MỚI === */
+
+/* Vô hiệu hóa nút Báo cáo */
+.report-button:disabled {
+  background: #e5e7eb;
+  border-color: #d1d5db;
+  color: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.report-button:disabled:hover {
+  background: #e5e7eb;
+}
+
+/* Lớp phủ cho form bình luận khi bị vô hiệu hóa */
+.comment-form-card {
+  position: relative;
+}
+
+.form-disabled-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(249, 250, 251, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  border-radius: 12px;
+  color: #6b7280;
+  font-weight: 500;
+  text-align: center;
+  padding: 20px;
+}
+
+.form-disabled-overlay svg {
+  font-size: 1.5rem;
+  margin-bottom: 8px;
+}
+
+/* Thêm style cho các CustomButton khi bị disable */
+.action-btn:disabled,
+.submit-comment-btn:disabled {
+  background: #d1d5db;
+  border-color: #d1d5db;
+  color: #6b7280;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+.action-btn:disabled:hover {
+  background: #d1d5db;
+  transform: none;
+  box-shadow: none;
+}
+.action-btn.download-btn:disabled .btn-text,
+.action-btn.download-btn:disabled .file-info {
+  color: #6b7280;
+}
+
+/* Thêm style cho nút báo cáo khi đã báo cáo */
+.report-button.already-reported {
+  background: #6b7280; /* Màu xám */
+  border-color: #6b7280;
+  color: #f9fafb;
+  cursor: not-allowed;
+}
+
+.report-button.already-reported:hover {
+  background: #4b5563; /* Xám đậm hơn khi hover */
+  border-color: #4b5563;
+}
+
+/* ========================================
+   ERROR DISPLAY STYLES
+   ======================================== */
+.error-display-card {
+  text-align: center;
+  padding: 40px 20px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  margin: 40px auto;
+}
+
+.error-icon {
+  color: #ef4444; /* Màu đỏ */
+  margin-bottom: 20px;
+}
+
+.error-display-card h3 {
+  font-size: 1.5rem;
+  color: #111827;
+  margin-bottom: 10px;
+}
+
+.error-display-card p {
+  color: #6b7280;
+  margin-bottom: 25px;
+  line-height: 1.6;
+}
+
+.back-to-home-btn {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.back-to-home-btn:hover {
+  background-color: #2563eb;
+}
+.author-details{
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }

@@ -4,6 +4,18 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { getDocumentById, updateDocument, getCategories } from '../services/api';
 import { getFullImageUrl } from '../utils/imageUtils';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faPenToSquare,
+  faFont,
+  faParagraph,
+  faPaperclip,
+  faImage,
+  faCheckCircle,
+  faXmarkCircle,
+  faTags,
+  faFolder
+} from '@fortawesome/free-solid-svg-icons';
 import '../styles/components/UpdateDocument.css';
 
 function UpdateDocument() {
@@ -67,7 +79,6 @@ function UpdateDocument() {
         } else {
           setCurrentCoverImageUrl(getFullImageUrl(null));
         }
-
 
         setLoading(false);
       } catch (error) {
@@ -152,8 +163,6 @@ function UpdateDocument() {
       }
       formData.append('UploadedBy', uploadedBy.toString());
 
-      // points removed: do not append PointsRequired
-
       if (data.File && data.File.length > 0) {
         const selectedFile = data.File[0];
         const extension = selectedFile.name.split('.').pop().toLowerCase();
@@ -199,21 +208,18 @@ function UpdateDocument() {
   if (loading || !document) return <div className="loading-display">Đang tải...</div>;
 
   return (
-    <div className="update-container">
-      <div className="upload-card">
+    <div className="all-container">
+      <div className="all-container-card">
         <h2 className="upload-title">
-          <i className="bi bi-pencil-square icon-margin-right"></i> Cập nhật tài liệu
+          Cập nhật tài liệu
         </h2>
+
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="form-group">
             <label className="form-label">Tiêu đề</label>
             <div className="input-wrapper">
-              <i className="bi bi-fonts input-icon"></i>
-              <input
-                type="text"
-                className="form-input"
-                {...register('Title', { required: 'Vui lòng nhập tiêu đề' })}
-              />
+              <FontAwesomeIcon icon={faFont} className="input-icon" />
+              <input type="text" className="form-input" {...register('Title', { required: 'Vui lòng nhập tiêu đề' })} />
             </div>
             {errors.Title && <p className="error-text">{errors.Title.message}</p>}
           </div>
@@ -221,41 +227,45 @@ function UpdateDocument() {
           <div className="form-group">
             <label className="form-label">Mô tả</label>
             <div className="input-wrapper">
-              <i className="bi bi-text-paragraph input-icon"></i>
-              <textarea
-                className="form-input"
-                {...register('Description')}
-              />
+              <FontAwesomeIcon icon={faParagraph} className="input-icon" />
+              <textarea className="form-input" {...register('Description')} />
             </div>
           </div>
 
           <div className="form-group">
             <label className="form-label">Danh mục</label>
-            <select
-              className="form-select"
-              {...register('CategoryId', {
-                required: 'Vui lòng chọn danh mục',
-                validate: (value) => parseInt(value, 10) > 0 || 'Vui lòng chọn danh mục hợp lệ'
-              })}
-            >
-              <option value="">Chọn danh mục</option>
-              {categories.map((category) => (
-                <option key={category.categoryId} value={category.categoryId}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
+            <div className="input-wrapper">
+              <div className="input-icon"><FontAwesomeIcon icon={faFolder} /></div>
+              <select
+                className="form-select"
+                {...register('CategoryId', {
+                  required: 'Vui lòng chọn danh mục',
+                  validate: (value) => parseInt(value, 10) > 0 || 'Vui lòng chọn danh mục hợp lệ'
+                })}
+              >
+                <option value="">Chọn danh mục</option>
+                {categories.map((category) => (
+                  <option key={category.categoryId} value={category.categoryId}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+            </div>
             {errors.CategoryId && <p className="error-text">{errors.CategoryId.message}</p>}
           </div>
 
-          <div className="form-group margin-bottom">
-            <label className="form-label" htmlFor="tag-input">Tags</label>
-            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <div className="form-group">
+             <label className="form-label" htmlFor="tag-input-upload">Tags</label>
+            <div className="tag-input-row">
+               <div className="input-wrapper">
+                <div className="input-icon">
+                  <FontAwesomeIcon icon={faTags} />
+                </div>
               <input
                 type="text"
                 id="tag-input"
                 className="form-input"
-                style={{ flexGrow: 1, width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '4px' }}
+                style={{ flexGrow: 1 }}
                 value={tagInputText}
                 onChange={(e) => setTagInputText(e.target.value)}
                 placeholder="Nhập tên tag rồi nhấn 'Thêm Tag' hoặc Enter"
@@ -266,136 +276,52 @@ function UpdateDocument() {
                   }
                 }}
               />
-              <button
-                type="button"
-                className="tag-button"
-                onClick={handleExternalAddTag}
-              >
+              </div>
+              <button type="button" className="tag-button" onClick={handleExternalAddTag}>
                 Thêm Tag
               </button>
             </div>
           </div>
 
-          {currentTags && currentTags.length > 0 && (
-            <div className="tags-display-upload" style={{
-              marginTop: '20px',
-              marginBottom: '15px',
-              padding: '10px',
-              border: '1px solid #e0e0e0',
-              borderRadius: '4px',
-              backgroundColor: '#f9f9f9'
-            }}>
-              <strong style={{ display: 'block', marginBottom: '8px' }}>Tags:</strong>
-              <ul style={{ listStyle: 'none', paddingLeft: '0', margin: '0', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                {currentTags.map((tag, index) => (
-                  <li
-                    key={index}
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      background: '#007bff',
-                      color: 'white',
-                      padding: '6px 10px',
-                      borderRadius: '15px',
-                      fontSize: '0.875em'
-                    }}
-                  >
-                    <span>{tag.label}</span>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const newTags = currentTags.filter((_, i) => i !== index);
-                        setValue('Tags', newTags, { shouldValidate: true, shouldDirty: true });
-                        toast.info(`Tag "${tag.label}" đã được xóa.`);
-                      }}
-                      style={{
-                        marginLeft: '10px',
-                        background: 'transparent',
-                        border: 'none',
-                        color: 'white',
-                        cursor: 'pointer',
-                        fontWeight: 'bold',
-                        fontSize: '1.1em',
-                        lineHeight: '1'
-                      }}
-                      aria-label={`Xóa tag ${tag.label}`}
-                    >
-                      ×
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* Points field removed */}
-
           <div className="form-group">
-            <label className="form-label">File tài liệu (để trống nếu không muốn thay đổi)</label>
-            <div style={{ marginBottom: '10px' }}>
-              <span style={{ fontWeight: 'bold' }}>File hiện tại: </span>
-              {fileName || 'Chưa có file'}
-            </div>
+            <label className="form-label">File tài liệu</label>
             <div className="input-wrapper">
-              <i className="bi bi-paperclip input-icon"></i>
-              <input
-                type="file"
-                className="form-input"
-                accept=".pdf,.docx,.txt"
-                {...register('File')}
-                onChange={handleFileChange}
-              />
+              <FontAwesomeIcon icon={faPaperclip} className="input-icon" />
+              <input type="file" className="form-input" accept=".pdf,.docx,.txt" {...register('File')} onChange={handleFileChange} />
             </div>
-            {errors.File && <p className="error-text">{errors.File.message}</p>}
           </div>
 
           <div className="form-group margin-bottom">
-            <label className="form-label">Ảnh bìa (JPG, PNG, GIF - tùy chọn)</label>
+            <label className="form-label">Ảnh bìa</label>
             {currentCoverImageUrl && !previewNewCover && (
               <div className="preview-container">
                 <p>Ảnh bìa hiện tại:</p>
-                <img
-                  src={currentCoverImageUrl}
-                  alt="Ảnh bìa hiện tại"
-                  style={{ maxWidth: '200px', maxHeight: '200px', objectFit: 'cover', border: '1px solid #ddd' }}
-                  onError={(e) => { e.target.style.display = 'none'; }}
-                />
+                <img src={currentCoverImageUrl} alt="Ảnh bìa hiện tại" style={{ maxWidth: '200px', border: '1px solid #ddd' }} />
               </div>
             )}
             {previewNewCover && (
               <div className="preview-container">
                 <p>Xem trước ảnh bìa mới:</p>
-                <img
-                  src={previewNewCover}
-                  alt="Xem trước ảnh bìa mới"
-                  style={{ maxWidth: '200px', maxHeight: '200px', objectFit: 'cover', border: '1px solid #ddd' }}
-                />
+                <img src={previewNewCover} alt="Xem trước ảnh bìa mới" style={{ maxWidth: '200px', border: '1px solid #ddd' }} />
               </div>
             )}
             <div className="input-wrapper file-input-group">
-              <span className="file-input-icon">
-                <i className="bi bi-image"></i>
-              </span>
-              <input
-                type="file"
-                className="form-input file-input"
-                accept="image/jpeg,image/png,image/gif"
-                {...register('CoverImage')}
-              />
+              <FontAwesomeIcon icon={faImage} className="file-input-icon" />
+              <input type="file" className="form-input file-input" accept="image/jpeg,image/png,image/gif" {...register('CoverImage')} />
             </div>
-            <small className="form-helper-text">Để trống nếu không muốn thay đổi ảnh bìa.</small>
           </div>
 
           <button type="submit" className="submit-button" disabled={loading}>
-            <i className="bi bi-check-circle icon-margin-right"></i> {loading ? 'Đang cập nhật...' : 'Cập nhật tài liệu'}
+            <FontAwesomeIcon icon={faCheckCircle} className="icon-margin-right" /> {loading ? 'Đang cập nhật...' : 'Cập nhật tài liệu'}
           </button>
+
           <button
             type="button"
             className="submit-button cancel-button"
             onClick={() => navigate('/profile')}
             style={{ background: 'linear-gradient(90deg, #EF4444 0%, #DC2626 100%)', marginTop: '10px' }}
           >
-            <i className="bi bi-x-circle icon-margin-right"></i> Hủy
+            <FontAwesomeIcon icon={faXmarkCircle} className="icon-margin-right" /> Hủy
           </button>
         </form>
       </div>
