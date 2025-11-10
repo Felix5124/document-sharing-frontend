@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getDocuments, deleteDocument, lockDocument } from '../services/api';
 import { toast } from 'react-toastify';
 import useOnScreen from '../hooks/useOnScreen';
@@ -14,6 +15,7 @@ import {
 function DocumentManagement() {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const fetchDocuments = async () => {
     setLoading(true);
@@ -80,7 +82,16 @@ function DocumentManagement() {
 
     return (
       <tr ref={rowRef} className={`fade-in ${isVisible ? 'visible' : ''}`}>
-        <td>{doc.title}</td>
+        <td>
+          <button
+            type="button"
+            className="link-like-btn document-title-btn title-clamp"
+            onClick={() => navigate(`/document/${doc.documentId}`)}
+            title="Xem chi tiết tài liệu"
+          >
+            <span className="title-text">{doc.title}</span>
+          </button>
+        </td>
         <td>{doc.email || 'Không xác định'}</td>
         <td className="download-count">{doc.downloadCount}</td>
         {/* === BẮT ĐẦU THAY ĐỔI === */}

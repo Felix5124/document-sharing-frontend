@@ -50,15 +50,28 @@ function DocumentApproval() {
 
     return (
       <tr ref={rowRef} className={`fade-in ${isVisible ? 'visible' : ''}`}>
-        <td>{doc.title}</td>
-        <td>{doc.description}</td>
         <td>
           <button
-            className="action-button approve-button"
-            onClick={() => handleApprove(doc.documentId)}
+            type="button"
+            className="link-like-btn document-title-btn"
+            onClick={() => navigate(`/document/${doc.documentId}`)}
+            title="Xem chi tiết tài liệu"
           >
-            <FontAwesomeIcon icon={faCheckCircle} className="icon-margin-right" /> Duyệt
+             <span className="title-text">{doc.title}</span>
           </button>
+        </td>
+        <td>
+          <div className="description-clamp">{doc.description}</div>
+        </td>
+        <td>
+          <div className='btn-center'>
+            <button
+              className="action-button approve-button"
+              onClick={() => handleApprove(doc.documentId)}
+            >
+              <FontAwesomeIcon icon={faCheckCircle} className="icon-margin-right" /> Duyệt
+            </button>
+          </div>
         </td>
       </tr>
     );

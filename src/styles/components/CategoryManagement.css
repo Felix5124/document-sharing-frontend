@@ -6,10 +6,6 @@
   margin-right: 8px;
 }
 
-.margin-right {
-  margin-right: 0.5rem;
-}
-
 .margin-bottom {
   margin-bottom: 1.5rem;
 }
@@ -22,7 +18,9 @@
   margin-bottom: 24px;
   transition: all 0.3s ease;
 }
-
+.btn-center{
+  text-align: center;
+}
 .category-form h5 {
   font-size: 1.4rem;
   font-weight: 600;
@@ -143,11 +141,4 @@
 .button-group .submit-button,
 .button-group .action-button {
   flex-shrink: 0;
-}
-
-/* Focus Styles for Accessibility */
-.submit-button:focus,
-.action-button:focus {
-  outline: 2px solid #3b82f6;
-  outline-offset: 2px;
 }

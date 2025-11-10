@@ -129,6 +129,7 @@
 .btn-sm {
   padding: 0.25rem 0.5rem;
   font-size: 0.875rem;
+  cursor: pointer;
   line-height: 1.5;
   border-radius: 30px;
 }
@@ -391,7 +392,6 @@ textarea.form-control {
 .status-banner {
   border-radius: 8px;
   padding: 12px;
-  margin-bottom: 20px;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -416,13 +416,6 @@ textarea.form-control {
   border: 1px solid #e2e8f0;
 }
 
-/* Report Section */
-.report-section {
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px solid #e5e7eb;
-  text-align: right;
-}
 
 .report-button {
   background: #dc2626;
@@ -477,6 +470,7 @@ textarea.form-control {
 }
 .author-info {
   display: flex;
+  justify-content: space-between;
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
@@ -488,7 +482,7 @@ textarea.form-control {
 .author-name {
   color: #111827;
   font-weight: 600;
-  font-size: 0.7rem;
+  font-size: 0.85rem;
 }
 .follow-btn:hover {
   border-color: #0d9488;
@@ -1202,4 +1196,9 @@ textarea.form-control {
 
 .back-to-home-btn:hover {
   background-color: #2563eb;
+}
+.author-details{
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }

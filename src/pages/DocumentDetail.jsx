@@ -70,7 +70,7 @@ function DocumentDetail() {
     setTotalRatedComments(0);
     setIsFollowing(false);
     setFollowId(null); // Reset follow ID
-    
+
     // --- BẮT ĐẦU THAY ĐỔI ---
     // Chỉ fetch dữ liệu khi có ID và thông tin user đã sẵn sàng (hoặc user là null cho khách)
     // Việc thêm `user` vào dependency array sẽ tự động gọi lại fetchDocument khi user được xác thực.
@@ -156,10 +156,10 @@ function DocumentDetail() {
       const response = user
         ? await getDocumentById(id, user.userId)
         : await getDocumentById(id);
-      
+
       console.log('Document data:', response.data);
       setDoc(response.data);
-      
+
       // --- CẬP NHẬT STATE MỚI ---
       setHasAlreadyReported(response.data.hasReported || false);
       setLoadingState('success'); // Chuyển sang trạng thái thành công
@@ -230,24 +230,24 @@ function DocumentDetail() {
   const performDownload = async () => {
     try {
       const response = await downloadDocument(id, user.userId);
-      
+
       // Backend trả JSON với url và fileName
       const { url, fileName } = response.data;
-      
+
       if (!url) {
         setErrorMessage('Không thể lấy URL tải xuống từ server.');
         setShowErrorModal(true);
         return;
       }
-      
+
       // Download file từ SAS URL
       const fileResponse = await fetch(url);
       if (!fileResponse.ok) {
         throw new Error(`Không thể tải file: ${fileResponse.status} ${fileResponse.statusText}`);
       }
-      
+
       const blob = await fileResponse.blob();
-      
+
       // Tạo download link
       const downloadUrl = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -257,7 +257,7 @@ function DocumentDetail() {
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(downloadUrl);
-      
+
       setDoc((prevDoc) => ({
         ...prevDoc,
         downloadCount: (prevDoc.downloadCount || 0) + 1,
@@ -305,19 +305,19 @@ function DocumentDetail() {
     }
     try {
       const response = await previewDocument(id);
-      
+
       // Backend trả JSON với url
       if (response.data && response.data.url) {
         const { url } = response.data;
-        
+
         // Fetch file từ SAS URL
         const fileResponse = await fetch(url);
         if (!fileResponse.ok) {
           throw new Error(`Không thể tải file preview: ${fileResponse.status} ${fileResponse.statusText}`);
         }
-        
+
         const arrayBuffer = await fileResponse.arrayBuffer();
-        
+
         // Tạo blob URL cho PDF viewer
         const blob = new Blob([arrayBuffer], { type: 'application/pdf' });
         const pdfUrl = window.URL.createObjectURL(blob);
@@ -503,7 +503,7 @@ function DocumentDetail() {
               </div>
             )}
             {/* Debug: Hiển thị ApprovalStatus để kiểm tra */}
-            <div style={{display: 'none'}}>
+            <div style={{ display: 'none' }}>
               Current ApprovalStatus: {doc.approvalStatus || 'undefined'}
               Report Count: {doc.reportCount || 0}
             </div>
@@ -517,44 +517,66 @@ function DocumentDetail() {
 
               <div className="document-meta-row">
                 <div className="author-info">
-                  <span className="author-label">Tác giả:</span>
-                  <span className="author-name">{doc.email || 'Ẩn danh'}</span>
-                  {user && user.userId !== doc.uploadedBy && doc.uploadedBy && (
-                    <CustomButton
-                      variant={isFollowing ? "success" : "outline-success"}
-                      size="sm"
-                      onClick={handleFollowAuthor}
-                      disabled={loadingFollow}
-                      className="follow-btn"
-                    >
-                      <span className={`follow-icon ${isFollowing ? 'icon-person-check' : 'icon-person-plus'}`}></span>
-                      {isFollowing ? 'Đã theo dõi' : loadingFollow ? 'Đang xử lý...' : 'Theo dõi'}
-                    </CustomButton>
+                  <div className="author-details">
+                    <span className="author-name">Tác giả :</span>
+                    <span className="author-name">{doc.email || 'Ẩn danh'}</span>
+                    {user && user.userId !== doc.uploadedBy && doc.uploadedBy && (
+                      <CustomButton
+                        variant={isFollowing ? "success" : "outline-success"}
+                        size="sm"
+                        onClick={handleFollowAuthor}
+                        disabled={loadingFollow}
+                        className="follow-btn"
+                      >
+                        <span className={`follow-icon ${isFollowing ? 'icon-person-check' : 'icon-person-plus'}`}></span>
+                        {isFollowing ? 'Đã theo dõi' : loadingFollow ? 'Đang xử lý...' : 'Theo dõi'}
+                      </CustomButton>
+                    )}
+                  </div>
+                  {/* --- THAY ĐỔI LOGIC NÚT BÁO CÁO --- */}
+                  {user && (
+                    <div>
+                      <button
+                        className={`report-button ${hasAlreadyReported ? 'already-reported' : ''}`}
+                        onClick={() => !hasAlreadyReported && setShowReportModal(true)}
+                        disabled={doc.approvalStatus === 'Pending' || hasAlreadyReported}
+                        title={
+                          hasAlreadyReported
+                            ? "Bạn đã báo cáo tài liệu này"
+                            : doc.approvalStatus === 'Pending'
+                              ? "Không thể báo cáo tài liệu đang chờ duyệt"
+                              : "Báo cáo vi phạm"
+                        }
+                      >
+                        <FontAwesomeIcon icon={hasAlreadyReported ? faCheckCircle : faFlag} />
+                        {hasAlreadyReported ? 'Đã báo cáo' : 'Báo cáo vi phạm'}
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>
               <div className="layout-grid top-section">
 
                 {/* === LEFT COLUMN: Cover Image & Actions === */}
-                        {/* Cover image as a single centered card (removed left/right columns) */}
-                        <div className="cover-card">
-                          <div className="cover-image-wrapper">
-                            <img
-                              src={getFullImageUrl(doc.coverImageUrl)}
-                              alt={doc.title}
-                              className="document-cover-image"
-                              onError={(e) => {
-                                e.target.onerror = null;
-                                e.target.src = getFullImageUrl(null);
-                              }}
-                            />
-                            <div className="cover-image-overlay">
-                              <div className="document-type-badge">
-                                {doc.fileType ? doc.fileType.toUpperCase() : 'FILE'}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                {/* Cover image as a single centered card (removed left/right columns) */}
+                <div className="cover-card">
+                  <div className="cover-image-wrapper">
+                    <img
+                      src={getFullImageUrl(doc.coverImageUrl)}
+                      alt={doc.title}
+                      className="document-cover-image"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = getFullImageUrl(null);
+                      }}
+                    />
+                    <div className="cover-image-overlay">
+                      <div className="document-type-badge">
+                        {doc.fileType ? doc.fileType.toUpperCase() : 'FILE'}
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
                 {/* Xóa khu vực xem trước cũ: hiển thị trong modal thay vì inline */}
 
@@ -584,8 +606,8 @@ function DocumentDetail() {
                       doc.approvalStatus === 'Pending'
                         ? "Tài liệu đang chờ duyệt"
                         : doc.fileType?.toLowerCase() !== 'pdf'
-                        ? "Chỉ hỗ trợ xem trước file PDF"
-                        : "Xem Online"
+                          ? "Chỉ hỗ trợ xem trước file PDF"
+                          : "Xem Online"
                     }
                   >
                     <FontAwesomeIcon icon={faEye} />
@@ -595,28 +617,9 @@ function DocumentDetail() {
 
                 {/* points badge removed */}
               </div>
-      
-              {/* --- THAY ĐỔI LOGIC NÚT BÁO CÁO --- */}
-              {user && (
-                <div className="report-section">
-                  <button
-                    className={`report-button ${hasAlreadyReported ? 'already-reported' : ''}`}
-                    onClick={() => !hasAlreadyReported && setShowReportModal(true)}
-                    disabled={doc.approvalStatus === 'Pending' || hasAlreadyReported}
-                    title={
-                      hasAlreadyReported
-                        ? "Bạn đã báo cáo tài liệu này"
-                        : doc.approvalStatus === 'Pending'
-                        ? "Không thể báo cáo tài liệu đang chờ duyệt"
-                        : "Báo cáo vi phạm"
-                    }
-                  >
-                    <FontAwesomeIcon icon={hasAlreadyReported ? faCheckCircle : faFlag} />
-                    {hasAlreadyReported ? 'Đã báo cáo' : 'Báo cáo vi phạm'}
-                  </button>
-                </div>
-              )}
-      
+
+
+
               <div className="document-stats-row">
                 <div className="stats-item">
                   {totalRatedComments > 0 ? (
@@ -862,7 +865,7 @@ function DocumentDetail() {
                     <span>Không thể bình luận khi tài liệu đang chờ duyệt</span>
                   </div>
                 )}
-                
+
                 <div className="comment-form-header">
                   <h5>Chia sẻ đánh giá của bạn</h5>
                 </div>
@@ -895,8 +898,8 @@ function DocumentDetail() {
                             !user
                               ? "Vui lòng đăng nhập để bình luận"
                               : doc.approvalStatus === 'Pending'
-                              ? "Tài liệu đang chờ duyệt..."
-                              : "Chia sẻ ý kiến và đánh giá của bạn về tài liệu này..."
+                                ? "Tài liệu đang chờ duyệt..."
+                                : "Chia sẻ ý kiến và đánh giá của bạn về tài liệu này..."
                           }
                           disabled={!user || doc.approvalStatus === 'Pending'}
                           className="comment-textarea"

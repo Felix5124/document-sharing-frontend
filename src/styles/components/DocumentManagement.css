@@ -213,12 +213,6 @@
   }
 }
 
-/* Focus Styles for Accessibility */
-.action-button:focus {
-  outline: 2px solid #dc2626;
-  outline-offset: 2px;
-}
-
 /* Tooltip for Status Badge */
 .status-badge[title] {
   cursor: help;
@@ -236,4 +230,36 @@
 
 .document-table tbody tr.pending-row {
   background: rgba(245, 158, 11, 0.05);
+}
+
+/* Clamp title to 2 lines with ellipsis */
+.title-clamp {
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  word-break: break-word;
+  max-width: 420px;
+}
+
+/* Make document title look like a link */
+.link-like-btn.document-title-btn {
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 0;
+  color: #003209;
+  cursor: pointer;
+  font: inherit;
+}
+.link-like-btn.document-title-btn:hover {
+  filter: brightness(1.9);
+}
+/* Underline only the inner text to avoid clamp/display quirks */
+.document-title-btn .title-text {
+  text-decoration: none;
+  text-align: left;
 }

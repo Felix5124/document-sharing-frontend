@@ -68,17 +68,19 @@ function AccountManagement() {
           </span>
         </td>
         <td>
-          <button
-            className={`action-button ${user.isLocked ? 'unlock-button' : 'lock-button'}`}
-            onClick={() => handleLockUnlock(user.userId, user.isLocked)}
-          >
-            <FontAwesomeIcon
-              icon={user.isLocked ? faLockOpen : faLock}
-              className="icon-margin-right"
-            />
-            {user.isLocked ? 'Mở khóa' : 'Khóa'}
-
-          </button>
+          <div className='btn-center'>
+            <button
+              className={`action-button ${user.isLocked ? 'unlock-button' : 'lock-button'}`}
+              onClick={() => handleLockUnlock(user.userId, user.isLocked)}
+            >
+              <FontAwesomeIcon
+                icon={user.isLocked ? faLockOpen : faLock}
+                className="icon-margin-right"
+              />
+              {user.isLocked ? 'Mở khóa' : 'Khóa'}
+  
+            </button>
+          </div>
         </td>
       </tr>
     );
