@@ -72,18 +72,10 @@
   color: #888;
 }
 
-.search-input {
-  padding: 8px 12px 8px 36px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 1rem;
-  width: 200px;
-}
-
 .select-filter {
   padding: 8px 12px;
   border: 1px solid #ccc;
-  border-radius: 6px;
+  /* animation removed for subtle look */
   font-size: 1rem;
   background: #fff;
 }
@@ -165,6 +157,43 @@
   position: relative;
 }
 
+/* VIP star badge in the top-right corner of the card image */
+.document-card-image-container .vip-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  bottom: auto; /* override generic .vip-badge from navbar */
+  left: auto;   /* override generic .vip-badge from navbar */
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  /* VIP gradient border effect similar to navbar avatar */
+  border: 2px solid transparent;
+  background-image: linear-gradient(#f5c542, #f5c542),
+    linear-gradient(45deg, #ffd700, #ff9d00, #ffdd55);
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  z-index: 2;
+  animation: vip-glow 2s linear infinite;
+}
+
+.document-card-image-container .vip-badge svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* VIP glow animation (duplicated here so Home.css doesn't depend on Navbar.css load order) */
+@keyframes vip-glow {
+  0% { filter: drop-shadow(0 0 2px #ffea00); }
+  50% { filter: drop-shadow(0 0 6px #ffdd00); }
+  100% { filter: drop-shadow(0 0 2px #ffea00); }
+}
+
 .document-card-image {
   width: 100%;
   height: 100%;
@@ -180,13 +209,6 @@
   flex: 1;
 }
 
-.document-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
 /* Tiêu đề tài liệu ở trang Home - chỉ dành cho danh sách tài liệu */
 .home-document-title {
   font-size: 0.8rem;
@@ -195,6 +217,7 @@
   flex-grow: 1;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2; /* standard property for better compatibility */
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -207,6 +230,7 @@
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
 }
 
@@ -460,6 +484,15 @@
   gap: 10px;
   border-bottom: 1px solid #e5e7eb;
 }
+/* Subtle highlight for VIP items */
+.top-interest-item.vip {
+  background: linear-gradient(90deg, rgba(244, 208, 4, 0.06), rgba(255, 217, 0, 0.675));
+  border-radius: 6px;
+  padding-left: 8px;
+}
+
+/* Optional subtle inner glow to emphasize VIP */
+.top-interest-item.vip::before { display: none; }
 
 .top-interest-item:last-child {
   border-bottom: none;
@@ -487,6 +520,13 @@
   max-height: 89px;
   gap: 12px;
 }
+/* Thumbnail wrapper to host VIP badge */
+.item-thumb {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  flex-shrink: 0;
+}
 
 /* Thumbnail image */
 .item-image {
@@ -496,6 +536,33 @@
   object-fit: cover;
   border-radius: 4px;
   flex-shrink: 0;
+}
+/* VIP star badge on top-interest thumbnail */
+.item-thumb .vip-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  bottom: auto; /* override generic .vip-badge from navbar */
+  left: auto;   /* override generic .vip-badge from navbar */
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  background-image: linear-gradient(#f5c542, #f5c542),
+    linear-gradient(45deg, #ffd700, #ff9d00, #ffdd55);
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  animation: vip-glow 2s linear infinite;
+  z-index: 3;
+}
+.item-thumb .vip-badge svg {
+  width: 10px;
+  height: 10px;
 }
 
 /* Info area */
@@ -507,6 +574,20 @@
   flex-direction: column;
   gap: 3px;
 }
+/* VIP pill next to title */
+.vip-tag {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #111827;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background-image: linear-gradient(45deg, #ffd700, #ff9d00);
+}
 
 /* Title */
 .item-title {
@@ -516,6 +597,7 @@
   /* phần quan trọng để cho phép 2 dòng rồi ... */
   display: -webkit-box;
   -webkit-line-clamp: 2; /* số dòng muốn hiển thị */
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -589,6 +671,7 @@
   margin-bottom: 0.5rem;
   display: -webkit-box;        /* Bật chế độ box ảo */
   -webkit-line-clamp: 2;       /* Giới hạn 2 dòng */
+  line-clamp: 2;
   -webkit-box-orient: vertical;/* Hướng xếp dọc */
   overflow: hidden;            /* Ẩn phần vượt quá */
   text-overflow: ellipsis;     /* Thêm dấu … */
@@ -681,6 +764,7 @@
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
 }
 
@@ -750,7 +834,8 @@
 }
 
 .status-label.semi-approved {
-  background-color: rgba(245, 159, 11, 0.85); /* Màu cam */
+   background-color: rgba(245, 159, 11, 0.85); /* Màu cam */
+
 }
 
 .status-label.approved {

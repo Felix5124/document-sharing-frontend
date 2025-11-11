@@ -4,7 +4,8 @@ import {
   getCategories,
   getTopCommenter,
   getTopDownloadedDocument,
-  getTopDownloadedDocumentsList
+  getTopDownloadedDocumentsList,
+  getDocumentById
 } from '../services/api';
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
@@ -23,7 +24,8 @@ import {
   faDownload,
   faChartLine,
   faCommentDots,
-  faCircleExclamation
+  faCircleExclamation,
+  faStar
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -265,6 +267,12 @@ function Home() {
               className="document-card-image"
               onError={(e) => (e.target.src = getFullImageUrl(null))}
             />
+            {/* VIP badge at top-right if the document is VIP-only */}
+            {(doc.isVipOnly || doc.IsVipOnly) && (
+              <span className="vip-badge" title="Tài liệu VIP">
+                <FontAwesomeIcon icon={faStar} />
+              </span>
+            )}
             {/* THÊM MỚI: Nhãn trạng thái */}
             {doc.approvalStatus === 'SemiApproved' && (
               <span className="status-label semi-approved">Chưa kiểm duyệt</span>
@@ -344,6 +352,51 @@ function Home() {
   };
 
   const TopInterestDocumentsList = ({ documents, isLoading }) => {
+    const [augDocs, setAugDocs] = useState([]);
+    useEffect(() => {
+      let mounted = true;
+      const keys = ['isVipOnly', 'IsVipOnly', 'isVip', 'IsVip', 'vipOnly', 'VipOnly'];
+      const getLocalVip = (obj) => {
+        for (const k of keys) {
+          if (obj && obj[k] !== undefined && obj[k] !== null) {
+            const v = obj[k];
+            const truthy = v === true || v === 'true' || v === 1 || v === '1';
+            return { known: true, value: truthy };
+          }
+        }
+        return { known: false, value: false };
+      };
+
+      const fetchDetails = async () => {
+        try {
+          const base = Array.isArray(documents) ? documents.slice(0, 5) : [];
+          const detailed = await Promise.all(
+            base.map(async (d, idx) => {
+              const local = getLocalVip(d);
+              if (local.known) return { ...d, vipFlag: local.value };
+              try {
+                if (!d?.documentId) return { ...d, vipFlag: false };
+                const res = await getDocumentById(d.documentId);
+                const dd = res?.data || {};
+                const fromDetail = getLocalVip(dd);
+                return { ...d, vipFlag: fromDetail.known ? fromDetail.value : false };
+              } catch {
+                return { ...d, vipFlag: false };
+              }
+            })
+          );
+          if (mounted) setAugDocs(detailed);
+        } catch {
+          if (mounted) setAugDocs([]);
+        }
+      };
+      fetchDetails();
+      return () => { mounted = false; };
+    }, [JSON.stringify(documents)]);
+
+    const docsToRender = augDocs?.length ? augDocs : documents;
+    const isVipDoc = (d) => d?.vipFlag === true || [d?.isVipOnly, d?.IsVipOnly, d?.isVip, d?.IsVip, d?.vipOnly, d?.VipOnly]
+      .some((v) => v === true || v === 'true' || v === 1 || v === '1');
     const renderContent = () => {
       if (isLoading)
         return (
@@ -352,19 +405,29 @@ function Home() {
             <p className="loading-text-small">Đang tải...</p>
           </div>
         );
-      if (!documents?.length) return <p className="empty-text">Chưa có tài liệu nổi bật nào.</p>;
+      if (!docsToRender?.length) return <p className="empty-text">Chưa có tài liệu nổi bật nào.</p>;
       return (
         <ul className="top-interest-list">
-          {documents.map((doc, i) => (
-            <li key={doc.documentId || i} className="top-interest-item">
+          {docsToRender.map((doc, i) => (
+            <li
+              key={doc.documentId || i}
+              className={`top-interest-item ${ isVipDoc(doc) ? 'vip' : '' }`}
+            >
               <span className="item-rank">{i + 1}</span>
               <Link to={`/document/${doc.documentId}`} className="item-link">
-                <img
-                  src={getFullImageUrl(doc.coverImageUrl)}
-                  alt={doc.title}
-                  className="item-image"
-                  onError={(e) => (e.target.src = getFullImageUrl(null))}
-                />
+                <div className="item-thumb">
+                  <img
+                    src={getFullImageUrl(doc.coverImageUrl)}
+                    alt={doc.title}
+                    className="item-image"
+                    onError={(e) => (e.target.src = getFullImageUrl(null))}
+                  />
+                  {isVipDoc(doc) && (
+                    <span className="vip-badge" title="Tài liệu VIP" aria-label="VIP">
+                      <FontAwesomeIcon icon={faStar} />
+                    </span>
+                  )}
+                </div>
                 <div className="item-info">
                   <h6 className="item-title">{doc.title}</h6>
                   <div className="item-meta">

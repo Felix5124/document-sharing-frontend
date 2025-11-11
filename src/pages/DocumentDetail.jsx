@@ -12,6 +12,7 @@ import {
   getRelatedDocumentsByTags,
   getRelatedDocuments
 } from '../services/api';
+import { getActiveVipSubscription } from '../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faDownload, faFolder, faFile, faDatabase, faCalendar, faTags, faArrowRight, faUser, faPaperPlane, faCommentDots, faPlusCircle, faFlag, faCircleExclamation, faExclamationTriangle, faClock, faLock, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 
@@ -57,6 +58,7 @@ function DocumentDetail() {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
   const [hasAlreadyReported, setHasAlreadyReported] = useState(false); // <-- STATE MỚI
+  const [hasActiveVip, setHasActiveVip] = useState(false);
 
 
   useEffect(() => {
@@ -90,6 +92,28 @@ function DocumentDetail() {
       };
     }
   }, [isPreviewOpen]);
+
+  // Check active VIP when preview opens or user changes
+  useEffect(() => {
+    const checkVip = async () => {
+      try {
+        if (user && user.userId) {
+          const res = await getActiveVipSubscription(user.userId);
+          const data = res?.data;
+          // Accept a few possible shapes
+          const active = !!(data && (data.isActive === true || data.active === true || Object.keys(data).length > 0));
+          setHasActiveVip(active);
+        } else {
+          setHasActiveVip(false);
+        }
+      } catch {
+        setHasActiveVip(false);
+      }
+    };
+    if (isPreviewOpen) {
+      checkVip();
+    }
+  }, [isPreviewOpen, user]);
 
   useEffect(() => {
     if (user && user.userId && doc?.uploadedBy) {
@@ -419,6 +443,13 @@ function DocumentDetail() {
   const onDocumentLoadSuccess = ({ numPages: loadedNumPages }) => {
     setNumPages(loadedNumPages);
   };
+
+  // Số trang preview tối đa theo loại tài khoản
+  const getPreviewLimit = () => {
+    if (hasActiveVip || (user && user.isVip)) return 10;
+    return 2;
+  };
+  const previewLimit = getPreviewLimit();
 
   if (loadingState === 'loading') {
     return (
@@ -1014,23 +1045,37 @@ function DocumentDetail() {
       <CustomModal
         show={isPreviewOpen}
         onHide={handleClosePreview}
-        title="Xem Online (PDF)"
+        fullscreen
+        modalClassName="bare"
       >
         {pdfData ? (
-          <div style={{ maxHeight: '80vh', overflowY: 'auto' }}>
-            <Document file={pdfData} onLoadSuccess={onDocumentLoadSuccess} loading="Đang tải tài liệu...">
-              {numPages && Array.from({ length: numPages }, (_, i) => (
-                <Page
-                  key={`page_${i + 1}`}
-                  pageNumber={i + 1}
-                  renderTextLayer={false}
-                  renderAnnotationLayer={false}
-                  className="pdf-page"
-                />
-              ))}
-              {!numPages && <div className="preview-loading">Không thể tải trang.</div>}
-            </Document>
-          </div>
+          <Document file={pdfData} onLoadSuccess={onDocumentLoadSuccess} loading="Đang tải tài liệu...">
+            {numPages && Array.from({ length: Math.min(numPages, previewLimit) }, (_, i) => (
+              <Page
+                key={`page_${i + 1}`}
+                pageNumber={i + 1}
+                renderTextLayer={false}
+                renderAnnotationLayer={false}
+                className="pdf-page"
+              />
+            ))}
+            {numPages && numPages > previewLimit && (
+              <div className="preview-limit-overlay">
+                <p>Bạn đã xem {previewLimit} trang trong số {numPages}. {user ? 'Vui lòng tải xuống để xem toàn bộ.' : 'Đăng nhập và tải xuống để xem toàn bộ.'}</p>
+                <button
+                  type="button"
+                  className="download-to-continue-btn"
+                  onClick={() => {
+                    handleClosePreview();
+                    handleDownload();
+                  }}
+                >
+                  Tải tài liệu để xem tiếp
+                </button>
+              </div>
+            )}
+            {!numPages && <div className="preview-loading">Không thể tải trang.</div>}
+          </Document>
         ) : (
           <div className="loading-container">
             <div className="spinner"></div>
