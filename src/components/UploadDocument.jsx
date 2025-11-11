@@ -17,6 +17,7 @@ function UploadDocument() {
       Tags: [],
       File: null,
       CoverImage: null,
+      IsVipOnly: false,
     }
   });
 
@@ -26,6 +27,7 @@ function UploadDocument() {
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
   const userId = user?.userId;
+  const isVipActive = !!(user?.isVip && (!user?.vipExpiryDate || new Date(user.vipExpiryDate) > new Date()));
 
   const coverImageFile = watch('CoverImage');
   const currentTags = watch('Tags');
@@ -88,6 +90,9 @@ function UploadDocument() {
     formData.append('Description', data.Description || '');
     formData.append('CategoryId', parseInt(data.CategoryId, 10).toString());
     formData.append('UploadedBy', userId.toString());
+    // Loại tài liệu: chỉ VIP mới được chọn tài liệu VIP; người thường luôn false
+    const wantVip = !!data.IsVipOnly;
+    formData.append('IsVipOnly', (isVipActive && wantVip ? true : false).toString());
     // points and school removed: do not append PointsRequired or SchoolId
 
     if (data.File && data.File.length > 0) {
@@ -199,6 +204,22 @@ function UploadDocument() {
             </div>
             {errors.CategoryId && <p className="error-text">{errors.CategoryId.message}</p>}
           </div>
+
+          {isVipActive && (
+            <div className="form-group">
+              <label className="form-label">Loại tài liệu</label>
+              <div className="vip-toggle-row">
+                <label className="checkbox-inline" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <input type="checkbox" {...register('IsVipOnly')} />
+                  <span>
+                    <FontAwesomeIcon icon={faStar} style={{ color: '#f59e0b', marginRight: 6 }} />
+                    Đánh dấu là tài liệu VIP
+                  </span>
+                </label>
+                <small style={{ color: '#6b7280' }}>Tài liệu VIP chỉ cho phép tài khoản VIP tải xuống.</small>
+              </div>
+            </div>
+          )}
 
           <div className="form-group">
             <label className="form-label" htmlFor="tag-input-upload">Tags</label>
