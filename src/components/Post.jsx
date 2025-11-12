@@ -1,4 +1,5 @@
 import { useState, useEffect, useContext } from 'react';
+import { Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 import { getPosts, createPost, getPostComments, addPostComment } from '../services/api';
@@ -151,17 +152,25 @@ const Post = () => {
           {posts.map(post => (
             <div key={post.postId} className="post-card">
               <div className="post-header">
-                <img
-                  src={getFullAvatarUrl(post.user?.avatarUrl)}
-                  alt={post.user?.fullName || post.user?.email || 'Avatar'}
-                  className="post-avatar"
-                  onError={e => {
-                    e.currentTarget.onerror = null;
-                    e.currentTarget.src = getFullAvatarUrl(null);
-                  }}
-                />
+                <Link to={post.userId ? `/profile/${post.userId}` : '/profile'}>
+                  <img
+                    src={getFullAvatarUrl(post.user?.avatarUrl)}
+                    alt={post.user?.fullName || post.user?.email || 'Avatar'}
+                    className="post-avatar"
+                    onError={e => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = getFullAvatarUrl(null);
+                    }}
+                  />
+                </Link>
                 <div className="post-user-info">
-                  <p className="post-user-email">{post.user?.fullName || post.user?.email || 'Ẩn danh'}</p>
+                  <p className="post-user-email">
+                    {post.userId ? (
+                      <Link to={`/profile/${post.userId}`}>{post.user?.fullName || post.user?.email}</Link>
+                    ) : (
+                      (post.user?.fullName || post.user?.email || 'Ẩn danh')
+                    )}
+                  </p>
                   <p className="post-date">{new Date(post.createdAt).toLocaleString('vi-VN')}</p>
                 </div>
               </div>
@@ -181,17 +190,25 @@ const Post = () => {
                   {comments[post.postId].map(comment => (
                     <div key={comment.postCommentId} className="comment-item">
                       <div className="comment-post-header">
-                        <img
-                          src={getFullAvatarUrl(comment.user?.avatarUrl)}
-                          alt={comment.user?.fullName || comment.user?.email || 'Avatar'}
-                          className="comment-avatar"
-                          onError={e => {
-                            e.currentTarget.onerror = null;
-                            e.currentTarget.src = getFullAvatarUrl(null);
-                          }}
-                        />
+                        <Link to={comment.userId ? `/profile/${comment.userId}` : '/profile'}>
+                          <img
+                            src={getFullAvatarUrl(comment.user?.avatarUrl)}
+                            alt={comment.user?.fullName || comment.user?.email || 'Avatar'}
+                            className="comment-avatar"
+                            onError={e => {
+                              e.currentTarget.onerror = null;
+                              e.currentTarget.src = getFullAvatarUrl(null);
+                            }}
+                          />
+                        </Link>
                         <div className="comment-user-info">
-                          <p className="comment-user-email">{comment.user?.fullName || comment.user?.email || 'Ẩn danh'}</p>
+                          <p className="comment-user-email">
+                            {comment.userId ? (
+                              <Link to={`/profile/${comment.userId}`}>{comment.user?.fullName || comment.user?.email}</Link>
+                            ) : (
+                              (comment.user?.fullName || comment.user?.email || 'Ẩn danh')
+                            )}
+                          </p>
                           <p className="comment-content">{comment.content}</p>
                         </div>
                       </div>
@@ -209,7 +226,7 @@ const Post = () => {
                             onChange={e =>
                               setNewComment({ ...newComment, [post.postId]: e.target.value })
                             }
-                            className="form-input"
+                            className="form-input-no-icon"
                             rows="2"
                           />
                         </div>

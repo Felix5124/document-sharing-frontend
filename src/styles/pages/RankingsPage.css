@@ -2,40 +2,7 @@
    1. CSS Variables & Global Styles
    ========================================================================== */
 
-:root {
-  /* Colors */
-  --color-text-primary: #334155;
-  --color-text-secondary: #64748b;
-  --color-background-page: #f8fafc;
-  --color-background-card: #ffffff;
-  --color-border: #e2e8f0;
-  --color-value-badge-bg: #f1f5f9;
-  --color-gold: gold;
-  --color-silver: silver;
-  --color-bronze: #cd7f32;
-
-  /* Theming Colors for Headers/Icons */
-  /* points theme removed */
-  --theme-color-uploads: #0dcaf0;
-  --theme-color-comments: #0d6efd;
-  --theme-color-downloads-user: #198754;
-  --theme-color-downloads-doc: #dc3545;
-
-  /* Typography */
-  --font-family-base: sans-serif;
-  --font-size-base: 16px;
-
-  /* Spacing */
-  --spacing-gutter: 12px;
-  --spacing-card-padding: 20px;
-  --spacing-item-padding: 16px;
-
-  /* Other */
-  --border-radius-card: 12px;
-  --border-radius-badge: 16px;
-  --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  --card-shadow-hover: 0 8px 20px rgba(0, 0, 0, 0.12);
-}
+/* Variables moved to src/styles/GlobalStyles.css :root */
 
 body {
   font-family: var(--font-family-base);
@@ -166,10 +133,6 @@ body {
 
 .ranking-card__item--clickable {
   cursor: pointer;
-}
-
-.ranking-card__item--clickable:hover {
-  background-color: var(--color-background-page);
 }
 
 .ranking-card__position {

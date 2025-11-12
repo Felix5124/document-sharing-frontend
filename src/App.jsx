@@ -82,6 +82,8 @@ function App() {
           <Route path="/document/:id" element={<ErrorBoundary><DocumentDetail /></ErrorBoundary>} />
           <Route path="/postcommentdetail/:id" element={<ErrorBoundary><PostCommentDetail /></ErrorBoundary>} />
           <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+          {/* View other user's profile (public) */}
+          <Route path="/profile/:id" element={<ErrorBoundary><Profile /></ErrorBoundary>} />
           <Route path="/upgrade-account" element={<PrivateRoute><UpgradeAccount /></PrivateRoute>} />
           <Route
             path="/admin"

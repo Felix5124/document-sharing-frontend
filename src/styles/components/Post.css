@@ -17,7 +17,7 @@
 .comment-post-header{
   display: flex;
   align-items: center;
-  margin-bottom: 0.75rem;
+  justify-content: center;
 }
 /* Title */
 .post-page-title {
@@ -39,24 +39,18 @@
 /* Form */
 .post-form {
   margin-bottom: 2rem;
-}
-
-.form-item {
-  margin-bottom: 1.25rem;
-}
-
-
+} 
 
 /* Buttons */
 .btn-submit,
 .btn-submit-comment {
-  background-color: var(--color-button);
+  background: var(--color-button);
   color: white;
+  margin-top: 0.5rem;
   align-self: flex-end;
   border: none;
   border-radius: 6px;
-  padding: 0.6rem 1rem;
-  font-size: 1rem;
+  padding: 0.45rem 0.85rem;
   cursor: pointer;
   transition: background-color 0.2s;
 }
@@ -64,7 +58,7 @@
 .btn-submit:hover,
 .btn-submit-comment:hover,
 .btn-comment:hover {
-  filter: brightness(0.8);
+  filter: brightness(0.96);
 }
 .btn-comment {
   align-self: flex-end;
@@ -131,15 +125,26 @@
   background-color: var(--color-background-comment);
   font-size: 0.8rem;
   border-radius: 20px;
-  padding: 15px;
+  padding: 5px;
+  /* allow the content box to determine its own width and wrap text */
+  display: inline-block;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  max-width: 100%; /* responsive cap */
 }
 .post-user-email,
 .comment-user-email {
-  font-weight: 500;
+  font-size: 0.85rem;
+  font-weight: 700;
   margin: 0;
 }
+.post-user-email a,.comment-user-email a {
+  text-decoration: none;
+  color: inherit;
+}
 .post-date {
-  font-size: 0.8rem;
+  font-size: 0.6rem;
   color: #6c757d;
   margin: 0;
 }
@@ -147,12 +152,10 @@
 
 /* Post content */
 .post-title {
-  margin: 0.5rem 0;
   font-size: 1.25rem;
 }
 
 .post-content {
-  margin-bottom: 1rem;
   word-wrap: break-word;
   white-space: normal;
   overflow-wrap: break-word;
@@ -166,17 +169,32 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  /* don't stretch children horizontally; let them size to content */
+  align-items: flex-start;
+}
+
+/* Make the inline comment form stretch to the full width of the post card */
+.comment-form {
+  width: 100%;
+}
+
+.comment-form .form-item,
+.comment-form .input-wrapper {
+  width: 100%;
 }
 
 .comment-item {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  padding: 20px;
+  gap: 4px;
+  padding: 10px;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   transition: all 0.2s ease;
-  background-color: #fff;
+  background-color: #e3e3e3;
+  /* let the comment width be determined by its content column */
+  width: auto;
+  max-width: 100%;
 }
 
 /* Link primary */

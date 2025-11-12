@@ -420,7 +420,7 @@ textarea.form-control {
 
 .download-btn,
 .preview-btn {
-  background-color: var(--color-button);
+  background: var(--color-button);
   padding: 8px 20px;
   border-radius: 8px;
   font-size: 0.8rem;

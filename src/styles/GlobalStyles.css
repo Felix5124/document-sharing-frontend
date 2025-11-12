@@ -2,15 +2,46 @@
 
 /* CSS custom properties */
 :root {
+  /* General colors */
   --color-text-navbar: #ffffff;
   --color-text: #1f2937;
-  --color-hover: #3feab4; /* xanh đậm của gradient */
   --color-subtitle: #6b7280;
-  --color-background-card: #e5e7eb;
-  --color-button: #13b2a1;
   --color-background: #e3e3e3;
-  --color-background-comment: #f0f2f5;
-  --color-line : #bebfc0;
+  --color-background-card: #ffffff; /* default card bg, Rankings overrides may adjust */
+  /* Removed unused tokens: --color-hover, --color-background-comment, --color-line */
+  --color-button:  linear-gradient(135deg, #10b981 0%, #059669 100%);
+  --color-hover: #10b981;
+
+  /* Rankings / Cards theme (moved from RankingsPage.css) */
+  --color-text-primary: #334155;
+  --color-text-secondary: #64748b;
+  --color-background-page: #f8fafc;
+  --color-border: #e2e8f0;
+  --color-value-badge-bg: #f1f5f9;
+  --color-gold: gold;
+  --color-silver: silver;
+  --color-bronze: #cd7f32;
+
+  /* Theming Colors for Headers/Icons */
+  --theme-color-uploads: #0dcaf0;
+  --theme-color-comments: #0d6efd;
+  --theme-color-downloads-user: #198754;
+  --theme-color-downloads-doc: #dc3545;
+
+  /* Typography defaults */
+  --font-family-base: "Inter", sans-serif;
+  --font-size-base: 16px;
+
+  /* Spacing */
+  /* --spacing-gutter removed (not used) */
+  --spacing-card-padding: 20px;
+  --spacing-item-padding: 16px;
+
+  /* Card / UI tokens */
+  --border-radius-card: 12px;
+  --border-radius-badge: 16px;
+  --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --card-shadow-hover: 0 8px 20px rgba(0, 0, 0, 0.12);
 }
 
 /* Base reset / global elements */
@@ -174,6 +205,7 @@ body {
 }
 /* Secondary Button */
 .btn-secondary {
+  width: 100%;
   padding: 12px 20px;
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: #ffffff;
