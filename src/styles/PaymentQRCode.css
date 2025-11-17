@@ -1,0 +1,265 @@
+.payment-qr-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 30px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.payment-header {
+  text-align: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.payment-header h3 {
+  margin: 0 0 15px 0;
+  color: #2c3e50;
+  font-size: 24px;
+}
+
+.expiry-countdown {
+  display: inline-block;
+  padding: 8px 16px;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 6px;
+  color: #856404;
+  font-size: 14px;
+}
+
+.expiry-countdown strong {
+  color: #d9534f;
+}
+
+.payment-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-bottom: 30px;
+}
+
+@media (max-width: 768px) {
+  .payment-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+.qr-section {
+  text-align: center;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.qr-section h4 {
+  margin-top: 0;
+  color: #495057;
+  font-size: 16px;
+}
+
+.qr-code-image {
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  margin: 15px 0;
+  border: 3px solid #dee2e6;
+  border-radius: 8px;
+  background: white;
+  padding: 10px;
+}
+
+.qr-placeholder {
+  width: 100%;
+  max-width: 300px;
+  height: 300px;
+  margin: 15px auto;
+  background: #e9ecef;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  color: #6c757d;
+}
+
+.qr-instruction {
+  margin-top: 10px;
+  color: #6c757d;
+  font-size: 14px;
+}
+
+.bank-info-section {
+  padding: 20px;
+}
+
+.bank-info-section h4 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #495057;
+  font-size: 16px;
+}
+
+.info-group {
+  margin-bottom: 15px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 6px;
+}
+
+.info-group.highlight {
+  background: #e7f3ff;
+  border: 2px solid #0d6efd;
+}
+
+.info-group label {
+  display: block;
+  margin-bottom: 5px;
+  color: #6c757d;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.info-value {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.info-value span {
+  flex: 1;
+  color: #212529;
+  font-size: 15px;
+}
+
+.info-value .amount {
+  color: #d9534f;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.info-value code {
+  flex: 1;
+  background: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  color: #0d6efd;
+  font-weight: bold;
+}
+
+.copy-btn {
+  padding: 6px 12px;
+  background: #0d6efd;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  white-space: nowrap;
+  transition: background 0.3s;
+}
+
+.copy-btn:hover {
+  background: #0b5ed7;
+}
+
+.warning-box {
+  margin-top: 20px;
+  padding: 15px;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 6px;
+  color: #856404;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.warning-box code {
+  background: white;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-weight: bold;
+  color: #d9534f;
+}
+
+.order-info {
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-row span {
+  color: #6c757d;
+}
+
+.info-row strong {
+  color: #212529;
+}
+
+.status-pending {
+  color: #ffc107;
+}
+
+.status-completed {
+  color: #28a745;
+}
+
+.status-cancelled {
+  color: #dc3545;
+}
+
+.status-expired {
+  color: #6c757d;
+}
+
+.check-status-btn {
+  width: 100%;
+  padding: 15px;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+  margin-bottom: 20px;
+}
+
+.check-status-btn:hover:not(:disabled) {
+  background: #218838;
+}
+
+.check-status-btn:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+}
+
+.payment-footer {
+  text-align: center;
+  padding-top: 20px;
+  border-top: 2px solid #f0f0f0;
+}
+
+.payment-footer p {
+  margin: 0;
+  color: #6c757d;
+  font-size: 14px;
+  font-style: italic;
+}
