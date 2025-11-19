@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, memo } from 'react';
 import {
   searchDocuments,
   getCategories,
@@ -74,6 +74,140 @@ function Banner() {
     </div>
   );
 }
+
+// Component để hiển thị danh sách tài liệu được quan tâm
+const TopInterestDocumentsList = memo(({ documents, isLoading }) => {
+  const [augDocs, setAugDocs] = useState([]);
+  const lastFetchedDocsRef = useRef(null);
+  const isFetchingRef = useRef(false);
+  
+  useEffect(() => {
+    if (!documents || !Array.isArray(documents) || documents.length === 0) {
+      return;
+    }
+    
+    // So sánh deep để xem documents có thực sự thay đổi không
+    const currentDocsString = JSON.stringify(documents);
+    if (lastFetchedDocsRef.current === currentDocsString || isFetchingRef.current) {
+      return;
+    }
+    
+    lastFetchedDocsRef.current = currentDocsString;
+    isFetchingRef.current = true;
+    
+    let mounted = true;
+    const keys = ['isVipOnly', 'IsVipOnly', 'isVip', 'IsVip', 'vipOnly', 'VipOnly'];
+    const getLocalVip = (obj) => {
+      for (const k of keys) {
+        if (obj && obj[k] !== undefined && obj[k] !== null) {
+          const v = obj[k];
+          const truthy = v === true || v === 'true' || v === 1 || v === '1';
+          return { known: true, value: truthy };
+        }
+      }
+      return { known: false, value: false };
+    };
+
+    const fetchDetails = async () => {
+      try {
+        const base = documents.slice(0, 5);
+        const detailed = await Promise.all(
+          base.map(async (d) => {
+            const local = getLocalVip(d);
+            if (local.known) return { ...d, vipFlag: local.value };
+            try {
+              if (!d?.documentId) return { ...d, vipFlag: false };
+              const res = await getDocumentById(d.documentId);
+              const dd = res?.data || {};
+              const fromDetail = getLocalVip(dd);
+              return { ...d, vipFlag: fromDetail.known ? fromDetail.value : false };
+            } catch {
+              return { ...d, vipFlag: false };
+            }
+          })
+        );
+        if (mounted) {
+          setAugDocs(detailed);
+          isFetchingRef.current = false;
+        }
+      } catch (err) {
+        console.error('Error fetching VIP status:', err);
+        isFetchingRef.current = false;
+      }
+    };
+    
+    fetchDetails();
+    return () => { 
+      mounted = false;
+      isFetchingRef.current = false;
+    };
+  }, [documents]);
+
+  const docsToRender = augDocs.length > 0 ? augDocs : documents.slice(0, 5);
+  const isVipDoc = (d) => d?.vipFlag === true || [d?.isVipOnly, d?.IsVipOnly, d?.isVip, d?.IsVip, d?.vipOnly, d?.VipOnly]
+    .some((v) => v === true || v === 'true' || v === 1 || v === '1');
+
+  return (
+    <div className="top-interest-documents-card">
+      <div className="top-interest-header">
+        <h5 className="top-interest-title">
+          <FontAwesomeIcon icon={faChartLine} /> Tài liệu được quan tâm
+        </h5>
+      </div>
+      <div className="top-interest-body">
+        {isLoading ? (
+          <div className="loading-box">
+            <div className="spinner-custom-sm"></div>
+            <p className="loading-text-small">Đang tải...</p>
+          </div>
+        ) : !docsToRender?.length ? (
+          <p className="empty-text">Chưa có tài liệu nổi bật nào.</p>
+        ) : (
+          <ul className="top-interest-list">
+            {docsToRender.map((doc, i) => (
+              <li
+                key={doc.documentId || i}
+                className={`top-interest-item ${isVipDoc(doc) ? 'vip' : ''}`}
+              >
+                <span className="item-rank">{i + 1}</span>
+                <Link to={`/document/${doc.documentId}`} className="item-link">
+                  <div className="item-thumb">
+                    <img
+                      src={getFullImageUrl(doc.coverImageUrl)}
+                      alt={doc.title}
+                      className="item-image"
+                      onError={(e) => (e.target.src = getFullImageUrl(null))}
+                    />
+                    {isVipDoc(doc) && (
+                      <span className="vip-badge" title="Tài liệu VIP">
+                        <FontAwesomeIcon icon={faStar} />
+                      </span>
+                    )}
+                  </div>
+                  <div className="item-info">
+                    <h6 className="item-title">{doc.title}</h6>
+                    <div className="item-meta">
+                      {doc.uploadedByUser?.fullName || doc.fullName || 'Ẩn danh'}
+                      <span className="item-download">
+                        <FontAwesomeIcon icon={faDownload} /> {doc.downloadCount}
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+}, (prevProps, nextProps) => {
+  // Custom comparison: chỉ re-render khi documents hoặc isLoading thực sự thay đổi
+  return (
+    JSON.stringify(prevProps.documents) === JSON.stringify(nextProps.documents) &&
+    prevProps.isLoading === nextProps.isLoading
+  );
+});
 
 function Home() {
   const { cache, setCache } = useHomeCache();
@@ -267,13 +401,11 @@ function Home() {
               className="document-card-image"
               onError={(e) => (e.target.src = getFullImageUrl(null))}
             />
-            {/* VIP badge at top-right if the document is VIP-only */}
             {(doc.isVipOnly || doc.IsVipOnly) && (
               <span className="vip-badge" title="Tài liệu VIP">
                 <FontAwesomeIcon icon={faStar} />
               </span>
             )}
-            {/* THÊM MỚI: Nhãn trạng thái */}
             {doc.approvalStatus === 'SemiApproved' && (
               <span className="status-label semi-approved">Chưa kiểm duyệt</span>
             )}
@@ -347,111 +479,6 @@ function Home() {
             )}
           </div>
         ) : <p className="contributor-empty">Không có dữ liệu</p>}
-      </div>
-    );
-  };
-
-  const TopInterestDocumentsList = ({ documents, isLoading }) => {
-    const [augDocs, setAugDocs] = useState([]);
-    useEffect(() => {
-      let mounted = true;
-      const keys = ['isVipOnly', 'IsVipOnly', 'isVip', 'IsVip', 'vipOnly', 'VipOnly'];
-      const getLocalVip = (obj) => {
-        for (const k of keys) {
-          if (obj && obj[k] !== undefined && obj[k] !== null) {
-            const v = obj[k];
-            const truthy = v === true || v === 'true' || v === 1 || v === '1';
-            return { known: true, value: truthy };
-          }
-        }
-        return { known: false, value: false };
-      };
-
-      const fetchDetails = async () => {
-        try {
-          const base = Array.isArray(documents) ? documents.slice(0, 5) : [];
-          const detailed = await Promise.all(
-            base.map(async (d, idx) => {
-              const local = getLocalVip(d);
-              if (local.known) return { ...d, vipFlag: local.value };
-              try {
-                if (!d?.documentId) return { ...d, vipFlag: false };
-                const res = await getDocumentById(d.documentId);
-                const dd = res?.data || {};
-                const fromDetail = getLocalVip(dd);
-                return { ...d, vipFlag: fromDetail.known ? fromDetail.value : false };
-              } catch {
-                return { ...d, vipFlag: false };
-              }
-            })
-          );
-          if (mounted) setAugDocs(detailed);
-        } catch {
-          if (mounted) setAugDocs([]);
-        }
-      };
-      fetchDetails();
-      return () => { mounted = false; };
-    }, [JSON.stringify(documents)]);
-
-    const docsToRender = augDocs?.length ? augDocs : documents;
-    const isVipDoc = (d) => d?.vipFlag === true || [d?.isVipOnly, d?.IsVipOnly, d?.isVip, d?.IsVip, d?.vipOnly, d?.VipOnly]
-      .some((v) => v === true || v === 'true' || v === 1 || v === '1');
-    const renderContent = () => {
-      if (isLoading)
-        return (
-          <div className="loading-box">
-            <div className="spinner-custom-sm"></div>
-            <p className="loading-text-small">Đang tải...</p>
-          </div>
-        );
-      if (!docsToRender?.length) return <p className="empty-text">Chưa có tài liệu nổi bật nào.</p>;
-      return (
-        <ul className="top-interest-list">
-          {docsToRender.map((doc, i) => (
-            <li
-              key={doc.documentId || i}
-              className={`top-interest-item ${ isVipDoc(doc) ? 'vip' : '' }`}
-            >
-              <span className="item-rank">{i + 1}</span>
-              <Link to={`/document/${doc.documentId}`} className="item-link">
-                <div className="item-thumb">
-                  <img
-                    src={getFullImageUrl(doc.coverImageUrl)}
-                    alt={doc.title}
-                    className="item-image"
-                    onError={(e) => (e.target.src = getFullImageUrl(null))}
-                  />
-                  {isVipDoc(doc) && (
-                    <span className="vip-badge" title="Tài liệu VIP" aria-label="VIP">
-                      <FontAwesomeIcon icon={faStar} />
-                    </span>
-                  )}
-                </div>
-                <div className="item-info">
-                  <h6 className="item-title">{doc.title}</h6>
-                  <div className="item-meta">
-                    {doc.uploadedByUser?.fullName || doc.fullName || 'Ẩn danh'}
-                    <span className="item-download">
-                      <FontAwesomeIcon icon={faDownload} /> {doc.downloadCount}
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      );
-    };
-
-    return (
-      <div className="top-interest-documents-card">
-        <div className="top-interest-header">
-          <h5 className="top-interest-title">
-            <FontAwesomeIcon icon={faChartLine} /> Tài liệu được quan tâm
-          </h5>
-        </div>
-        <div className="top-interest-body">{renderContent()}</div>
       </div>
     );
   };

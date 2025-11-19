@@ -149,7 +149,6 @@
   padding-left: 22px;
 }
 .navbar-link.active {
-  color: var(--color-text-navbar);
   font-weight: 600;
 }
 

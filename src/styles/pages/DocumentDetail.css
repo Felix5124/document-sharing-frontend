@@ -623,7 +623,7 @@ textarea.form-control {
 .author-name {
   color: #111827;
   font-weight: 600;
-  font-size: 0.85rem;
+  font-size: 0.7rem;
 }
 .follow-btn:hover {
   border-color: #0d9488;
@@ -914,7 +914,7 @@ textarea.form-control {
 .card-author {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.1rem;
   color: #6b7280;
   font-size: 0.85rem;
 }

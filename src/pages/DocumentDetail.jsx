@@ -642,7 +642,7 @@ function DocumentDetail() {
                     }
                   >
                     <FontAwesomeIcon icon={faEye} />
-                    <span className="btn-text">Xem Online</span>
+                    <span className="btn-text">Xem Online (PDF)</span>
                   </CustomButton>
                 </div>
 
