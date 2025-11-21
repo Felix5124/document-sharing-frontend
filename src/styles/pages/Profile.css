@@ -273,6 +273,9 @@
   align-items: center;
   display: flex;
 }
+.btn-full-width{
+  width: 100%;
+}
 /* Status text colors for document approval status */
 .status-text.approved {
   color: #059669;

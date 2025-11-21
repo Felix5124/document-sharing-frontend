@@ -321,7 +321,7 @@ function Profile() {
                   {viewingOther && (
                     user?.userId ? (
                       isFollowing ? (
-                        <button className="btn-secondary" onClick={handleUnfollow}>Hủy theo dõi</button>
+                        <button className="btn-secondary btn-full-width" onClick={handleUnfollow}>Hủy theo dõi</button>
                       ) : (
                         <button className="submit-button" onClick={handleFollow}>Theo dõi</button>
                       )
@@ -407,7 +407,7 @@ function Profile() {
         )}
 
         <div className="profile-achievements">
-          <Achievements />
+          <Achievements userId={targetUserId} />
         </div>
       </div>
     </div>

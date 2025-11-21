@@ -100,7 +100,7 @@
   position: absolute;
   top: 20px;
   right: 45px;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0, 0, 0, 0.6);
   color: #fff;
   border: none;
   font-size: 2rem;
@@ -112,18 +112,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background .2s ease;
+  transition: background 0.2s ease;
   z-index: 10;
 }
 .custom-modal-close.floating:hover {
-  background: rgba(0,0,0,0.8);
+  background: rgba(0, 0, 0, 0.8);
 }
 .custom-modal.fullscreen .pdf-page {
   box-shadow: none;
   background: #fff;
   margin: 0 auto 12px; /* tighter spacing between pages */
 }
-.custom-modal.fullscreen .pdf-page:last-child { margin-bottom: 0; }
+.custom-modal.fullscreen .pdf-page:last-child {
+  margin-bottom: 0;
+}
 .custom-modal.fullscreen .pdf-page canvas {
   max-width: min(100%, 1100px) !important;
   height: auto !important;
@@ -172,7 +174,7 @@
   position: absolute;
   top: 12px;
   right: 16px;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0, 0, 0, 0.6);
   color: #fff;
   border: none;
   font-size: 2rem;
@@ -184,16 +186,28 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background .2s ease;
+  transition: background 0.2s ease;
   z-index: 10;
 }
-.pdf-preview-modal .custom-modal-close:hover { background: rgba(0,0,0,0.8); }
-.pdf-preview-modal .pdf-page { box-shadow: none; background: #fff; }
-.pdf-preview-modal .pdf-page canvas { max-width: min(100%, 1000px) !important; height: auto !important; }
+.pdf-preview-modal .custom-modal-close:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+.pdf-preview-modal .pdf-page {
+  box-shadow: none;
+  background: #fff;
+}
+.pdf-preview-modal .pdf-page canvas {
+  max-width: min(100%, 1000px) !important;
+  height: auto !important;
+}
 
 /* Preview limit notice */
 .preview-limit-overlay {
-  background: linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.08) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.05) 0%,
+    rgba(0, 0, 0, 0.08) 100%
+  );
   border: 1px dashed #94a3b8;
   color: #e2e8f0;
   text-align: center;
@@ -210,7 +224,9 @@
   border-radius: 8px;
   cursor: pointer;
 }
-.download-to-continue-btn:hover { filter: brightness(0.95); }
+.download-to-continue-btn:hover {
+  filter: brightness(0.95);
+}
 .custom-modal-header {
   display: flex;
   justify-content: space-between;
@@ -557,7 +573,6 @@ textarea.form-control {
   border: 1px solid #e2e8f0;
 }
 
-
 .report-button {
   background: #dc2626;
   border: 1px solid #dc2626;
@@ -622,8 +637,19 @@ textarea.form-control {
 }
 .author-name {
   color: #111827;
-  font-weight: 600;
-  font-size: 0.7rem;
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.author-name.clickable-author {
+  color: #0d9488;
+  transition: all 0.2s ease;
+}
+
+.author-name.clickable-author:hover {
+  color: #0f766e;
+  text-decoration: underline;
+  transform: translateY(-1px);
 }
 .follow-btn:hover {
   border-color: #0d9488;
@@ -953,7 +979,7 @@ textarea.form-control {
 }
 .comment-form-card {
   border-radius: 12px;
-  padding: 14px 14px 15px 14px;
+  padding: 14px;
 }
 .comment-form-header {
   margin-bottom: 10px;
@@ -986,6 +1012,7 @@ textarea.form-control {
 .comments-container {
   display: flex;
   flex-direction: column;
+  padding: 0 14px 14px 14px;
   gap: 1.5rem;
 }
 .comment-card {
@@ -1002,7 +1029,7 @@ textarea.form-control {
 }
 
 .comment-header {
-  margin-bottom: 1rem;
+  margin-bottom: 10px;
 }
 .comment-author {
   display: flex;
@@ -1014,7 +1041,6 @@ textarea.form-control {
   height: 40px;
   border-radius: 50%;
   color: white;
-  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1023,6 +1049,13 @@ textarea.form-control {
   font-size: 0.8rem;
 }
 
+.author-name-comment.clickable-author-comment {
+  color: var(--color-text);
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+
 .comment-date {
   text-align: left;
   font-size: 0.6rem;
@@ -1030,16 +1063,14 @@ textarea.form-control {
   margin: 0;
 }
 .comment-content {
-  white-space: normal;          /* Cho phép xuống dòng */
-  word-break: break-word;       /* Bẻ từ dài */
-  overflow-wrap: anywhere;      /* Cho phép xuống dòng ở bất kỳ đâu */
-  display: block;               /* Trả nó về dạng đoạn văn bình thường */
+  white-space: normal; /* Cho phép xuống dòng */
+  word-break: break-word; /* Bẻ từ dài */
+  overflow-wrap: anywhere; /* Cho phép xuống dòng ở bất kỳ đâu */
+  display: block; /* Trả nó về dạng đoạn văn bình thường */
 }
-
 
 .comment-text {
   font-size: 0.8rem;
-  margin-left: 10px;
   white-space: pre-line;
   word-break: break-word;
 }
@@ -1048,9 +1079,7 @@ textarea.form-control {
   align-items: center;
   gap: 0.75rem;
   margin-top: 5px;
-  padding: 5px;
   border-radius: 8px;
-  border: 1px solid #ccfbf1;
 }
 .star-rating-display {
   display: flex;
@@ -1338,7 +1367,7 @@ textarea.form-control {
 .back-to-home-btn:hover {
   background-color: #2563eb;
 }
-.author-details{
+.author-details {
   display: flex;
   align-items: center;
   gap: 6px;

@@ -757,6 +757,7 @@
 }
 
 .document-description {
+  height: 30px;
   font-size: 0.85rem;
   color: var(--color-subtitle);
   margin: 10px 0;
