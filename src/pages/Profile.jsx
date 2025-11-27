@@ -27,10 +27,16 @@ import {
   faCloudUploadAlt,
   faCloudDownloadAlt,
   faTrash,
+  faEyeSlash,
+  faEye,
 } from '@fortawesome/free-solid-svg-icons';
 
 import '../styles/pages/Profile.css';
+import '../styles/layouts/PageWithSidebar.css';
 import { getFullAvatarUrl } from '../utils/avatarUtils';
+import VipPromoBanner from '../components/VipPromoBanner';
+import VipWelcomeBanner from '../components/VipWelcomeBanner';
+import RightSidebar from '../components/RightSidebar';
 
 function Profile() {
   const navigate = useNavigate();
@@ -45,6 +51,9 @@ function Profile() {
   const [avatarFile, setAvatarFile] = useState(null);
   const [isFollowing, setIsFollowing] = useState(false);
   const [currentFollowId, setCurrentFollowId] = useState(null);
+  const [hideLeftSidebar, setHideLeftSidebar] = useState(false);
+  const [hideRightSidebar, setHideRightSidebar] = useState(false);
+  const [contextMenu, setContextMenu] = useState({ show: false, x: 0, y: 0, type: '' });
   // schools removed
   const { register, handleSubmit, formState: { errors } } = useForm();
 
@@ -52,6 +61,31 @@ function Profile() {
   const viewingOther = !!routeUserId && String(routeUserId) !== String(user?.userId);
   const targetUserId = routeUserId ? parseInt(routeUserId, 10) : user?.userId;
   const canEdit = !!user && !viewingOther && String(user?.userId) === String(targetUserId);
+
+  // Handle context menu
+  const handleContextMenu = (e, type) => {
+    if (!user?.isVip) return;
+    e.preventDefault();
+    setContextMenu({ show: true, x: e.clientX, y: e.clientY, type });
+  };
+
+  const handleToggleSidebar = (type) => {
+    if (type === 'left') {
+      setHideLeftSidebar(!hideLeftSidebar);
+    } else if (type === 'right') {
+      setHideRightSidebar(!hideRightSidebar);
+    }
+    setContextMenu({ show: false, x: 0, y: 0, type: '' });
+  };
+
+  // Close context menu when clicking outside
+  useEffect(() => {
+    const handleClick = () => setContextMenu({ show: false, x: 0, y: 0, type: '' });
+    if (contextMenu.show) {
+      document.addEventListener('click', handleClick);
+      return () => document.removeEventListener('click', handleClick);
+    }
+  }, [contextMenu.show]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -232,12 +266,45 @@ function Profile() {
 
   return (
     <div className="all-container">
-      <div className="all-container-card">
-        <h2 className="upload-title">
-          <FontAwesomeIcon icon={faUserCircle} /> Hồ sơ cá nhân
-        </h2>
+      {/* Context Menu */}
+      {contextMenu.show && (
+        <div 
+          className="sidebar-context-menu"
+          style={{ top: contextMenu.y, left: contextMenu.x }}
+        >
+          <button onClick={() => handleToggleSidebar(contextMenu.type)}>
+            {(contextMenu.type === 'left' && hideLeftSidebar) || (contextMenu.type === 'right' && hideRightSidebar) 
+              ? '👁️ Hiển thị' 
+              : '🚫 Ẩn'}
+          </button>
+        </div>
+      )}
 
-        <div className="profile-content">
+      <div className={`page-layout-with-sidebar ${userData?.isVip ? 'no-left-sidebar' : ''}`}>
+        {/* Sidebar - VIP Welcome or Promo Banner */}
+        {canEdit && user?.isVip && (
+          <aside 
+            className="page-sidebar"
+            onContextMenu={(e) => handleContextMenu(e, 'left')}
+            style={{ cursor: 'context-menu' }}
+          >
+            {!hideLeftSidebar && <VipWelcomeBanner />}
+          </aside>
+        )}
+        {canEdit && user && !userData.isVip && (
+          <aside className="page-sidebar">
+            <VipPromoBanner variant="profile" />
+          </aside>
+        )}
+
+        {/* Main Content */}
+        <div className="page-main-content">
+          <div className="all-container-card">
+            <h2 className="upload-title">
+              <FontAwesomeIcon icon={faUserCircle} /> Hồ sơ cá nhân
+            </h2>
+
+            <div className="profile-content">
           <div className="avatar-section">
             <div className="avatar-wrapper">
               <img
@@ -409,6 +476,17 @@ function Profile() {
         <div className="profile-achievements">
           <Achievements userId={targetUserId} />
         </div>
+          </div>
+        </div>
+
+        {/* Right Sidebar */}
+        <aside 
+          className="page-sidebar-right"
+          onContextMenu={(e) => handleContextMenu(e, 'right')}
+          style={{ cursor: user?.isVip ? 'context-menu' : 'default' }}
+        >
+          {!hideRightSidebar && <RightSidebar variant="profile" />}
+        </aside>
       </div>
     </div>
   );

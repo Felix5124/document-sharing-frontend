@@ -92,6 +92,9 @@
 .sidebar-area {
   flex: 1 1 220px;
   max-width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 /* Main area */
@@ -846,3 +849,523 @@
 .status-label.pending {
   background-color: rgba(156, 163, 175, 0.85); /* Màu xám */
 }
+
+/* ========================================
+   VIP HORIZONTAL BANNER - Full Width
+   ======================================== */
+
+.vip-horizontal-banner-wrapper {
+  margin: 50px 0;
+  animation: fadeInScale 0.8s ease-out;
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.vip-horizontal-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 40px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  padding: 40px 50px;
+  text-decoration: none;
+  color: white;
+  box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.vip-horizontal-banner::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  animation: shimmerSlow 6s infinite linear;
+}
+
+@keyframes shimmerSlow {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.vip-horizontal-banner:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 50px rgba(102, 126, 234, 0.4);
+}
+
+.vip-horizontal-left {
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.vip-horizontal-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.vip-horizontal-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  line-height: 1.2;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.vip-horizontal-subtitle {
+  font-size: 1.1rem;
+  opacity: 0.95;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.vip-horizontal-features {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.vip-h-feature {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(5px);
+  border-radius: 25px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.vip-h-feature:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.05);
+}
+
+.vip-h-feature svg {
+  font-size: 1.1rem;
+}
+
+.vip-horizontal-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.vip-horizontal-icon-wrapper {
+  width: 120px;
+  height: 120px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  animation: floatUpDown 3s ease-in-out infinite;
+}
+
+@keyframes floatUpDown {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.vip-horizontal-icon {
+  font-size: 4rem;
+  color: white;
+}
+
+.vip-horizontal-button {
+  padding: 14px 32px;
+  background: white;
+  color: #667eea;
+  border: none;
+  border-radius: 30px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.vip-horizontal-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(255, 255, 255, 0.5);
+  background: #f9fafb;
+}
+
+.vip-horizontal-price {
+  font-size: 1rem;
+  opacity: 0.95;
+  font-weight: 500;
+}
+
+.price-highlight {
+  font-size: 1.8rem;
+  font-weight: 700;
+  background: linear-gradient(90deg, #fbbf24, #f59e0b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* VIP Welcome Banner (for logged in VIP users) */
+.vip-welcome-horizontal-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 40px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  border: 2px solid #ffd700;
+  border-radius: 20px;
+  padding: 40px 50px;
+  color: white;
+  box-shadow: 0 10px 40px rgba(255, 215, 0, 0.4), 0 0 80px rgba(255, 215, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.vip-welcome-horizontal-banner::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.15) 0%, transparent 70%);
+  animation: shimmerSlow 6s infinite linear;
+}
+
+.vip-welcome-horizontal-banner::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    linear-gradient(45deg, transparent 48%, rgba(255, 215, 0, 0.1) 50%, transparent 52%),
+    linear-gradient(-45deg, transparent 48%, rgba(255, 215, 0, 0.1) 50%, transparent 52%);
+  background-size: 40px 40px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.vip-welcome-left {
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.vip-welcome-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  color: #1a1a2e;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.5);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.5);
+  }
+  50% {
+    box-shadow: 0 4px 25px rgba(255, 215, 0, 0.8);
+  }
+}
+
+.vip-welcome-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  background: linear-gradient(90deg, #ffd700, #ffed4e, #ffd700);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  background-size: 200% auto;
+  animation: gradientShift 3s linear infinite;
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+.vip-welcome-subtitle {
+  font-size: 1.15rem;
+  margin-bottom: 24px;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 400;
+}
+
+.vip-welcome-stats {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.vip-stat {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ffd700;
+  background: rgba(255, 215, 0, 0.15);
+  padding: 12px 20px;
+  border-radius: 15px;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.vip-stat:hover {
+  background: rgba(255, 215, 0, 0.25);
+  border-color: rgba(255, 215, 0, 0.5);
+  transform: translateY(-2px);
+}
+
+.vip-stat svg {
+  color: #ffd700;
+  font-size: 1.2rem;
+}
+
+.vip-welcome-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.vip-welcome-icon-wrapper {
+  animation: floatUpDown 3s infinite ease-in-out;
+  filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.6));
+}
+
+.vip-welcome-icon {
+  font-size: 5rem;
+  color: #ffd700;
+  animation: rotateGlow 4s infinite ease-in-out;
+}
+
+@keyframes rotateGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8));
+    transform: rotate(-10deg);
+  }
+  50% {
+    filter: drop-shadow(0 0 30px rgba(255, 215, 0, 1));
+    transform: rotate(10deg);
+  }
+}
+
+.vip-manage-button {
+  padding: 16px 36px;
+  background: linear-gradient(135deg, #ffd700 0%, #ffb800 100%);
+  color: #1a1a2e;
+  border: none;
+  border-radius: 30px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.vip-manage-button:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 30px rgba(255, 215, 0, 0.6);
+  background: linear-gradient(135deg, #ffed4e 0%, #ffd700 100%);
+}
+
+.vip-welcome-message {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: rgba(255, 215, 0, 0.9);
+  text-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
+}
+
+/* ========================================
+   RESPONSIVE HORIZONTAL BANNER
+   ======================================== */
+
+@media (max-width: 1024px) {
+  .vip-horizontal-banner {
+    padding: 35px 40px;
+    gap: 30px;
+  }
+
+  .vip-horizontal-title {
+    font-size: 1.8rem;
+  }
+
+  .vip-horizontal-subtitle {
+    font-size: 1rem;
+  }
+
+  .vip-horizontal-icon-wrapper {
+    width: 100px;
+    height: 100px;
+  }
+
+  .vip-horizontal-icon {
+    font-size: 3.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .vip-horizontal-banner-wrapper {
+    margin: 30px 0;
+  }
+
+  .vip-horizontal-banner {
+    flex-direction: column;
+    text-align: center;
+    padding: 30px 25px;
+    gap: 25px;
+  }
+
+  .vip-horizontal-title {
+    font-size: 1.6rem;
+  }
+
+  .vip-horizontal-subtitle {
+    font-size: 0.95rem;
+  }
+
+  .vip-horizontal-features {
+    justify-content: center;
+  }
+
+  .vip-h-feature {
+    padding: 8px 14px;
+    font-size: 0.85rem;
+  }
+
+  .vip-horizontal-icon-wrapper {
+    width: 90px;
+    height: 90px;
+  }
+
+  .vip-horizontal-icon {
+    font-size: 3rem;
+  }
+
+  .vip-horizontal-button {
+    padding: 12px 28px;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .vip-horizontal-banner {
+    padding: 25px 20px;
+  }
+
+  .vip-horizontal-badge {
+    font-size: 0.7rem;
+    padding: 5px 12px;
+  }
+
+  .vip-horizontal-title {
+    font-size: 1.4rem;
+  }
+
+  .vip-horizontal-subtitle {
+    font-size: 0.85rem;
+  }
+
+  .vip-horizontal-features {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .vip-h-feature {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .vip-horizontal-icon-wrapper {
+    width: 80px;
+    height: 80px;
+  }
+
+  .vip-horizontal-icon {
+    font-size: 2.5rem;
+  }
+
+  .vip-horizontal-button {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 24px;
+    font-size: 0.95rem;
+  }
+
+  .vip-horizontal-price {
+    font-size: 0.9rem;
+  }
+
+  .price-highlight {
+    font-size: 1.5rem;
+  }
+}
+

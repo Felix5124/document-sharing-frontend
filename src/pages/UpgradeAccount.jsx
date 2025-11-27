@@ -30,11 +30,11 @@ function UpgradeAccount() {
       icon: faStar,
       color: '#3b82f6',
       features: [
-        'Tăng lượt tải tài liệu',
-        'Xem trước tài liệu Premium',
+        'Tải 8 file thường/ngày',
+        'Tải 5 file VIP/ngày',
+        'Xem trước 15 trang PDF',
         'Không quảng cáo',
-        'Hỗ trợ ưu tiên',
-        'Badge VIP đặc biệt'
+        'Ưu tiên duyệt bài'
       ],
       popular: false
     },
@@ -48,11 +48,13 @@ function UpgradeAccount() {
       icon: faCrown,
       color: '#8b5cf6',
       features: [
-        'Tất cả tính năng VIP Tháng',
-        'Tiết kiệm 15%',
-        'Truy cập sớm tính năng mới',
-        'Lưu trữ tài liệu cá nhân',
-        'Thống kê chi tiết'
+        'Tải 8 file thường/ngày',
+        'Tải 5 file VIP Premium/ngày',
+        'Xem trước 15 trang PDF',
+        'Không quảng cáo',
+        'Ưu tiên duyệt bài nhanh',
+        'Badge VIP đặc biệt',
+        'Tiết kiệm 13%'
       ],
       popular: true
     },
@@ -66,11 +68,13 @@ function UpgradeAccount() {
       icon: faRocket,
       color: '#f59e0b',
       features: [
-        'Tất cả tính năng VIP 3 Tháng',
-        'Tiết kiệm 33%',
+        'Tải 8 file thường/ngày',
+        'Tải 5 file VIP Premium/ngày',
+        'Xem trước 15 trang PDF',
+        'Không quảng cáo',
+        'Ưu tiên duyệt bài cao nhất',
         'Badge VIP Vàng độc quyền',
-        'Không giới hạn lưu trữ',
-        'Ưu tiên hỗ trợ 24/7'
+        'Tiết kiệm 33%'
       ],
       popular: false
     }
@@ -122,27 +126,26 @@ function UpgradeAccount() {
       </div>
 
       <div className="benefits-section">
-        <h2 className="benefits-title">Lợi ích khi trở thành VIP</h2>
         <div className="benefits-grid">
           <div className="benefit-card">
             <FontAwesomeIcon icon={faDownload} className="benefit-icon" />
-            <h3>Tăng Lượt Tải</h3>
-            <p>Download nhiều tài liệu hơn với giới hạn cao hơn</p>
+            <h3>Tải Nhiều Hơn 6.5x</h3>
+            <p>13 file/ngày so với 2 file của tài khoản thường</p>
           </div>
           <div className="benefit-card">
             <FontAwesomeIcon icon={faFileAlt} className="benefit-icon" />
-            <h3>Tài Liệu Premium</h3>
-            <p>Truy cập kho tài liệu độc quyền dành riêng cho VIP</p>
+            <h3>Tài Liệu VIP Premium</h3>
+            <p>Truy cập độc quyền 5 file VIP mỗi ngày</p>
           </div>
           <div className="benefit-card">
             <FontAwesomeIcon icon={faLock} className="benefit-icon" />
-            <h3>Không Quảng Cáo</h3>
-            <p>Trải nghiệm mượt mà không bị làm phiền bởi quảng cáo</p>
+            <h3>Xem Trước 3x Nhiều</h3>
+            <p>15 trang PDF so với 5 trang của tài khoản free</p>
           </div>
           <div className="benefit-card">
             <FontAwesomeIcon icon={faCrown} className="benefit-icon" />
-            <h3>Badge Đặc Biệt</h3>
-            <p>Nổi bật với badge VIP độc quyền trên profile</p>
+            <h3>Ưu Tiên & Badge VIP</h3>
+            <p>Duyệt bài nhanh + Badge đặc biệt + Không ads</p>
           </div>
         </div>
       </div>

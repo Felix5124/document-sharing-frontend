@@ -1,0 +1,135 @@
+/* Layout cho các trang có sidebar VIP banner */
+
+.page-layout-with-sidebar {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Context Menu for Sidebar Toggle (VIP only) */
+.sidebar-context-menu {
+  position: fixed;
+  z-index: 10000;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 4px;
+  min-width: 140px;
+}
+
+.sidebar-context-menu button {
+  width: 100%;
+  padding: 10px 16px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+  border-radius: 6px;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sidebar-context-menu button:hover {
+  background: #f5f5f5;
+}
+
+/* Sidebar trái chứa VIP banner */
+.page-sidebar {
+  flex: 0 0 240px;
+  position: sticky;
+  top: 80px;
+  height: fit-content;
+  align-self: flex-start;
+}
+
+/* Nội dung chính - Tự động mở rộng khi không có sidebar trái */
+.page-main-content {
+  flex: 1;
+  min-width: 0; /* Prevent flex overflow */
+}
+
+/* Khi không có sidebar trái (user VIP), chỉ ẩn quảng cáo */
+.page-layout-with-sidebar.no-left-sidebar {
+  justify-content: flex-start;
+}
+
+.page-layout-with-sidebar.no-left-sidebar .page-main-content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Sidebar phải chứa tips và stats */
+.page-sidebar-right {
+  flex: 0 0 260px;
+  position: sticky;
+  top: 80px;
+  height: fit-content;
+  align-self: flex-start;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .page-sidebar {
+    flex: 0 0 220px;
+  }
+  
+  .page-sidebar-right {
+    flex: 0 0 240px;
+  }
+  
+  .page-layout-with-sidebar {
+    gap: 16px;
+  }
+
+  .page-layout-with-sidebar.no-left-sidebar .page-main-content {
+    flex: 1;
+  }
+}
+
+@media (max-width: 992px) {
+  .page-layout-with-sidebar {
+    flex-direction: column-reverse;
+  }
+
+  .page-sidebar {
+    flex: 1 1 auto;
+    position: static;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .page-sidebar-right {
+    flex: 1 1 auto;
+    position: static;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .page-main-content {
+    flex: 1 1 auto;
+  }
+
+  /* Reset layout trên mobile */
+  .page-layout-with-sidebar.no-left-sidebar .page-main-content {
+    flex: 1 1 auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-layout-with-sidebar {
+    padding: 0 15px;
+  }
+
+  .page-sidebar,
+  .page-sidebar-right {
+    max-width: 100%;
+  }
+}

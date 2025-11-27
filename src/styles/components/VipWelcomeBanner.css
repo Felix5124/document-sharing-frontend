@@ -1,0 +1,169 @@
+/* VIP Welcome Banner */
+
+.vip-welcome-banner {
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
+  border: 2px solid #ffa500;
+  animation: slideInFade 0.6s ease-out;
+}
+
+@keyframes slideInFade {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.vip-welcome-content {
+  position: relative;
+  z-index: 1;
+}
+
+.vip-crown-icon {
+  width: 60px;
+  height: 60px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  margin: 0 auto 12px;
+  color: #ffd700;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  animation: pulse 2s infinite;
+  border: 3px solid #ffa500;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.vip-welcome-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+  text-align: left;
+  color: #1f2937;
+  text-shadow: 0 2px 4px rgba(255, 255, 255, 0.5);
+}
+
+.vip-welcome-subtitle {
+  font-size: 0.85rem;
+  line-height: 1.4;
+  margin-bottom: 16px;
+  text-align: left;
+  color: #c5c5c5;
+  font-weight: 500;
+}
+.vip-welcome-title-sidebar-left {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+  text-align: center;
+  color: #161f2c;
+  text-shadow: 0 2px 4px rgba(255, 255, 255, 0.5);
+}
+
+.vip-welcome-subtitle-sidebar-left {
+  font-size: 0.85rem;
+  line-height: 1.4;
+  margin-bottom: 16px;
+  text-align: center;
+  color: #1c1111;
+  font-weight: 500;
+}
+.vip-perks {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.vip-perk-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: #1f2937;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.vip-perk-item:hover {
+  background: white;
+  transform: translateX(3px);
+}
+
+.vip-perk-item svg {
+  font-size: 1rem;
+  color: #ffa500;
+  flex-shrink: 0;
+}
+
+.vip-manage-button {
+  display: block;
+  width: 100%;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+  color: white;
+  text-align: center;
+  border-radius: 25px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.vip-manage-button:hover {
+  transform: scale(1.03);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .vip-welcome-banner {
+    padding: 16px;
+  }
+
+  .vip-crown-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 1.6rem;
+  }
+
+  .vip-welcome-title {
+    font-size: 1.15rem;
+  }
+
+  .vip-welcome-subtitle {
+    font-size: 0.8rem;
+  }
+
+  .vip-perk-item {
+    font-size: 0.8rem;
+    padding: 8px 10px;
+  }
+
+  .vip-manage-button {
+    padding: 10px 16px;
+    font-size: 0.9rem;
+  }
+}

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, memo } from 'react';
+import { useState, useEffect, useRef, memo, useContext } from 'react';
 import {
   searchDocuments,
   getCategories,
@@ -7,6 +7,7 @@ import {
   getTopDownloadedDocumentsList,
   getDocumentById
 } from '../services/api';
+import { AuthContext } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
 import bannerImage1 from '../assets/images/anhbg.jpg';
@@ -25,7 +26,13 @@ import {
   faChartLine,
   faCommentDots,
   faCircleExclamation,
-  faStar
+  faStar,
+  faBook,
+  faUsers,
+  faCrown,
+  faRocket,
+  faUpload,
+  faArrowRight
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -210,6 +217,7 @@ const TopInterestDocumentsList = memo(({ documents, isLoading }) => {
 });
 
 function Home() {
+  const { user } = useContext(AuthContext);
   const { cache, setCache } = useHomeCache();
   const [documents, setDocuments] = useState(cache.documents || []);
   const [loading, setLoading] = useState(false);
@@ -573,6 +581,89 @@ function Home() {
                 </div>
               )}
             </main>
+          </div>
+
+          {/* VIP Banner - Giữa trang */}
+          <div className="vip-horizontal-banner-wrapper">
+            {!user?.isVip ? (
+              <Link to="/upgrade-account" className="vip-horizontal-banner">
+                <div className="vip-horizontal-left">
+                  <div className="vip-horizontal-badge">
+                    <FontAwesomeIcon icon={faStar} /> ĐẶC QUYỀN VIP
+                  </div>
+                  <h2 className="vip-horizontal-title">
+                    Nâng Cấp VIP - Mở Khóa Toàn Bộ Tính Năng
+                  </h2>
+                  <p className="vip-horizontal-subtitle">
+                    Tăng giới hạn lượt tải • Tài liệu Premium • Không quảng cáo • Hỗ trợ ưu tiên 24/7
+                  </p>
+                  <div className="vip-horizontal-features">
+                    <div className="vip-h-feature">
+                      <FontAwesomeIcon icon={faDownload} />
+                      <span>Tăng giới hạn lượt tải</span>
+                    </div>
+                    <div className="vip-h-feature">
+                      <FontAwesomeIcon icon={faStar} />
+                      <span>Premium Content</span>
+                    </div>
+                    <div className="vip-h-feature">
+                      <FontAwesomeIcon icon={faRocket} />
+                      <span>Không Quảng Cáo</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="vip-horizontal-right">
+                  <div className="vip-horizontal-icon-wrapper">
+                    <FontAwesomeIcon icon={faCrown} className="vip-horizontal-icon" />
+                  </div>
+                  <button className="vip-horizontal-button">
+                    <FontAwesomeIcon icon={faArrowRight} /> Nâng Cấp Ngay
+                  </button>
+                  <div className="vip-horizontal-price">
+                    Chỉ từ <span className="price-highlight">49K</span>/tháng
+                  </div>
+                </div>
+              </Link>
+            ) : (
+              <div className="vip-welcome-horizontal-banner">
+                <div className="vip-welcome-left">
+                  <div className="vip-welcome-badge">
+                    <FontAwesomeIcon icon={faCrown} /> THÀNH VIÊN VIP
+                  </div>
+                  <h2 className="vip-welcome-title">
+                    Chào mừng {user.fullName || user.email}! 🎉
+                  </h2>
+                  <p className="vip-welcome-subtitle">
+                    Bạn đang tận hưởng tất cả đặc quyền VIP của chúng tôi
+                  </p>
+                  <div className="vip-welcome-stats">
+                    <div className="vip-stat">
+                      <FontAwesomeIcon icon={faDownload} />
+                      <span>13 files/ngày</span>
+                    </div>
+                    <div className="vip-stat">
+                      <FontAwesomeIcon icon={faBook} />
+                      <span>15 trang PDF</span>
+                    </div>
+                    <div className="vip-stat">
+                      <FontAwesomeIcon icon={faStar} />
+                      <span>Nội dung VIP</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="vip-welcome-right">
+                  <div className="vip-welcome-icon-wrapper">
+                    <FontAwesomeIcon icon={faCrown} className="vip-welcome-icon" />
+                  </div>
+                  <Link to="/upgrade-account" className="vip-manage-button">
+                    Quản Lý Gói VIP
+                  </Link>
+                  <div className="vip-welcome-message">
+                    Cảm ơn bạn đã ủng hộ! ❤️
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="divider-section">
