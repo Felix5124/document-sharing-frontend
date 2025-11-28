@@ -3,7 +3,16 @@ import { AuthContext } from "../context/AuthContext";
 import { createPayment, getUserPayments } from "../services/api";
 import { toast } from "react-toastify";
 import PaymentQRCode from "../components/PaymentQRCode";
-import "../styles/UpgradeAccount.css";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { 
+  faCrown, 
+  faCheck, 
+  faStar, 
+  faDownload,
+  faFileAlt,
+  faLock
+} from '@fortawesome/free-solid-svg-icons';
+import "../styles/pages/UpgradeAccount.css";
 
 function UpgradeAccount() {
   const { user, setUser } = useContext(AuthContext);
@@ -16,28 +25,60 @@ function UpgradeAccount() {
   const plans = [
     {
       type: "Monthly",
-      name: "Gói Tháng",
-      price: 50000,
-      duration: "1 tháng",
+      name: "Premium 1 Tháng",
+      price: 49000,
+      duration: "1 Tháng",
+      originalPrice: null,
+      discount: null,
+      saveAmount: null,
+      icon: faStar,
+      color: "#3b82f6",
       benefits: [
         "Tải xuống không giới hạn",
-        "Xem trước tài liệu VIP",
+        "Xem trước tài liệu Premium",
         "Không quảng cáo",
-        "Hỗ trợ ưu tiên"
-      ]
+        "Hỗ trợ ưu tiên",
+        "Badge Premium đặc biệt"
+      ],
+      popular: false
+    },
+    {
+      type: "Quarterly",
+      name: "Premium 3 Tháng",
+      price: 129000,
+      duration: "3 Tháng",
+      originalPrice: "147.000",
+      discount: "-12%",
+      saveAmount: "18.000đ",
+      icon: faStar,
+      color: "#8b5cf6",
+      benefits: [
+        "Tất cả quyền lợi gói 1 tháng",
+        "Tiết kiệm 18.000đ",
+        "Badge Premium tím đặc biệt",
+        "Ưu tiên duyệt bài cao",
+        "Hỗ trợ ưu tiên Premium"
+      ],
+      popular: true
     },
     {
       type: "Yearly",
-      name: "Gói Năm",
-      price: 500000,
-      duration: "12 tháng",
-      discount: "Tiết kiệm 100,000đ",
+      name: "Premium 12 Tháng",
+      price: 499000,
+      duration: "12 Tháng",
+      originalPrice: "588.000",
+      discount: "-15%",
+      saveAmount: "89.000đ",
+      icon: faCrown,
+      color: "#f59e0b",
       benefits: [
-        "Tất cả quyền lợi gói tháng",
-        "Giảm giá 16%",
-        "Ưu đãi đặc biệt",
-        "Badge VIP vàng"
-      ]
+        "Tất cả quyền lợi gói 3 tháng",
+        "Tiết kiệm tới 89.000đ",
+        "Badge Premium vàng độc quyền",
+        "Ưu tiên duyệt bài cao nhất",
+        "Quà tặng đặc biệt Premium"
+      ],
+      popular: false
     }
   ];
 
@@ -64,8 +105,6 @@ function UpgradeAccount() {
 
     setLoading(true);
     try {
-      const selectedPlanData = plans.find(p => p.id === selectedPlan);
-      
       const data = {
         userId: user.userId,
         subscriptionType: plan.type
@@ -74,9 +113,10 @@ function UpgradeAccount() {
       const res = await createPayment(data);
       setPaymentData(res.data);
       setSelectedPlan(plan);
-      toast.success("Đã tạo đơn thanh toán! Vui lòng quét QR hoặc chuyển khoản.");
+      await loadPaymentHistory(); // Reload lịch sử ngay sau khi tạo payment
     } catch (error) {
       console.error("Lỗi khi tạo thanh toán:", error);
+      console.error("Chi tiết lỗi:", error.response?.data);
       toast.error(error.response?.data?.message || "Có lỗi xảy ra khi tạo đơn thanh toán.");
     } finally {
       setLoading(false);
@@ -85,7 +125,7 @@ function UpgradeAccount() {
 
   const handlePaymentComplete = (completedPayment) => {
     // Refresh user data
-    if (user) {
+    if (user && setUser && typeof setUser === 'function') {
       setUser({
         ...user,
         isVip: true,
@@ -114,23 +154,51 @@ function UpgradeAccount() {
   };
 
   return (
-    <div className="all-container">
-      <div className="all-container-card upgrade-account-container">
-        <div className="upload-title">
-          <h4>Nâng cấp tài khoản VIP</h4>
-        </div>
+    <div className="upgrade-account-container">
+      <div className="upgrade-header">
+        <FontAwesomeIcon icon={faCrown} className="upgrade-header-icon" />
+        <h1 className="upgrade-title">Nâng Cấp Tài Khoản Premium</h1>
+        <p className="upgrade-subtitle">
+          Mở khóa trải nghiệm premium với nhiều tính năng độc quyền
+        </p>
+      </div>
 
-        {/* Show current VIP status */}
-        {user?.isVip && user?.vipExpiryDate && (
-          <div className="vip-status-box">
-            <div className="vip-badge">👑 VIP</div>
-            <p>
-              Tài khoản VIP của bạn còn hiệu lực đến:{" "}
-              <strong>{new Date(user.vipExpiryDate).toLocaleDateString("vi-VN")}</strong>
-            </p>
-            <p className="vip-note">Bạn có thể gia hạn thêm bất cứ lúc nào.</p>
+      {/* Show current VIP status */}
+      {user?.isVip && user?.vipExpiryDate && (
+        <div className="vip-status-box">
+          <div className="vip-badge-current">👑 Premium</div>
+          <p>
+            Tài khoản Premium của bạn còn hiệu lực đến:{" "}
+            <strong>{new Date(user.vipExpiryDate).toLocaleDateString("vi-VN")}</strong>
+          </p>
+          <p className="vip-note">Bạn có thể gia hạn thêm bất cứ lúc nào.</p>
+        </div>
+      )}
+
+      <div className="benefits-section">
+        <div className="benefits-grid">
+          <div className="benefit-card">
+            <FontAwesomeIcon icon={faDownload} className="benefit-icon" />
+            <h3>Tải Không Giới Hạn</h3>
+            <p>Tải xuống tài liệu không giới hạn số lượng</p>
           </div>
-        )}
+          <div className="benefit-card">
+            <FontAwesomeIcon icon={faFileAlt} className="benefit-icon" />
+            <h3>Tài Liệu Premium</h3>
+            <p>Truy cập độc quyền tài liệu Premium</p>
+          </div>
+          <div className="benefit-card">
+            <FontAwesomeIcon icon={faLock} className="benefit-icon" />
+            <h3>Không Quảng Cáo</h3>
+            <p>Trải nghiệm mượt mà không bị gián đoạn</p>
+          </div>
+          <div className="benefit-card">
+            <FontAwesomeIcon icon={faCrown} className="benefit-icon" />
+            <h3>Badge Premium Đặc Biệt</h3>
+            <p>Hiển thị đẳng cấp với badge độc quyền</p>
+          </div>
+        </div>
+      </div>
 
         {/* Show payment QR if payment is created */}
         {paymentData ? (
@@ -143,6 +211,8 @@ function UpgradeAccount() {
               onClick={() => {
                 setPaymentData(null);
                 setSelectedPlan(null);
+                loadPaymentHistory(); // Reload lịch sử khi quay lại
+                window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll lên đầu trang
               }}
               className="back-btn"
             >
@@ -151,44 +221,61 @@ function UpgradeAccount() {
           </div>
         ) : (
           <>
-            {/* Show plans */}
-            <div className="upgrade-content">
-              <p className="intro-text">
-                Nâng cấp lên VIP để trải nghiệm đầy đủ tính năng của hệ thống!
-              </p>
-
-              <div className="plans-container">
+            <div className="plans-section">
+              <h2 className="plans-title">Chọn Gói Phù Hợp Với Bạn</h2>
+              <div className="plans-grid">
                 {plans.map((plan) => (
-                  <div 
-                    key={plan.type} 
-                    className={`plan-card ${selectedPlan?.type === plan.type ? 'selected' : ''}`}
+                  <div
+                    key={plan.type}
+                    className={`plan-card ${selectedPlan?.type === plan.type ? 'selected' : ''} ${plan.popular ? 'popular' : ''}`}
                   >
-                    {plan.discount && (
-                      <div className="discount-badge">{plan.discount}</div>
+                    {plan.popular && (
+                      <div className="popular-badge">
+                        <FontAwesomeIcon icon={faStar} /> Phổ Biến Nhất
+                      </div>
                     )}
-                    <h3>{plan.name}</h3>
-                    <div className="plan-price">
-                      <span className="price">{plan.price.toLocaleString()}đ</span>
-                      <span className="duration">/{plan.duration}</span>
+                    
+                    <div className="plan-header" style={{ background: `linear-gradient(135deg, ${plan.color} 0%, ${plan.color}dd 100%)` }}>
+                      <FontAwesomeIcon icon={plan.icon} className="plan-icon" />
+                      <h3 className="plan-name">{plan.name}</h3>
+                      <p className="plan-duration">{plan.duration}</p>
                     </div>
-                    <ul className="benefits-list">
-                      {plan.benefits.map((benefit, idx) => (
-                        <li key={idx}>✓ {benefit}</li>
+
+                    <div className="plan-pricing">
+                      <div className="price-wrapper">
+                        <span className="price-amount">{(plan.price / 1000).toFixed(0)}</span>
+                        <span className="price-currency">.000đ</span>
+                      </div>
+                      {plan.originalPrice && (
+                        <div className="original-price">
+                          <span className="strike-through">{plan.originalPrice}đ</span>
+                          <span className="discount-badge-price">{plan.discount}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="plan-features">
+                      {plan.benefits.map((benefit, index) => (
+                        <div key={index} className="feature-item">
+                          <FontAwesomeIcon icon={faCheck} className="feature-check" />
+                          <span>{benefit}</span>
+                        </div>
                       ))}
-                    </ul>
+                    </div>
+
                     <button
-                      className="select-plan-btn"
+                      className={`select-plan-btn ${selectedPlan?.type === plan.type ? 'selected' : ''}`}
+                      style={selectedPlan?.type === plan.type ? { background: plan.color } : {}}
                       onClick={() => handleCreatePayment(plan)}
                       disabled={loading}
                     >
-                      {loading ? "Đang xử lý..." : "Chọn gói này"}
+                      {loading ? "Đang xử lý..." : selectedPlan?.type === plan.type ? 'Đã Chọn' : 'Chọn Gói Này'}
                     </button>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Payment history */}
             <div className="payment-history-section">
               <button 
                 className="toggle-history-btn"
@@ -215,10 +302,23 @@ function UpgradeAccount() {
                       <tbody>
                         {paymentHistory.map((payment) => {
                           const badge = getStatusBadge(payment.status);
+                          const displayType = payment.subscriptionType === 'Monthly' ? '1 Tháng' 
+                            : payment.subscriptionType === 'Quarterly' ? '3 Tháng' 
+                            : '12 Tháng';
                           return (
-                            <tr key={payment.paymentId}>
+                            <tr 
+                              key={payment.paymentId}
+                              onClick={() => {
+                                if (payment.status === 'Pending') {
+                                  setPaymentData(payment);
+                                  toast.info("Đã mở lại đơn thanh toán. Vui lòng hoàn tất thanh toán.");
+                                }
+                              }}
+                              style={{ cursor: payment.status === 'Pending' ? 'pointer' : 'default' }}
+                              title={payment.status === 'Pending' ? 'Click để xem lại QR code' : ''}
+                            >
                               <td>{payment.orderCode}</td>
-                              <td>{payment.subscriptionType === 'Monthly' ? 'Tháng' : 'Năm'}</td>
+                              <td>{displayType}</td>
                               <td>{payment.amount.toLocaleString()}đ</td>
                               <td>
                                 <span className={`status-badge ${badge.className}`}>
@@ -235,12 +335,28 @@ function UpgradeAccount() {
                 </div>
               )}
             </div>
+
+            <div className="faq-section">
+              <h2 className="faq-title">Câu Hỏi Thường Gặp</h2>
+              <div className="faq-list">
+                <div className="faq-item">
+                  <h3>💳 Có những phương thức thanh toán nào?</h3>
+                  <p>Hiện tại hỗ trợ chuyển khoản qua VietQR. Quét mã QR bằng app banking để thanh toán nhanh chóng.</p>
+                </div>
+                <div className="faq-item">
+                  <h3>🔄 Mất bao lâu để được kích hoạt Premium?</h3>
+                  <p>Sau khi chuyển khoản thành công, admin sẽ xác nhận trong vòng 5-30 phút. Bạn có thể nhấn "Kiểm tra trạng thái" để cập nhật.</p>
+                </div>
+                <div className="faq-item">
+                  <h3>⭐ Tài khoản Premium có gì đặc biệt?</h3>
+                  <p>Premium được tải không giới hạn, xem trước tài liệu premium, không quảng cáo, badge đặc biệt và ưu tiên duyệt bài.</p>
+                </div>
+              </div>
+            </div>
           </>
         )}
-      </div>
     </div>
   );
 }
 
 export default UpgradeAccount;
-

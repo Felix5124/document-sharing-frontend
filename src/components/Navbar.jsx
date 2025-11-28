@@ -177,7 +177,7 @@ function Navbar() {
                             className={`navbar-avatar ${user?.isVip ? 'vip-avatar' : ''}`}
                             onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = getFullAvatarUrl(null); }}
                           />
-                          {user?.isVip && <span className="vip-badge">⭐</span>}
+                          {user?.isVip && <span className="vip-badge">PREMIUM</span>}
                         </Link>
                       </li>
 

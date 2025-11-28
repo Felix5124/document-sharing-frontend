@@ -97,7 +97,8 @@
 
 .navbar-links {
   display: flex;
-
+  text-align: center;
+  justify-self: center;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -106,6 +107,9 @@
 
 .navbar-item {
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .navbar-link {
@@ -168,6 +172,12 @@
 .navbar-link.active::after {
   width: 60%;
   opacity: 1;
+}
+
+/* Remove active state for avatar link */
+.navbar-link.avatar-link.active::after {
+  width: 0;
+  opacity: 0;
 }
 
 /* Chuyển đổi gradient từ custom-navbar.scrolled */
@@ -236,12 +246,7 @@
 .dropdown-menu li {
   padding: 0;
 }
-.navbar-link.avatar-link {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 14px; /* giảm chút cho cân */
-}
+
 .navbar-avatar {
   width: 30px;
   height: 30px;
@@ -278,12 +283,21 @@
   100% { filter: drop-shadow(0 0 2px #ffea00); }
 }
 
-/* ⭐ icon nhỏ cạnh avatar */
+/* PREMIUM badge */
 .vip-badge {
   position: absolute;
-  bottom: 6px;
-  right: 8px;
-  font-size: 0.75rem;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
   color: #ffd700;
-  text-shadow: 0 0 4px #ffae00;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid #ffd700;
+  text-shadow: 0 0 3px #ffae00;
+  box-shadow: 0 2px 4px rgba(255, 215, 0, 0.3);
+  white-space: nowrap;
 }

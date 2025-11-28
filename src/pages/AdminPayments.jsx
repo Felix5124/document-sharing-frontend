@@ -116,7 +116,7 @@ function AdminPayments() {
 
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    
+
     return `${hours}h ${minutes}m`;
   };
 
@@ -135,9 +135,6 @@ function AdminPayments() {
       <div className="all-container-card admin-payments-container">
         <div className="upload-title">
           <h4>Quản lý thanh toán VIP</h4>
-          <button onClick={loadPendingPayments} disabled={loading} className="refresh-btn">
-            🔄 {loading ? "Đang tải..." : "Làm mới"}
-          </button>
         </div>
 
         {loading && pendingPayments.length === 0 ? (
@@ -151,13 +148,15 @@ function AdminPayments() {
             <p className="payments-count">
               Có <strong>{pendingPayments.length}</strong> đơn đang chờ xác nhận
             </p>
-
+            <button onClick={loadPendingPayments} disabled={loading} className="refresh-btn">
+              🔄 {loading ? "Đang tải..." : "Làm mới"}
+            </button>
             {pendingPayments.map((payment) => (
               <div key={payment.paymentId} className="payment-card">
                 <div className="payment-header-row">
                   <div className="payment-code">
                     <strong>#{payment.orderCode}</strong>
-                    <button 
+                    <button
                       onClick={() => copyToClipboard(payment.orderCode)}
                       className="copy-icon-btn"
                       title="Sao chép mã đơn"
@@ -185,7 +184,7 @@ function AdminPayments() {
                     <span className="label">Nội dung CK:</span>
                     <span className="value transfer-content">
                       <code>{payment.transferContent}</code>
-                      <button 
+                      <button
                         onClick={() => copyToClipboard(payment.transferContent)}
                         className="copy-icon-btn"
                       >
@@ -212,13 +211,13 @@ function AdminPayments() {
                 </div>
 
                 <div className="payment-actions">
-                  <button 
+                  <button
                     onClick={() => handleConfirmClick(payment)}
                     className="btn-confirm"
                   >
                     ✅ Xác nhận thanh toán
                   </button>
-                  <button 
+                  <button
                     onClick={() => handleCancelClick(payment)}
                     className="btn-cancel"
                   >
@@ -254,15 +253,15 @@ function AdminPayments() {
                 />
               </div>
               <div className="modal-actions">
-                <button 
-                  onClick={handleConfirmPayment} 
+                <button
+                  onClick={handleConfirmPayment}
                   disabled={processing}
                   className="btn-primary"
                 >
                   {processing ? "Đang xử lý..." : "Xác nhận"}
                 </button>
-                <button 
-                  onClick={() => setShowConfirmModal(false)} 
+                <button
+                  onClick={() => setShowConfirmModal(false)}
                   disabled={processing}
                   className="btn-secondary"
                 >
@@ -293,15 +292,15 @@ function AdminPayments() {
                 />
               </div>
               <div className="modal-actions">
-                <button 
-                  onClick={handleCancelPayment} 
+                <button
+                  onClick={handleCancelPayment}
                   disabled={processing || !note.trim()}
                   className="btn-danger"
                 >
                   {processing ? "Đang xử lý..." : "Xác nhận hủy"}
                 </button>
-                <button 
-                  onClick={() => setShowCancelModal(false)} 
+                <button
+                  onClick={() => setShowCancelModal(false)}
                   disabled={processing}
                   className="btn-secondary"
                 >

@@ -164,7 +164,7 @@
 .document-card-image-container .vip-badge {
   position: absolute;
   top: 8px;
-  right: 8px;
+  right: -8px;
   bottom: auto; /* override generic .vip-badge from navbar */
   left: auto;   /* override generic .vip-badge from navbar */
   width: 26px;

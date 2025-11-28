@@ -14,11 +14,7 @@
   padding: 1.5rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
-.comment-post-header{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+
 /* Title */
 .post-page-title {
   margin-bottom: 1.5rem;
@@ -39,7 +35,7 @@
 /* Form */
 .post-form {
   margin-bottom: 2rem;
-} 
+}
 
 /* Buttons */
 .btn-submit,
@@ -100,7 +96,7 @@
   align-items: center;
   margin-bottom: 0.75rem;
 }
-.post-avatar{
+.post-avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -109,6 +105,7 @@
 }
 
 .comment-avatar {
+  background-color: white;
   width: 30px;
   height: 30px;
   border-radius: 50%;
@@ -121,34 +118,32 @@
   display: flex;
   flex-direction: column;
 }
-.comment-user-info {
-  background-color: var(--color-background-comment);
-  font-size: 0.8rem;
-  border-radius: 20px;
-  padding: 5px;
-  /* allow the content box to determine its own width and wrap text */
-  display: inline-block;
-  white-space: normal;
-  word-break: break-word;
-  overflow-wrap: anywhere;
-  max-width: 100%; /* responsive cap */
-}
+
 .post-user-email,
 .comment-user-email {
   font-size: 0.85rem;
   font-weight: 700;
-  margin: 0;
+  margin: 0 0 4px 0;
 }
-.post-user-email a,.comment-user-email a {
+.post-user-email a,
+.comment-user-email a {
   text-decoration: none;
   color: inherit;
 }
-.post-date {
-  font-size: 0.6rem;
-  color: #6c757d;
+
+.comment-content {
   margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
 }
 
+.post-date,
+.comment-date {
+  font-size: 0.75rem;
+  color: #6c757d;
+  margin: 0;
+  padding-left: 12px;
+}
 
 /* Post content */
 .post-title {
@@ -185,16 +180,25 @@
 
 .comment-item {
   display: flex;
+
+  align-items: flex-start;
+  width: 100%;
+}
+
+.comment-content-wrapper {
+  display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 10px;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  transition: all 0.2s ease;
-  background-color: #e3e3e3;
-  /* let the comment width be determined by its content column */
-  width: auto;
-  max-width: 100%;
+  flex: 1;
+}
+
+.comment-bubble {
+  background-color: #e1e1e1;
+  border-radius: 18px;
+  padding: 6px 12px;
+  max-width: fit-content;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 /* Link primary */

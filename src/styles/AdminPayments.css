@@ -3,12 +3,6 @@
   margin: 0 auto;
 }
 
-.upload-title {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
 
 .refresh-btn {
   padding: 8px 16px;
@@ -252,10 +246,6 @@
   margin: 8px 0;
   font-size: 14px;
   color: #495057;
-}
-
-.form-group {
-  margin: 20px 0;
 }
 
 .form-group label {

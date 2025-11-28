@@ -167,7 +167,11 @@ function PaymentQRCode({ paymentData, onPaymentComplete }) {
         </div>
         <div className="info-row">
           <span>Loại gói:</span>
-          <strong>{paymentData.subscriptionType === 'Monthly' ? 'Tháng' : 'Năm'}</strong>
+          <strong>
+            {paymentData.subscriptionType === 'Monthly' ? '1 Tháng' 
+              : paymentData.subscriptionType === 'Quarterly' ? '3 Tháng' 
+              : '12 Tháng'}
+          </strong>
         </div>
         <div className="info-row">
           <span>Trạng thái:</span>
