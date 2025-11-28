@@ -16,11 +16,10 @@ const Chatbot = () => {
   const [showQuickReplies, setShowQuickReplies] = useState(true); // Mặc định là true khi có user
 
   const baseQuickReplyOptions = [
-    { label: "Xem điểm của tôi", query: "Xem điểm của tôi" },
-    { label: "Số tài liệu tải lên của tôi?", query: "Số tài liệu tải lên của tôi" },
-    { label: "Số tài liệu tải về của tôi?", query: "Số tài liệu tải về của tôi" },
-    { label: "Hướng dẫn tải tài liệu lên", query: "Hướng dẫn tải tài liệu lên" },
-    { label: "Hướng dẫn tải tài liệu xuống", query: "Hướng dẫn tải tài liệu xuống" },
+    { label: "Xem lượt tải của tôi", query: "Tôi còn bao nhiêu lượt tải hôm nay?" },
+    { label: "Top tài liệu của tôi", query: "Tài liệu nào của tôi được tải nhiều nhất?" },
+    { label: "Hướng dẫn đăng tài liệu", query: "Hướng dẫn tôi cách tải tài liệu lên hệ thống." },
+    { label: "Quyền lợi VIP", query: "Tài khoản VIP có những quyền lợi gì?" },
   ];
 
   const scrollToBottom = () => {
@@ -44,7 +43,7 @@ const Chatbot = () => {
         setShowQuickReplies(false); // Không hiển thị quick replies nếu chưa đăng nhập
       } else if (user && messages.length === 1 && lastMessage && lastMessage.type === 'bot-login-prompt') {
         // User vừa đăng nhập và trước đó là thông báo yêu cầu đăng nhập
-        setMessages([{ sender: 'bot', text: `Xin chào ${user.fullName || 'bạn'}! Tôi có thể giúp gì?` }]);
+        setMessages([{ sender: 'bot', text: `Xin chào ${user.fullName || 'bạn'}! Tôi là **DocShare AI Assistant**, trợ lý ảo chuyên trách hỗ trợ bạn quản lý tài liệu và tài khoản tại hệ thống. Tôi có thể giúp bạn kiểm tra lượt tải, thống kê tài liệu hoặc hướng dẫn sử dụng. Bạn cần hỗ trợ gì hôm nay?` }]);
         setShowQuickReplies(true); // Hiển thị quick replies khi chào mừng user
       }
     }
@@ -75,7 +74,7 @@ const Chatbot = () => {
         } else {
           setMessages([{
             sender: 'bot',
-            text: `Xin chào ${user.fullName || 'bạn'}! Bạn muốn thực hiện thao tác nào?`
+            text: `Xin chào ${user.fullName || 'bạn'}! Tôi là **DocShare AI Assistant**, trợ lý ảo chuyên trách hỗ trợ bạn quản lý tài liệu và tài khoản tại hệ thống. Tôi có thể giúp bạn kiểm tra lượt tải, thống kê tài liệu hoặc hướng dẫn sử dụng. Bạn cần hỗ trợ gì hôm nay?`
           }]);
           setShowQuickReplies(true); // Hiển thị quick replies khi chào mừng user
         }

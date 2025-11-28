@@ -8,7 +8,8 @@ import {
   faEye,
   faFileAlt,
   faCog,
-  faFileDownload 
+  faFileDownload,
+  faLock
 } from '@fortawesome/free-solid-svg-icons';
 import { AuthContext } from '../context/AuthContext';
 import { getAllReports, updateReportStatus as apiUpdateReportStatus, lockDocument, resetDocumentReports, getProcessedReports, adminDownloadDocument, getReportsByDocumentId } from '../services/api';
@@ -127,16 +128,19 @@ function ReportManagement() {
     if (!selectedReportGroup) return;
     try {
       // Hành động này sẽ gọi API để khóa tài liệu
+      // Backend (DocumentsController) đã được cập nhật để tự động chuyển status các báo cáo sang "Resolved"
       await lockDocument(selectedReportGroup.documentId, true);
 
+      // --- XÓA ĐOẠN CODE SAU ---
       // Cập nhật trạng thái các báo cáo liên quan
-      for (const report of individualReports) {
-        await apiUpdateReportStatus(report.reportId, 'Resolved');
-      }
+      // for (const report of individualReports) {
+      //   await apiUpdateReportStatus(report.reportId, 'Resolved');
+      // }
+      // --- HẾT PHẦN XÓA ---
       
-      // SỬA LẠI THÔNG BÁO CHO ĐÚNG
       toast.success('Đã xử lý báo cáo và khóa tài liệu thành công.');
       
+      // Tải lại danh sách để cập nhật UI
       fetchReports();
       fetchProcessedReports();
       setShowReportDetail(false);
@@ -353,22 +357,29 @@ function ReportManagement() {
           ) : (
             <div className="reports-grid">
               {reports.map((documentReport) => (
-                <div key={documentReport.documentId} className={`report-card ${getPriorityColor('Pending')}`}>
-                  <div className="report-card-header">
-                    <div className="report-title-section">
-                      <h4 className="document-title" title={documentReport.documentTitle}>
-                        {documentReport.documentTitle}
-                      </h4>
-                      <div className="report-meta">
-                        <span className="report-count">
-                          <FontAwesomeIcon icon={faExclamationTriangle} /> {documentReport.reportCount} báo cáo
-                        </span>
-                        <span className="report-date">
-                          Báo cáo gần nhất: {new Date(documentReport.latestReportDate).toLocaleDateString()}
-                        </span>
+                  <div key={documentReport.documentId} className={`report-card ${getPriorityColor('Pending')}`}>
+                    <div className="report-card-header">
+                      <div className="report-title-section">
+                        <h4 className="document-title" title={documentReport.documentTitle}>
+                          {documentReport.documentTitle}
+                          
+                          {/* THÊM HIỂN THỊ TRẠNG THÁI */}
+                          {documentReport.isLocked && (
+                             <span className="status-badge status-suspended" style={{marginLeft: '10px', fontSize: '0.7rem'}}>
+                               <FontAwesomeIcon icon={faLock} /> Đã khóa
+                             </span>
+                          )}
+                        </h4>
+                        <div className="report-meta">
+                          <span className="report-count">
+                            <FontAwesomeIcon icon={faExclamationTriangle} /> {documentReport.reportCount} báo cáo
+                          </span>
+                          <span className="report-date">
+                            Báo cáo gần nhất: {new Date(documentReport.latestReportDate).toLocaleDateString()}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
                   <div className="report-card-actions">
                     <button
@@ -391,25 +402,32 @@ function ReportManagement() {
           ) : (
             <div className="reports-grid">
               {processedReports.map((documentReport) => (
-                <div key={documentReport.documentId} className={`report-card ${getPriorityColor(documentReport.status)}`}>
-                  <div className="report-card-header">
-                    <div className="report-title-section">
-                      <h4 className="document-title" title={documentReport.documentTitle}>
-                        {documentReport.documentTitle}
-                      </h4>
-                      <div className="report-meta">
-                        <span className="report-count">
-                          <FontAwesomeIcon icon={faFileAlt} /> {documentReport.reportCount} báo cáo
-                        </span>
-                        <span className="report-date">
-                          Xử lý gần nhất: {new Date(documentReport.latestReportDate).toLocaleDateString()}
-                        </span>
+                  <div key={documentReport.documentId} className={`report-card ${getPriorityColor(documentReport.status)}`}>
+                    <div className="report-card-header">
+                      <div className="report-title-section">
+                        <h4 className="document-title" title={documentReport.documentTitle}>
+                          {documentReport.documentTitle}
+                          
+                          {/* THÊM HIỂN THỊ TRẠNG THÁI */}
+                          {documentReport.isLocked && (
+                             <span className="status-badge status-suspended" style={{marginLeft: '10px', fontSize: '0.7rem'}}>
+                               <FontAwesomeIcon icon={faLock} /> Đã khóa
+                             </span>
+                          )}
+                        </h4>
+                        <div className="report-meta">
+                          <span className="report-count">
+                            <FontAwesomeIcon icon={faFileAlt} /> {documentReport.reportCount} báo cáo
+                          </span>
+                          <span className="report-date">
+                            Xử lý gần nhất: {new Date(documentReport.latestReportDate).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="report-status">
+                        {getStatusBadge(documentReport.status)}
                       </div>
                     </div>
-                    <div className="report-status">
-                      {getStatusBadge(documentReport.status)}
-                    </div>
-                  </div>
 
                   <div className="report-card-actions">
                     <button
