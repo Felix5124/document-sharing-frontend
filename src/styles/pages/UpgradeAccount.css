@@ -187,9 +187,18 @@
 
 .plans-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
   margin-bottom: 20px;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (min-width: 900px) {
+  .plans-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 .plan-card {
@@ -279,9 +288,13 @@
 }
 
 .plan-pricing {
+  height: 120px;
   padding: 24px;
   text-align: center;
   background: #f9fafb;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .price-wrapper {
@@ -319,7 +332,8 @@
   font-size: 1.1rem;
 }
 
-.discount-badge {
+.discount-badge,
+.discount-badge-price {
   background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   color: white;
   padding: 4px 12px;
@@ -372,6 +386,181 @@
   background: #667eea;
   color: white;
   border-color: #667eea;
+}
+
+/* ========================================
+   VIP STATUS BOX
+   ======================================== */
+
+.vip-status-box {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border: 2px solid #f59e0b;
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.vip-badge-current {
+  display: inline-block;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.vip-status-box p {
+  font-size: 1rem;
+  color: #92400e;
+  margin: 8px 0;
+}
+
+.vip-note {
+  font-size: 0.9rem !important;
+  opacity: 0.85;
+}
+
+/* ========================================
+   PAYMENT SECTION
+   ======================================== */
+
+.payment-section {
+  margin-bottom: 40px;
+}
+
+.back-btn {
+  background: white;
+  border: 2px solid #667eea;
+  color: #667eea;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 20px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.back-btn:hover {
+  background: #667eea;
+  color: white;
+  transform: translateX(-5px);
+}
+
+/* ========================================
+   PAYMENT HISTORY SECTION
+   ======================================== */
+
+.payment-history-section {
+  margin-bottom: 40px;
+}
+
+.toggle-history-btn {
+  display: block;
+  margin: 0 auto 20px;
+  background: white;
+  border: 2px solid #667eea;
+  color: #667eea;
+  padding: 12px 32px;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.toggle-history-btn:hover {
+  background: #667eea;
+  color: white;
+}
+
+.history-list {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.no-history {
+  text-align: center;
+  color: #9ca3af;
+  font-style: italic;
+  padding: 30px;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.history-table thead {
+  background: #f9fafb;
+}
+
+.history-table th {
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+  color: #374151;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.history-table td {
+  padding: 12px;
+  border-bottom: 1px solid #f3f4f6;
+  color: #6b7280;
+}
+
+.history-table tbody tr:hover {
+  background: #f9fafb;
+}
+
+.history-table tbody tr[style*="pointer"]:hover {
+  background: #e0e7ff;
+  transform: scale(1.01);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.badge-pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.badge-success {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.badge-danger {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.badge-secondary {
+  background: #f3f4f6;
+  color: #6b7280;
 }
 
 /* ========================================

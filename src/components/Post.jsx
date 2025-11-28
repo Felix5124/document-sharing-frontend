@@ -152,6 +152,11 @@ const Post = () => {
 
       <div className={`page-layout-with-sidebar ${user?.isVip ? 'no-left-sidebar' : ''}`}>
         {/* Sidebar VIP Banner */}
+        {!user && (
+          <aside className="page-sidebar">
+            <VipPromoBanner variant="forum" />
+          </aside>
+        )}
         {user && !user.isVip && (
           <aside className="page-sidebar">
             <VipPromoBanner variant="forum" />
@@ -256,19 +261,19 @@ const Post = () => {
                 <div className="comments-wrapper">
                   {comments[post.postId].map(comment => (
                     <div key={comment.postCommentId} className="comment-item">
-                      <div className="comment-post-header">
-                        <Link to={comment.userId ? `/profile/${comment.userId}` : '/profile'}>
-                          <img
-                            src={getFullAvatarUrl(comment.user?.avatarUrl)}
-                            alt={comment.user?.fullName || comment.user?.email || 'Avatar'}
-                            className="comment-avatar"
-                            onError={e => {
-                              e.currentTarget.onerror = null;
-                              e.currentTarget.src = getFullAvatarUrl(null);
-                            }}
-                          />
-                        </Link>
-                        <div className="comment-user-info">
+                      <Link to={comment.userId ? `/profile/${comment.userId}` : '/profile'}>
+                        <img
+                          src={getFullAvatarUrl(comment.user?.avatarUrl)}
+                          alt={comment.user?.fullName || comment.user?.email || 'Avatar'}
+                          className="comment-avatar"
+                          onError={e => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = getFullAvatarUrl(null);
+                          }}
+                        />
+                      </Link>
+                      <div className="comment-content-wrapper">
+                        <div className="comment-bubble">
                           <p className="comment-user-email">
                             {comment.userId ? (
                               <Link to={`/profile/${comment.userId}`}>{comment.user?.fullName || comment.user?.email}</Link>
@@ -278,8 +283,8 @@ const Post = () => {
                           </p>
                           <p className="comment-content">{comment.content}</p>
                         </div>
+                        <p className="comment-date">{new Date(comment.createdAt).toLocaleString('vi-VN')}</p>
                       </div>
-                      <p className="comment-date">{new Date(comment.createdAt).toLocaleString('vi-VN')}</p>
                     </div>
                   ))}
                   {user ? (
