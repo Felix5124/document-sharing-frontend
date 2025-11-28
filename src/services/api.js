@@ -215,6 +215,7 @@ export const getUserBadges = (userId) =>
 // --- API cho bảng xếp hạng ---
 export const getTopCommenter = () => apiClient.get("/users/top-commenter");
 export const getTopPointsUser = () => apiClient.get("/users/top-points");
+export const getTopUploader = () => apiClient.get("/users/rankings/uploads?limit=1");
 export const getTopDownloadedDocument = () =>
   apiClient.get("/documents/top-downloaded");
 export const getTopDownloadedDocumentsList = (limit = 5) => {

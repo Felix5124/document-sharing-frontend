@@ -618,6 +618,35 @@ textarea.form-control {
   color: #111827;
   position: relative;
   margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.vip-badge-detail {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #ffd700 100%);
+  color: #000;
+  border-radius: 12px;
+  border: 1.5px solid rgba(218, 165, 32, 0.6);
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
+  animation: vip-glow 2s ease-in-out infinite;
+  flex-shrink: 0;
+  letter-spacing: 0.5px;
+}
+
+@keyframes vip-glow {
+  0%, 100% {
+    box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
+  }
+  50% {
+    box-shadow: 0 4px 16px rgba(255, 215, 0, 0.7);
+  }
 }
 /* school/logo styles removed */
 
@@ -640,7 +669,10 @@ textarea.form-control {
   font-weight: 500;
   font-size: 1rem;
 }
-
+.author-name-detail {
+  color: #6b7280;
+  font-size: 0.7rem;
+}
 .author-name.clickable-author {
   color: #0d9488;
   transition: all 0.2s ease;
