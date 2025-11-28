@@ -14,7 +14,7 @@ const VipWelcomeBanner = () => {
         <div className="vip-crown-icon">
           <FontAwesomeIcon icon={faCrown} />
         </div>
-        <h3 className="vip-welcome-title-sidebar-left">Chào {user?.fullName || user?.email || 'VIP'}!</h3>
+        <h3 className="vip-welcome-title-sidebar-left">Chào {user?.fullName || user?.email || 'Premium'}!</h3>
         <p className="vip-welcome-subtitle-sidebar-left">
           Bạn đang trải nghiệm tài khoản Premium
         </p>
@@ -39,7 +39,7 @@ const VipWelcomeBanner = () => {
         </div>
 
         <Link to="/upgrade-account" className="vip-manage-button">
-          Quản Lý Gói VIP
+          Quản Lý Gói Premium
         </Link>
       </div>
     </div>

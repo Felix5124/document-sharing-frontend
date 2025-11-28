@@ -74,9 +74,6 @@ function Notifications() {
           <div className="notifications-list">
             {notifications.map((notification) => {
               const isUnread = !notification.isRead;
-              const shortMessage = notification.message.length > 50
-                ? `${notification.message.substring(0, 50)}...`
-                : notification.message;
 
               return (
                 <div
@@ -86,7 +83,7 @@ function Notifications() {
                 >
                   <div className="notification-content">
                     <p className={`notification-message ${isUnread ? 'unread' : ''}`}>
-                      {shortMessage}
+                      {notification.message}
                     </p>
                     <span className={`notification-time ${isUnread ? 'unread' : ''}`}>
                       {new Date(notification.sentAt).toLocaleString('vi-VN', {

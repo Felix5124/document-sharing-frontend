@@ -186,7 +186,7 @@ const TopInterestDocumentsList = memo(({ documents, isLoading }) => {
                       onError={(e) => (e.target.src = getFullImageUrl(null))}
                     />
                     {isVipDoc(doc) && (
-                      <span className="vip-badge" title="Tài liệu VIP">
+                      <span className="vip-badge" title="Tài liệu Premium">
                         <FontAwesomeIcon icon={faStar} />
                       </span>
                     )}
@@ -410,7 +410,7 @@ function Home() {
               onError={(e) => (e.target.src = getFullImageUrl(null))}
             />
             {(doc.isVipOnly || doc.IsVipOnly) && (
-              <span className="vip-badge" title="Tài liệu VIP">
+              <span className="vip-badge" title="Tài liệu Premium">
                 <FontAwesomeIcon icon={faStar} />
               </span>
             )}
@@ -589,10 +589,10 @@ function Home() {
               <Link to="/upgrade-account" className="vip-horizontal-banner">
                 <div className="vip-horizontal-left">
                   <div className="vip-horizontal-badge">
-                    <FontAwesomeIcon icon={faStar} /> ĐẶC QUYỀN VIP
+                    <FontAwesomeIcon icon={faStar} /> ĐẶC QUYỀN PREMIUM
                   </div>
                   <h2 className="vip-horizontal-title">
-                    Nâng Cấp VIP - Mở Khóa Toàn Bộ Tính Năng
+                    Nâng Cấp Premium - Mở Khóa Toàn Bộ Tính Năng
                   </h2>
                   <p className="vip-horizontal-subtitle">
                     Tăng giới hạn lượt tải • Tài liệu Premium • Không quảng cáo • Hỗ trợ ưu tiên 24/7
@@ -628,13 +628,13 @@ function Home() {
               <div className="vip-welcome-horizontal-banner">
                 <div className="vip-welcome-left">
                   <div className="vip-welcome-badge">
-                    <FontAwesomeIcon icon={faCrown} /> THÀNH VIÊN VIP
+                    <FontAwesomeIcon icon={faCrown} /> THÀNH VIÊN PREMIUM
                   </div>
                   <h2 className="vip-welcome-title">
                     Chào mừng {user.fullName || user.email}! 🎉
                   </h2>
                   <p className="vip-welcome-subtitle">
-                    Bạn đang tận hưởng tất cả đặc quyền VIP của chúng tôi
+                    Bạn đang tận hưởng tất cả đặc quyền Premium của chúng tôi
                   </p>
                   <div className="vip-welcome-stats">
                     <div className="vip-stat">
@@ -647,7 +647,7 @@ function Home() {
                     </div>
                     <div className="vip-stat">
                       <FontAwesomeIcon icon={faStar} />
-                      <span>Nội dung VIP</span>
+                      <span>Nội dung Premium</span>
                     </div>
                   </div>
                 </div>
@@ -656,7 +656,7 @@ function Home() {
                     <FontAwesomeIcon icon={faCrown} className="vip-welcome-icon" />
                   </div>
                   <Link to="/upgrade-account" className="vip-manage-button">
-                    Quản Lý Gói VIP
+                    Quản Lý Gói Premium
                   </Link>
                   <div className="vip-welcome-message">
                     Cảm ơn bạn đã ủng hộ! ❤️

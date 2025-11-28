@@ -265,6 +265,28 @@ export const getActiveVipSubscription = (userId) =>
 export const checkAndUpdateExpiredSubscriptions = () =>
   apiClient.post("/VipSubscriptions/check-expiry");
 
+// --- API cho Payment ---
+export const createPayment = (data) =>
+  apiClient.post("/payments/create", data);
+
+export const checkPaymentStatus = (orderCode) =>
+  apiClient.get(`/payments/check/${orderCode}`);
+
+export const getPendingPayments = () =>
+  apiClient.get("/payments/pending");
+
+export const confirmPayment = (data) =>
+  apiClient.post("/payments/confirm", data);
+
+export const cancelPayment = (paymentId, data) =>
+  apiClient.post(`/payments/cancel/${paymentId}`, data);
+
+export const getUserPayments = (userId) =>
+  apiClient.get(`/payments/user/${userId}`);
+
+export const getAllPayments = (page = 1, pageSize = 20) =>
+  apiClient.get(`/payments/all?page=${page}&pageSize=${pageSize}`);
+
 // --- API cho Báo cáo Vi phạm ---
 export const createReport = (data) => apiClient.post("/reports", data);
 
