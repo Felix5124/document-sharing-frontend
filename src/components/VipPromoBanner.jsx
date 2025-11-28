@@ -4,7 +4,6 @@ import { faCrown, faRocket, faDownload, faStar, faUpload, faComments, faAward } 
 import '../styles/components/VipPromoBanner.css';
 
 const VipPromoBanner = ({ variant = 'default' }) => {
-  // Định nghĩa nội dung theo từng ngữ cảnh
   const bannerContent = {
     forum: {
       icon: faCrown,
@@ -51,7 +50,7 @@ const VipPromoBanner = ({ variant = 'default' }) => {
   const content = bannerContent[variant] || bannerContent.default;
 
   return (
-    <Link to="/upgrade" className="vip-promo-banner">
+    <Link to="/upgrade-account" className="vip-promo-banner">
       <div className="vip-promo-icon">
         <FontAwesomeIcon icon={content.icon} />
       </div>

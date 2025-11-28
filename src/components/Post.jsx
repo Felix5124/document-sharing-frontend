@@ -152,6 +152,11 @@ const Post = () => {
 
       <div className={`page-layout-with-sidebar ${user?.isVip ? 'no-left-sidebar' : ''}`}>
         {/* Sidebar VIP Banner */}
+        {!user && (
+          <aside className="page-sidebar">
+            <VipPromoBanner variant="forum" />
+          </aside>
+        )}
         {user && !user.isVip && (
           <aside className="page-sidebar">
             <VipPromoBanner variant="forum" />

@@ -28,7 +28,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 48px;
+  margin-bottom: 24px;
   flex-wrap: wrap;
   gap: 24px;
 }
@@ -38,7 +38,7 @@ body {
 }
 
 .sub-title {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   font-weight: 400;
   color: #6b7280;
 }
@@ -323,7 +323,7 @@ body {
 }
 /* Footer Section */
 .footer {
-  background-color: #161616; /* tương đương bg-dark */
+  background-color: #444; /* tương đương bg-dark */
   color: #fff;
   padding: 3rem 1rem;
   text-align: center;

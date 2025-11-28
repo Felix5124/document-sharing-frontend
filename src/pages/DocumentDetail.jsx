@@ -541,7 +541,14 @@ function DocumentDetail() {
             <div className="document-header-section">
               <div className="document-title-row">
                 <div className="document-title-wrapper">
-                  <h1 className="detail-document-title">{doc.title}</h1>
+                  <h1 className="detail-document-title">
+                    {doc.title}
+                    {(doc.isVipOnly || doc.IsVipOnly) && (
+                      <span className="vip-badge-detail" title="Tài liệu Premium">
+                        PREMIUM
+                      </span>
+                    )}
+                  </h1>
                 </div>
                 {/* school logo removed */}
               </div>
@@ -875,7 +882,7 @@ function DocumentDetail() {
                           {relatedDoc.uploadedByEmail && (
                             <div className="card-author">
                               <FontAwesomeIcon icon={faUser} />
-                              <span className="author-name">{relatedDoc.uploadedByEmail}</span>
+                              <span className="author-name-detail">{relatedDoc.uploadedByEmail}</span>
                             </div>
                           )}
                         </div>
