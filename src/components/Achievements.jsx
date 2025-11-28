@@ -1,13 +1,11 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { AuthContext } from '../context/AuthContext';
 import { getAllBadges, getUserBadges, getUploadCount, getCommentCount } from '../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrophy } from '@fortawesome/free-solid-svg-icons'; // 🏆 thêm FAWS
 import '../styles/components/Achievements.css';
 
-function Achievements() {
-  const { user } = useContext(AuthContext);
+function Achievements({ userId }) {
   const [badges, setBadges] = useState([]);
   const [allBadges, setAllBadges] = useState([]);
   const [uploadCount, setUploadCount] = useState(0);
@@ -15,9 +13,9 @@ function Achievements() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!user) return;
+    if (!userId) return;
     fetchData();
-  }, [user]);
+  }, [userId]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -27,15 +25,15 @@ function Achievements() {
       if (Array.isArray(allBadgesData.$values)) allBadgesData = allBadgesData.$values;
       setAllBadges(allBadgesData);
 
-      const userBadgesResponse = await getUserBadges(user.userId);
+      const userBadgesResponse = await getUserBadges(userId);
       let userBadgesData = userBadgesResponse.data;
       if (Array.isArray(userBadgesData.$values)) userBadgesData = userBadgesData.$values;
       setBadges(userBadgesData);
 
-      const uploadCountResponse = await getUploadCount(user.userId);
+      const uploadCountResponse = await getUploadCount(userId);
       setUploadCount(uploadCountResponse.data.uploadCount || 0);
 
-      const commentCountResponse = await getCommentCount(user.userId);
+      const commentCountResponse = await getCommentCount(userId);
       setCommentCount(commentCountResponse.data.commentCount || 0);
     } catch (error) {
       console.error('Fetch achievements data error:', error);
@@ -51,12 +49,12 @@ function Achievements() {
     return { current: 0, required: 0 };
   };
 
-  if (!user) {
+  if (!userId) {
     return (
       <div className="achievements-container">
         <div className="empty-state">
           <FontAwesomeIcon icon={faTrophy} className="empty-icon" />
-          <p>Vui lòng đăng nhập để xem thành tựu.</p>
+          <p>Không có dữ liệu thành tựu.</p>
         </div>
       </div>
     );
@@ -65,7 +63,7 @@ function Achievements() {
   return (
     <div className="achievements-container">
       <h4 className="achievements-title">
-        <FontAwesomeIcon icon={faTrophy} className="icon-margin-right" /> Thành tựu của bạn
+        <FontAwesomeIcon icon={faTrophy} className="icon-margin-right" /> Thành tựu
       </h4>
 
       {loading ? (

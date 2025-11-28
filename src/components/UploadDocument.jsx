@@ -4,9 +4,13 @@ import { uploadDocument, getCategories } from '../services/api';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import '../styles/components/UploadDocument.css';
+import '../styles/layouts/PageWithSidebar.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeading, faParagraph, faFolder, faStar, faPaperclip, faImage, faTags, faCloudArrowUp } from '../utils/icons';
+import { faHeading, faParagraph, faFolder, faStar, faPaperclip, faImage, faTags, faCloudArrowUp, faEyeSlash, faEye } from '../utils/icons';
 import { AuthContext } from '../context/AuthContext';
+import VipPromoBanner from './VipPromoBanner';
+import VipWelcomeBanner from './VipWelcomeBanner';
+import RightSidebar from './RightSidebar';
 
 function UploadDocument() {
   const { register, handleSubmit, formState: { errors }, reset, watch, setValue } = useForm({
@@ -24,10 +28,38 @@ function UploadDocument() {
   const [categories, setCategories] = useState([]);
   const [previewCover, setPreviewCover] = useState(null);
   const [tagInputText, setTagInputText] = useState('');
+  const [hideLeftSidebar, setHideLeftSidebar] = useState(false);
+  const [hideRightSidebar, setHideRightSidebar] = useState(false);
+  const [contextMenu, setContextMenu] = useState({ show: false, x: 0, y: 0, type: '' });
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
   const userId = user?.userId;
   const isVipActive = !!(user?.isVip && (!user?.vipExpiryDate || new Date(user.vipExpiryDate) > new Date()));
+
+  // Handle context menu
+  const handleContextMenu = (e, type) => {
+    if (!user?.isVip) return;
+    e.preventDefault();
+    setContextMenu({ show: true, x: e.clientX, y: e.clientY, type });
+  };
+
+  const handleToggleSidebar = (type) => {
+    if (type === 'left') {
+      setHideLeftSidebar(!hideLeftSidebar);
+    } else if (type === 'right') {
+      setHideRightSidebar(!hideRightSidebar);
+    }
+    setContextMenu({ show: false, x: 0, y: 0, type: '' });
+  };
+
+  // Close context menu when clicking outside
+  useEffect(() => {
+    const handleClick = () => setContextMenu({ show: false, x: 0, y: 0, type: '' });
+    if (contextMenu.show) {
+      document.addEventListener('click', handleClick);
+      return () => document.removeEventListener('click', handleClick);
+    }
+  }, [contextMenu.show]);
 
   const coverImageFile = watch('CoverImage');
   const currentTags = watch('Tags');
@@ -150,11 +182,45 @@ function UploadDocument() {
 
   return (
     <div className="all-container">
-      <div className="all-container-card">
-        <h2 className="upload-title">
-          <i className="bi bi-upload icon-margin-right"></i> Tải lên tài liệu
-        </h2>
-        <form onSubmit={handleSubmit(onSubmit)}>
+      {/* Context Menu */}
+      {contextMenu.show && (
+        <div 
+          className="sidebar-context-menu"
+          style={{ top: contextMenu.y, left: contextMenu.x }}
+        >
+          <button onClick={() => handleToggleSidebar(contextMenu.type)}>
+            {(contextMenu.type === 'left' && hideLeftSidebar) || (contextMenu.type === 'right' && hideRightSidebar) 
+              ? '👁️ Hiển thị' 
+              : '🚫 Ẩn'}
+          </button>
+        </div>
+      )}
+
+      <div className={`page-layout-with-sidebar ${isVipActive ? 'no-left-sidebar' : ''}`}>
+        {/* Sidebar - VIP Welcome or Promo Banner */}
+        {user?.isVip && (
+          <aside 
+            className="page-sidebar"
+            onContextMenu={(e) => handleContextMenu(e, 'left')}
+            style={{ cursor: 'context-menu' }}
+          >
+            {!hideLeftSidebar && <VipWelcomeBanner />}
+          </aside>
+        )}
+        {user && !isVipActive && (
+          <aside className="page-sidebar">
+            <VipPromoBanner variant="upload" />
+          </aside>
+        )}
+
+        {/* Main Content */}
+        <div className="page-main-content">
+          <div className="all-container-card">
+            <h2 className="upload-title">
+              <i className="bi bi-upload icon-margin-right"></i> Tải lên tài liệu
+            </h2>
+
+            <form onSubmit={handleSubmit(onSubmit)}>
           <div className="form-group">
             <label className="form-label">Tiêu đề</label>
             <div className="input-wrapper">
@@ -319,6 +385,17 @@ function UploadDocument() {
             Tải lên
           </button>
         </form>
+          </div>
+        </div>
+
+        {/* Right Sidebar */}
+        <aside 
+          className="page-sidebar-right"
+          onContextMenu={(e) => handleContextMenu(e, 'right')}
+          style={{ cursor: user?.isVip ? 'context-menu' : 'default' }}
+        >
+          {!hideRightSidebar && <RightSidebar variant="upload" />}
+        </aside>
       </div>
     </div>
   );

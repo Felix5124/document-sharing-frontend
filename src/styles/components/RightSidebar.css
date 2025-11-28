@@ -1,0 +1,85 @@
+/* Right Sidebar - Thông tin bổ sung */
+
+.right-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.right-sidebar-card {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e5e7eb;
+}
+
+.right-sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #f3f4f6;
+}
+
+.right-sidebar-header svg {
+  font-size: 1.1rem;
+  color: #667eea;
+}
+
+.right-sidebar-header h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+.right-sidebar-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Tips Items */
+.sidebar-tip-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.8rem;
+  color: #4b5563;
+  line-height: 1.5;
+  padding: 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.sidebar-tip-item:hover {
+  background: #f9fafb;
+}
+
+.tip-icon {
+  color: #10b981;
+  font-size: 0.85rem;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .right-sidebar {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .right-sidebar-card {
+    padding: 14px;
+  }
+
+  .sidebar-tip-item {
+    font-size: 0.75rem;
+    padding: 6px;
+  }
+}

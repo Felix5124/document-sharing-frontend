@@ -550,7 +550,14 @@ function DocumentDetail() {
                 <div className="author-info">
                   <div className="author-details">
                     <span className="author-name">Tác giả :</span>
-                    <span className="author-name">{doc.email || 'Ẩn danh'}</span>
+                    <span 
+                      className="author-name clickable-author" 
+                      onClick={() => doc.uploadedBy && navigate(`/profile/${doc.uploadedBy}`)}
+                      style={{ cursor: doc.uploadedBy ? 'pointer' : 'default' }}
+                      title={doc.uploadedBy ? 'Xem profile tác giả' : ''}
+                    >
+                      {doc.email || 'Ẩn danh'}
+                    </span>
                     {user && user.userId !== doc.uploadedBy && doc.uploadedBy && (
                       <CustomButton
                         variant={isFollowing ? "success" : "outline-success"}
@@ -642,7 +649,7 @@ function DocumentDetail() {
                     }
                   >
                     <FontAwesomeIcon icon={faEye} />
-                    <span className="btn-text">Xem Online</span>
+                    <span className="btn-text">Xem Online (PDF)</span>
                   </CustomButton>
                 </div>
 
@@ -974,7 +981,14 @@ function DocumentDetail() {
                               />
                             </div>
                             <div className="author-info-comment">
-                              <div className="author-name-comment">{cmt.UserFullName || cmt.UserEmail}</div>
+                              <div 
+                                className="author-name-comment clickable-author-comment"
+                                onClick={() => cmt.UserId && navigate(`/profile/${cmt.UserId}`)}
+                                style={{ cursor: cmt.UserId ? 'pointer' : 'default' }}
+                                title={cmt.UserId ? 'Xem profile' : ''}
+                              >
+                                {cmt.UserFullName || cmt.UserEmail}
+                              </div>
                               <div className="comment-date">
                                 {cmt.CreatedAt ? new Date(cmt.CreatedAt).toLocaleString('vi-VN') : 'N/A'}
                               </div>
@@ -988,7 +1002,6 @@ function DocumentDetail() {
                           </div>
                           {cmt.Rating > 0 && (
                             <div className="comment-rating">
-                              <div className="rating-label">Đánh giá:</div>
                               <StarRatingDisplay rating={cmt.Rating} totalReviews={1} />
                             </div>
                           )}

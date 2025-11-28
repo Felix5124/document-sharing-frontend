@@ -64,6 +64,8 @@ function UpgradeAccount() {
 
     setLoading(true);
     try {
+      const selectedPlanData = plans.find(p => p.id === selectedPlan);
+      
       const data = {
         userId: user.userId,
         subscriptionType: plan.type

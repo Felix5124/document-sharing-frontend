@@ -205,7 +205,6 @@ body {
 }
 /* Secondary Button */
 .btn-secondary {
-  width: 100%;
   padding: 12px 20px;
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: #ffffff;
