@@ -7,6 +7,7 @@ import Profile from './pages/Profile';
 import DocumentDetail from './pages/DocumentDetail';
 import PostCommentDetail from './pages/PostCommentDetail';
 import AdminDashboard from './pages/AdminDashboard';
+import AdminPayments from './pages/AdminPayments';
 import Navbar from './components/Navbar';
 import Notifications from './components/Notifications';
 import NotificationDetail from './components/NotificationDetail';
@@ -91,6 +92,16 @@ function App() {
               <PrivateRoute requireAdmin={true}>
                 <ErrorBoundary>
                   <AdminDashboard />
+                </ErrorBoundary>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/payments"
+            element={
+              <PrivateRoute requireAdmin={true}>
+                <ErrorBoundary>
+                  <AdminPayments />
                 </ErrorBoundary>
               </PrivateRoute>
             }

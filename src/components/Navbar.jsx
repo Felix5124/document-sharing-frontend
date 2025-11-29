@@ -177,7 +177,7 @@ function Navbar() {
                             className={`navbar-avatar ${user?.isVip ? 'vip-avatar' : ''}`}
                             onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = getFullAvatarUrl(null); }}
                           />
-                          {user?.isVip && <span className="vip-badge">⭐</span>}
+                          {user?.isVip && <span className="vip-badge">PREMIUM</span>}
                         </Link>
                       </li>
 
@@ -207,15 +207,27 @@ function Navbar() {
 
                     {menuOpen && (
                       <ul className="dropdown-menu">
-                        <li>
-                          <Link
-                            className={`drop-menu-btn ${location.pathname === '/upgrade-account' ? 'active' : ''}`}
-                            to="/upgrade-account"
-                            onClick={() => setMenuOpen(false)}
-                          >
-                            <FontAwesomeIcon icon={faUser} /> Nâng cấp tài khoản
-                          </Link>
-                        </li>
+                        {!user.isAdmin ? (
+                          <li>
+                            <Link
+                              className={`drop-menu-btn ${location.pathname === '/upgrade-account' ? 'active' : ''}`}
+                              to="/upgrade-account"
+                              onClick={() => setMenuOpen(false)}
+                            >
+                              <FontAwesomeIcon icon={faUser} /> Nâng cấp tài khoản
+                            </Link>
+                          </li>
+                        ) : (
+                          <li>
+                            <Link
+                              className={`drop-menu-btn ${location.pathname === '/admin/payments' ? 'active' : ''}`}
+                              to="/admin/payments"
+                              onClick={() => setMenuOpen(false)}
+                            >
+                              <FontAwesomeIcon icon={faUser} /> Quản lý thanh toán
+                            </Link>
+                          </li>
+                        )}
                         <li>
                           <button
                             className="logout-button"

@@ -3,6 +3,7 @@ import {
   searchDocuments,
   getCategories,
   getTopCommenter,
+  getTopUploader,
   getTopDownloadedDocument,
   getTopDownloadedDocumentsList,
   getDocumentById
@@ -35,6 +36,9 @@ import {
   faArrowRight
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
+// Global cache for VIP status - persists across component unmounts
+const globalVipCache = {};
 
 // Banner
 function Banner() {
@@ -84,22 +88,47 @@ function Banner() {
 
 // Component để hiển thị danh sách tài liệu được quan tâm
 const TopInterestDocumentsList = memo(({ documents, isLoading }) => {
-  const [augDocs, setAugDocs] = useState([]);
+  // Khởi tạo augDocs từ cache nếu có
+  const initialAugDocs = () => {
+    if (documents && Array.isArray(documents) && documents.length > 0) {
+      const cacheKey = documents.slice(0, 5).map(d => d.documentId).join(',');
+      return globalVipCache[cacheKey] || [];
+    }
+    return [];
+  };
+  
+  const [augDocs, setAugDocs] = useState(initialAugDocs);
   const lastFetchedDocsRef = useRef(null);
   const isFetchingRef = useRef(false);
   
   useEffect(() => {
     if (!documents || !Array.isArray(documents) || documents.length === 0) {
+      console.log('[TopInterest] No documents, clearing augDocs');
+      setAugDocs([]);
       return;
     }
     
-    // So sánh deep để xem documents có thực sự thay đổi không
-    const currentDocsString = JSON.stringify(documents);
-    if (lastFetchedDocsRef.current === currentDocsString || isFetchingRef.current) {
+    // Tạo cache key dựa trên documentId thay vì stringify toàn bộ
+    const cacheKey = documents.slice(0, 5).map(d => d.documentId).join(',');
+    console.log('[TopInterest] Cache key:', cacheKey);
+    console.log('[TopInterest] Last fetched:', lastFetchedDocsRef.current);
+    console.log('[TopInterest] Global cache:', globalVipCache);
+    
+    if (lastFetchedDocsRef.current === cacheKey || isFetchingRef.current) {
+      console.log('[TopInterest] Skipping - already fetched or fetching');
       return;
     }
     
-    lastFetchedDocsRef.current = currentDocsString;
+    // Kiểm tra cache trước (dùng global cache)
+    if (globalVipCache[cacheKey]) {
+      console.log('[TopInterest] Found in cache, using cached data');
+      setAugDocs(globalVipCache[cacheKey]);
+      lastFetchedDocsRef.current = cacheKey;
+      return;
+    }
+    
+    console.log('[TopInterest] Cache miss, fetching VIP status...');
+    lastFetchedDocsRef.current = cacheKey;
     isFetchingRef.current = true;
     
     let mounted = true;
@@ -134,7 +163,11 @@ const TopInterestDocumentsList = memo(({ documents, isLoading }) => {
           })
         );
         if (mounted) {
+          const cacheKey = documents.slice(0, 5).map(d => d.documentId).join(',');
+          console.log('[TopInterest] Fetched VIP status, caching with key:', cacheKey);
+          console.log('[TopInterest] Detailed data:', detailed);
           setAugDocs(detailed);
+          globalVipCache[cacheKey] = detailed;
           isFetchingRef.current = false;
         }
       } catch (err) {
@@ -186,7 +219,7 @@ const TopInterestDocumentsList = memo(({ documents, isLoading }) => {
                       onError={(e) => (e.target.src = getFullImageUrl(null))}
                     />
                     {isVipDoc(doc) && (
-                      <span className="vip-badge" title="Tài liệu VIP">
+                      <span className="vip-badge-interest" title="Tài liệu Premium">
                         <FontAwesomeIcon icon={faStar} />
                       </span>
                     )}
@@ -231,6 +264,7 @@ function Home() {
   const documentsPerPage = 10;
 
   const [topCommenter, setTopCommenter] = useState(cache.topCommenter || null);
+  const [topUploader, setTopUploader] = useState(cache.topUploader || null);
   const [topDownloadedDoc, setTopDownloadedDoc] = useState(cache.topDownloadedDoc || null);
   const [topInterestDocuments, setTopInterestDocuments] = useState(cache.topInterestDocuments || []);
   const [loadingTopInterest, setLoadingTopInterest] = useState(false);
@@ -238,7 +272,7 @@ function Home() {
 
   // Hydrate from cache once
   useEffect(() => {
-    if (cache && (cache.documents?.length || cache.categories?.length || cache.topCommenter || cache.topDownloadedDoc || cache.topInterestDocuments?.length)) {
+    if (cache && (cache.documents?.length || cache.categories?.length || cache.topCommenter || cache.topUploader || cache.topDownloadedDoc || cache.topInterestDocuments?.length)) {
       skipInitialFetchRef.current = true; // prevent first fetches
     }
   }, []);
@@ -309,6 +343,15 @@ function Home() {
         commenterData = commenterData.$values[0] || null;
       setTopCommenter(commenterData);
 
+      const uploaderRes = await getTopUploader();
+      let uploaderData = uploaderRes.data;
+      if (Array.isArray(uploaderData)) {
+        uploaderData = uploaderData[0] || null;
+      } else if (uploaderData?.$values && Array.isArray(uploaderData.$values)) {
+        uploaderData = uploaderData.$values[0] || null;
+      }
+      setTopUploader(uploaderData);
+
       const topDocRes = await getTopDownloadedDocument();
       let topDocData = topDocRes.data;
       if (Array.isArray(topDocData?.$values))
@@ -325,6 +368,7 @@ function Home() {
       setCache(prev => ({
         ...prev,
         topCommenter: commenterData,
+        topUploader: uploaderData,
         topDownloadedDoc: topDocData,
         topInterestDocuments: Array.isArray(topInterestData?.$values) ? topInterestData.$values : (Array.isArray(topInterestData) ? topInterestData : []),
       }));
@@ -410,7 +454,7 @@ function Home() {
               onError={(e) => (e.target.src = getFullImageUrl(null))}
             />
             {(doc.isVipOnly || doc.IsVipOnly) && (
-              <span className="vip-badge" title="Tài liệu VIP">
+              <span className="vip-badge" title="Tài liệu Premium">
                 <FontAwesomeIcon icon={faStar} />
               </span>
             )}
@@ -589,10 +633,10 @@ function Home() {
               <Link to="/upgrade-account" className="vip-horizontal-banner">
                 <div className="vip-horizontal-left">
                   <div className="vip-horizontal-badge">
-                    <FontAwesomeIcon icon={faStar} /> ĐẶC QUYỀN VIP
+                    <FontAwesomeIcon icon={faStar} /> ĐẶC QUYỀN PREMIUM
                   </div>
                   <h2 className="vip-horizontal-title">
-                    Nâng Cấp VIP - Mở Khóa Toàn Bộ Tính Năng
+                    Nâng Cấp Premium - Mở Khóa Toàn Bộ Tính Năng
                   </h2>
                   <p className="vip-horizontal-subtitle">
                     Tăng giới hạn lượt tải • Tài liệu Premium • Không quảng cáo • Hỗ trợ ưu tiên 24/7
@@ -628,13 +672,13 @@ function Home() {
               <div className="vip-welcome-horizontal-banner">
                 <div className="vip-welcome-left">
                   <div className="vip-welcome-badge">
-                    <FontAwesomeIcon icon={faCrown} /> THÀNH VIÊN VIP
+                    <FontAwesomeIcon icon={faCrown} /> THÀNH VIÊN PREMIUM
                   </div>
                   <h2 className="vip-welcome-title">
                     Chào mừng {user.fullName || user.email}! 🎉
                   </h2>
                   <p className="vip-welcome-subtitle">
-                    Bạn đang tận hưởng tất cả đặc quyền VIP của chúng tôi
+                    Bạn đang tận hưởng tất cả đặc quyền Premium của chúng tôi
                   </p>
                   <div className="vip-welcome-stats">
                     <div className="vip-stat">
@@ -647,7 +691,7 @@ function Home() {
                     </div>
                     <div className="vip-stat">
                       <FontAwesomeIcon icon={faStar} />
-                      <span>Nội dung VIP</span>
+                      <span>Nội dung Premium</span>
                     </div>
                   </div>
                 </div>
@@ -656,7 +700,7 @@ function Home() {
                     <FontAwesomeIcon icon={faCrown} className="vip-welcome-icon" />
                   </div>
                   <Link to="/upgrade-account" className="vip-manage-button">
-                    Quản Lý Gói VIP
+                    Quản Lý Gói Premium
                   </Link>
                   <div className="vip-welcome-message">
                     Cảm ơn bạn đã ủng hộ! ❤️
@@ -686,7 +730,16 @@ function Home() {
             </div>
             <div className="contrib-box">
               <ContributorColumn
-                title="Tài liệu tải nhiều nhất"
+                title="Người đóng góp nhiều nhất"
+                data={topUploader}
+                icon={<FontAwesomeIcon icon={faUpload} />}
+                statLabel="Số tài liệu"
+                statValue={topUploader?.value}
+              />
+            </div>
+            <div className="contrib-box">
+              <ContributorColumn
+                title="Tài liệu được tải nhiều nhất"
                 data={topDownloadedDoc}
                 icon={<FontAwesomeIcon icon={faDownload} />}
                 statLabel="Lượt tải"
@@ -700,6 +753,78 @@ function Home() {
             <Link to="/rankings" className="btn-primary-custom">
               Xem Tất Cả Bảng Xếp Hạng
             </Link>
+          </div>
+
+          <div className="divider-section">
+            <span className="divider-text">📚 Về Chúng Tôi 📚</span>
+          </div>
+
+          <div className="about-section">
+            <h2 className="about-title">Tại Sao Chọn Chúng Tôi?</h2>
+            <p className="about-intro">
+              Nền tảng chia sẻ tài liệu học tập hàng đầu cho sinh viên và người học tại Việt Nam
+            </p>
+            
+            <div className="features-grid">
+              <div className="feature-card">
+                <div className="feature-icon">
+                  <FontAwesomeIcon icon={faBook} />
+                </div>
+                <h3 className="feature-title">Kho Tài Liệu Phong Phú</h3>
+                <p className="feature-description">
+                  Hàng nghìn tài liệu chất lượng cao từ nhiều lĩnh vực khác nhau, 
+                  được cập nhật liên tục bởi cộng đồng.
+                </p>
+              </div>
+
+              <div className="feature-card">
+                <div className="feature-icon">
+                  <FontAwesomeIcon icon={faUsers} />
+                </div>
+                <h3 className="feature-title">Cộng Đồng Năng Động</h3>
+                <p className="feature-description">
+                  Kết nối với hàng ngàn người học, chia sẻ kiến thức và 
+                  cùng nhau phát triển.
+                </p>
+              </div>
+
+              <div className="feature-card">
+                <div className="feature-icon">
+                  <FontAwesomeIcon icon={faCrown} />
+                </div>
+                <h3 className="feature-title">Tài Liệu Premium</h3>
+                <p className="feature-description">
+                  Truy cập tài liệu độc quyền chất lượng cao với gói Premium, 
+                  giúp bạn học tập hiệu quả hơn.
+                </p>
+              </div>
+
+              <div className="feature-card">
+                <div className="feature-icon">
+                  <FontAwesomeIcon icon={faRocket} />
+                </div>
+                <h3 className="feature-title">Dễ Dàng & Nhanh Chóng</h3>
+                <p className="feature-description">
+                  Tìm kiếm thông minh, tải xuống nhanh chóng, 
+                  và quản lý tài liệu một cách dễ dàng.
+                </p>
+              </div>
+            </div>
+
+            <div className="cta-section">
+              <h3 className="cta-title">Sẵn Sàng Bắt Đầu?</h3>
+              <p className="cta-description">
+                Tham gia cùng hàng ngàn người học khác và khám phá kho tài liệu phong phú của chúng tôi ngay hôm nay!
+              </p>
+              <div className="cta-buttons">
+                <Link to="/register" className="btn-cta-primary">
+                  <FontAwesomeIcon icon={faUpload} /> Đăng Ký Ngay
+                </Link>
+                <Link to="/upgrade-account" className="btn-cta-secondary">
+                  <FontAwesomeIcon icon={faCrown} /> Nâng Cấp Premium
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </div>
