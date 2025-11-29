@@ -30,9 +30,9 @@ function UpgradeAccount() {
       icon: faStar,
       color: '#3b82f6',
       features: [
-        'Tải 8 file thường/ngày',
-        'Tải 5 file VIP/ngày',
-        'Xem trước 15 trang PDF',
+        'Tải 10 file thường/ngày',
+        'Tải 10 file VIP/ngày',
+        'Xem trước 10 trang PDF',
         'Không quảng cáo',
         'Ưu tiên duyệt bài'
       ],
@@ -48,9 +48,9 @@ function UpgradeAccount() {
       icon: faCrown,
       color: '#8b5cf6',
       features: [
-        'Tải 8 file thường/ngày',
-        'Tải 5 file VIP Premium/ngày',
-        'Xem trước 15 trang PDF',
+        'Tải 10 file thường/ngày',
+        'Tải 10 file VIP Premium/ngày',
+        'Xem trước 10 trang PDF',
         'Không quảng cáo',
         'Ưu tiên duyệt bài nhanh',
         'Badge VIP đặc biệt',
@@ -68,9 +68,9 @@ function UpgradeAccount() {
       icon: faRocket,
       color: '#f59e0b',
       features: [
-        'Tải 8 file thường/ngày',
-        'Tải 5 file VIP Premium/ngày',
-        'Xem trước 15 trang PDF',
+        'Tải 10 file thường/ngày',
+        'Tải 10 file VIP Premium/ngày',
+        'Xem trước 10 trang PDF',
         'Không quảng cáo',
         'Ưu tiên duyệt bài cao nhất',
         'Badge VIP Vàng độc quyền',
@@ -130,17 +130,17 @@ function UpgradeAccount() {
           <div className="benefit-card">
             <FontAwesomeIcon icon={faDownload} className="benefit-icon" />
             <h3>Tải Nhiều Hơn 6.5x</h3>
-            <p>13 file/ngày so với 2 file của tài khoản thường</p>
+            <p>20 file/ngày so với 2 file của tài khoản thường</p>
           </div>
           <div className="benefit-card">
             <FontAwesomeIcon icon={faFileAlt} className="benefit-icon" />
             <h3>Tài Liệu VIP Premium</h3>
-            <p>Truy cập độc quyền 5 file VIP mỗi ngày</p>
+            <p>Truy cập độc quyền 10 file VIP mỗi ngày</p>
           </div>
           <div className="benefit-card">
             <FontAwesomeIcon icon={faLock} className="benefit-icon" />
             <h3>Xem Trước 3x Nhiều</h3>
-            <p>15 trang PDF so với 5 trang của tài khoản free</p>
+            <p>10 trang PDF so với 2 trang của tài khoản free</p>
           </div>
           <div className="benefit-card">
             <FontAwesomeIcon icon={faCrown} className="benefit-icon" />

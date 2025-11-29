@@ -19,20 +19,20 @@ const VipPromoBanner = ({ variant = 'default' }) => {
     upload: {
       icon: faUpload,
       title: '⚡ Nâng Cấp VIP - Thoải Mái Tải Xuống!',
-      subtitle: 'Tài khoản thường chỉ 2 file/ngày. VIP tải 8 file thường + 5 file Premium!',
+      subtitle: 'Tài khoản thường chỉ 2 file/ngày. VIP tải 10 file thường + 10 file Premium!',
       features: [
-        { icon: faDownload, text: 'Tải 8 file/ngày' },
-        { icon: faStar, text: 'Tải 5 file VIP/ngày' },
+        { icon: faDownload, text: 'Tải 10 file/ngày' },
+        { icon: faStar, text: 'Tải 10 file VIP/ngày' },
         { icon: faRocket, text: 'Ưu tiên duyệt bài' }
       ]
     },
     profile: {
       icon: faCrown,
       title: '💎 Đặc Quyền VIP Đang Chờ Bạn!',
-      subtitle: 'Xem trước 15 trang PDF, tải nhiều hơn 4x, không quảng cáo!',
+      subtitle: 'Xem trước 10 trang PDF, tải nhiều hơn 10x, không quảng cáo!',
       features: [
-        { icon: faDownload, text: 'Tải 8 file thường + 5 VIP' },
-        { icon: faStar, text: 'Xem trước 15 trang PDF' },
+        { icon: faDownload, text: 'Tải 10 file thường + 10 VIP' },
+        { icon: faStar, text: 'Xem trước 10 trang PDF' },
         { icon: faAward, text: 'Badge VIP + Ưu tiên duyệt' }
       ]
     },
@@ -41,8 +41,8 @@ const VipPromoBanner = ({ variant = 'default' }) => {
       title: '🚀 VIP - Trải Nghiệm Không Giới Hạn!',
       subtitle: 'Tải xuống nhiều hơn, xem nhiều hơn, không quảng cáo!',
       features: [
-        { icon: faDownload, text: 'Tải 13 file/ngày' },
-        { icon: faStar, text: 'Xem trước 15 trang' },
+        { icon: faDownload, text: 'Tải 20 file/ngày' },
+        { icon: faStar, text: 'Xem trước 10 trang' },
         { icon: faRocket, text: 'Không quảng cáo' }
       ]
     }

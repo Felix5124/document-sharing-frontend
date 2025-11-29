@@ -132,7 +132,17 @@ const Chatbot = () => {
     }
 
     try {
-      const response = await sendChatbotQuery({ message: messageText, userId: user.userId });
+      // Chuẩn bị lịch sử chat để gửi lên backend
+      const historyToSend = messages.map(m => ({
+          role: m.sender === 'user' ? 'user' : 'model',
+          text: typeof m.text === 'string' ? m.text : '' // Chỉ gửi text, không gửi JSX
+      })).filter(m => m.text !== ''); // Lọc tin nhắn rỗng hoặc lỗi
+
+      const response = await sendChatbotQuery({
+          message: messageText,
+          userId: user.userId,
+          history: historyToSend // Gửi kèm lịch sử
+      });
       const newBotMessage = { sender: 'bot', text: response.data.reply };
       setMessages((prevMessages) => [...prevMessages, newBotMessage]);
     } catch (error) {
