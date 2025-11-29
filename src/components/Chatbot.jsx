@@ -7,7 +7,7 @@ import ReactMarkdown from 'react-markdown';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComment } from '@fortawesome/free-solid-svg-icons';
 const Chatbot = () => {
-  const { user, isLoading: isAuthLoading } = useContext(AuthContext);
+  const { user, isLoading: isAuthLoading, logout } = useContext(AuthContext);
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
@@ -146,16 +146,39 @@ const Chatbot = () => {
       const newBotMessage = { sender: 'bot', text: response.data.reply };
       setMessages((prevMessages) => [...prevMessages, newBotMessage]);
     } catch (error) {
-      const errorText = error.response?.data?.message || error.message || 'Lỗi không xác định.';
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { sender: 'bot', text: `Xin lỗi, đã có lỗi: ${errorText}. Vui lòng thử lại.` },
-      ]);
+      // --- BẮT ĐẦU THAY ĐỔI ---
+      
+      // Kiểm tra lỗi 401 (Unauthorized)
+      if (error.response && error.response.status === 401) {
+          const sessionExpiredMsg = {
+              sender: 'bot',
+              // Sử dụng type 'error' để style màu đỏ (như CSS ở trên)
+              type: 'error',
+              text: (
+                  <span>
+                      ⚠️ <strong>Kết nối bị ngắt!</strong><br />
+                      Phiên đăng nhập của bạn đã hết hạn. Vui lòng <Link to="/login" onClick={() => { setIsOpen(false); setShowQuickReplies(false); }}>đăng nhập lại</Link> để tiếp tục.
+                  </span>
+              )
+          };
+          
+          setMessages((prevMessages) => [...prevMessages, sessionExpiredMsg]);
+          setShowQuickReplies(false); // Ẩn gợi ý
+          // logout(); // Tùy chọn: Gọi logout để clear state global
+      } else {
+          // Xử lý các lỗi khác như cũ
+          const errorText = error.response?.data?.message || error.message || 'Lỗi không xác định.';
+          setMessages((prevMessages) => [
+              ...prevMessages,
+              { sender: 'bot', text: `Xin lỗi, đã có lỗi: ${errorText}. Vui lòng thử lại.` },
+          ]);
+      }
+      // --- KẾT THÚC THAY ĐỔI ---
     } finally {
-      setIsChatLoading(false); // Bot đã trả lời xong
-      // Hiển thị lại Quick Replies sau khi bot trả lời, nếu user vẫn còn đăng nhập
-      if (user) { // Kiểm tra lại user vì session có thể hết hạn trong lúc chờ API
-        setShowQuickReplies(true);
+      setIsChatLoading(false);
+      // Chỉ hiện lại Quick Replies nếu KHÔNG phải lỗi 401
+      if (user && !(error?.response?.status === 401)) {
+           setShowQuickReplies(true);
       }
     }
   };
@@ -203,7 +226,7 @@ const Chatbot = () => {
           if (!msg) return null;
 
           return (
-            <div key={index} className={`message ${msg.sender || 'unknown'}`}>
+            <div key={index} className={`message ${msg.sender || 'unknown'} ${msg.type === 'error' ? 'error' : ''}`}>
               {msg.sender === 'bot' && <span className="icon">🤖</span>}
               <div className="message-text">
                 {typeof msg.text === 'string' ? (

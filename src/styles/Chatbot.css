@@ -166,11 +166,20 @@
 ================================== */
 .chatbot-quick-replies {
   display: flex;
-  flex-wrap: wrap;
-  padding: 5px 10px;
+  flex-wrap: nowrap; /* Không xuống dòng */
+  overflow-x: auto;  /* Cho phép cuộn ngang */
+  padding: 10px;
   border-top: 1px solid #eee;
   background-color: #f9f9f9;
-  gap: 5px;
+  gap: 8px;
+  
+  /* Ẩn thanh cuộn cho Chrome, Safari and Opera */
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.chatbot-quick-replies::-webkit-scrollbar {
+  display: none; /* Ẩn thanh cuộn cho Chrome/Safari */
 }
 
 .quick-reply-button {
@@ -181,6 +190,10 @@
   font-size: 0.9em;
   cursor: pointer;
   transition: background-color 0.2s ease;
+
+  /* THÊM MỚI: Đảm bảo nút không bị co và chữ nằm trên 1 dòng */
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .quick-reply-button:hover {
@@ -251,4 +264,18 @@
 .chatbot-toggle-button:hover {
   transform: scale(1.05);
   background-color: #0b5ed7;
+}
+
+/* ===============================
+   ⚠️ Error Message Styling
+================================== */
+.message.error .message-text {
+  background-color: #fee2e2; /* Nền đỏ nhạt */
+  color: #dc2626;            /* Chữ đỏ đậm */
+  border: 1px solid #fca5a5;
+}
+.message.error .message-text a {
+  color: #b91c1c;
+  font-weight: bold;
+  text-decoration: underline;
 }
