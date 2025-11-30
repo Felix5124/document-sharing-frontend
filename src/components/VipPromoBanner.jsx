@@ -40,8 +40,8 @@ const VipPromoBanner = ({ variant = 'default' }) => {
       title: '🚀 Premium - Trải Nghiệm Không Giới Hạn!',
       subtitle: 'Tải xuống nhiều hơn, xem nhiều hơn, không quảng cáo!',
       features: [
-        { icon: faDownload, text: 'Tải 13 file/ngày' },
-        { icon: faStar, text: 'Xem trước 15 trang' },
+        { icon: faDownload, text: 'Tải 20 file/ngày' },
+        { icon: faStar, text: 'Xem trước 10 trang' },
         { icon: faRocket, text: 'Không quảng cáo' }
       ]
     }
