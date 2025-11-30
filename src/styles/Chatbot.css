@@ -117,7 +117,8 @@
   align-items: center;
   padding: 10px;
   background-color: #f8f9fa;
-  border-top: 1px solid #dee2e6;
+  border-top: none; /* Bỏ border top vì quick replies đã có border */
+  padding-top: 5px;
 }
 
 .chatbot-input {
@@ -162,42 +163,88 @@
 
 
 /* ===============================
-   💡 Quick Replies
+   💡 Quick Replies (Đã chỉnh sửa)
 ================================== */
+
+/* Container bao ngoài để chứa nút bấm và thanh cuộn */
+.chatbot-quick-replies-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background-color: #f9f9f9;
+  border-top: 1px solid #eee;
+  padding: 5px 0;
+}
+
 .chatbot-quick-replies {
   display: flex;
-  flex-wrap: nowrap; /* Không xuống dòng */
-  overflow-x: auto;  /* Cho phép cuộn ngang */
-  padding: 10px;
-  border-top: 1px solid #eee;
-  background-color: #f9f9f9;
+  flex-wrap: nowrap;
+  overflow-x: auto;
   gap: 8px;
+  padding: 10px 35px; /* Padding trái phải để chừa chỗ cho nút mũi tên */
+  scroll-behavior: smooth; /* Cuộn mượt */
   
-  /* Ẩn thanh cuộn cho Chrome, Safari and Opera */
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  /* Ẩn thanh cuộn */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  width: 100%;
 }
 
 .chatbot-quick-replies::-webkit-scrollbar {
-  display: none; /* Ẩn thanh cuộn cho Chrome/Safari */
+  display: none;
 }
 
 .quick-reply-button {
-  background-color: #f0f0f0;
-  border: 1px solid #ccc;
+  background-color: #ffffff; /* Màu nền trắng cho nổi bật trên nền xám */
+  border: 1px solid #0d6efd; /* Viền xanh chủ đạo */
+  color: #0d6efd;
   border-radius: 15px;
   padding: 6px 12px;
-  font-size: 0.9em;
+  font-size: 0.85em;
   cursor: pointer;
-  transition: background-color 0.2s ease;
-
-  /* THÊM MỚI: Đảm bảo nút không bị co và chữ nằm trên 1 dòng */
+  transition: all 0.2s ease;
   white-space: nowrap;
   flex-shrink: 0;
+  font-weight: 500;
 }
 
 .quick-reply-button:hover {
-  background-color: #e0e0e0;
+  background-color: #0d6efd;
+  color: white;
+}
+
+/* Style cho nút mũi tên cuộn */
+.scroll-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid #ddd;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  color: #555;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: all 0.2s;
+}
+
+.scroll-btn:hover {
+  background-color: #0d6efd;
+  color: white;
+  border-color: #0d6efd;
+}
+
+.scroll-btn.left {
+  left: 5px;
+}
+
+.scroll-btn.right {
+  right: 5px;
 }
 
 .quick-reply-visibility-toggle {

@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import '../styles/Chatbot.css';
 import ReactMarkdown from 'react-markdown';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faComment } from '@fortawesome/free-solid-svg-icons';
+import { faComment, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons'; // Thêm icon mũi tên
 const Chatbot = () => {
   const { user, isLoading: isAuthLoading, logout } = useContext(AuthContext);
   const [isOpen, setIsOpen] = useState(false);
@@ -14,6 +14,9 @@ const Chatbot = () => {
   const [isChatLoading, setIsChatLoading] = useState(false);
   const messagesEndRef = useRef(null);
   const [showQuickReplies, setShowQuickReplies] = useState(true); // Mặc định là true khi có user
+  
+  // 2. Thêm Ref cho thanh cuộn Quick Replies
+  const scrollRef = useRef(null);
 
   const baseQuickReplyOptions = [
     { label: "Xem lượt tải của tôi", query: "Tôi còn bao nhiêu lượt tải hôm nay?" },
@@ -27,6 +30,25 @@ const Chatbot = () => {
   };
 
   useEffect(scrollToBottom, [messages]);
+
+  // 3. Thêm hàm xử lý cuộn trái/phải
+  const scroll = (direction) => {
+    if (scrollRef.current) {
+      const { current } = scrollRef;
+      const scrollAmount = 200; // Khoảng cách mỗi lần bấm
+      if (direction === 'left') {
+        current.scrollLeft -= scrollAmount;
+      } else {
+        current.scrollLeft += scrollAmount;
+      }
+    }
+  };
+
+  // 4. Cập nhật useEffect scrollToBottom để chạy khi showQuickReplies thay đổi
+  // Giúp tránh việc bị lệch khi thanh gợi ý hiện lại
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, showQuickReplies, isChatLoading]);
 
   useEffect(() => {
     if (isOpen && !isAuthLoading) {
@@ -253,18 +275,39 @@ const Chatbot = () => {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Quick Replies */}
+      {/* 5. Cấu trúc lại phần Quick Replies để thêm nút bấm */}
       {user && !isChatLoading && showQuickReplies && (
-        <div className="chatbot-quick-replies">
-          {baseQuickReplyOptions.map((option) => (
-            <button
-              key={option.query}
-              className="quick-reply-button"
-              onClick={() => handleQuickReplyClick(option.query)}
-            >
-              {option.label}
-            </button>
-          ))}
+        <div className="chatbot-quick-replies-wrapper">
+          {/* Nút cuộn trái */}
+          <button
+            className="scroll-btn left"
+            onClick={(e) => { e.preventDefault(); scroll('left'); }}
+            type="button"
+          >
+            <FontAwesomeIcon icon={faChevronLeft} />
+          </button>
+
+          <div className="chatbot-quick-replies" ref={scrollRef}>
+            {baseQuickReplyOptions.map((option) => (
+              <button
+                key={option.query}
+                className="quick-reply-button"
+                onClick={() => handleQuickReplyClick(option.query)}
+                type="button" // Quan trọng để không kích hoạt submit form
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Nút cuộn phải */}
+          <button
+            className="scroll-btn right"
+            onClick={(e) => { e.preventDefault(); scroll('right'); }}
+            type="button"
+          >
+            <FontAwesomeIcon icon={faChevronRight} />
+          </button>
         </div>
       )}
 
