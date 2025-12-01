@@ -153,6 +153,9 @@ const Chatbot = () => {
       return;
     }
 
+    // KHAI BÁO BIẾN CỜ TẠI ĐÂY
+    let isSessionExpired = false;
+
     try {
       // Chuẩn bị lịch sử chat để gửi lên backend
       const historyToSend = messages.map(m => ({
@@ -172,6 +175,9 @@ const Chatbot = () => {
       
       // Kiểm tra lỗi 401 (Unauthorized)
       if (error.response && error.response.status === 401) {
+          // ĐÁNH DẤU CỜ LÀ ĐÃ HẾT HẠN PHIÊN
+          isSessionExpired = true;
+
           const sessionExpiredMsg = {
               sender: 'bot',
               // Sử dụng type 'error' để style màu đỏ (như CSS ở trên)
@@ -198,8 +204,8 @@ const Chatbot = () => {
       // --- KẾT THÚC THAY ĐỔI ---
     } finally {
       setIsChatLoading(false);
-      // Chỉ hiện lại Quick Replies nếu KHÔNG phải lỗi 401
-      if (user && !(error?.response?.status === 401)) {
+      // SỬ DỤNG BIẾN CỜ 'isSessionExpired' THAY VÌ 'error'
+      if (user && !isSessionExpired) {
            setShowQuickReplies(true);
       }
     }
