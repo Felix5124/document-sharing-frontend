@@ -85,7 +85,8 @@
 .admin-nav {
   width: 100%;
   display: flex;
-  justify-content: space-between; /* chia đều khoảng cách giữa các nút */
+  gap: 20px;
+  justify-content: center; /* chia đều khoảng cách giữa các nút */
   align-items: center; /* căn giữa theo chiều dọc */
   flex-wrap: wrap;
   margin-bottom: 32px;
@@ -97,7 +98,7 @@
   animation: fadeInUp 0.6s ease-out 0.2s;
   animation-fill-mode: both;
 }
-.admin-navi {
+.admin-nav {
   width: 100%;
   display: flex;
   align-items: center;
