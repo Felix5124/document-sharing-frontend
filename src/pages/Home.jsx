@@ -103,31 +103,23 @@ const TopInterestDocumentsList = memo(({ documents, isLoading }) => {
   
   useEffect(() => {
     if (!documents || !Array.isArray(documents) || documents.length === 0) {
-      console.log('[TopInterest] No documents, clearing augDocs');
       setAugDocs([]);
       return;
     }
     
     // Tạo cache key dựa trên documentId thay vì stringify toàn bộ
     const cacheKey = documents.slice(0, 5).map(d => d.documentId).join(',');
-    console.log('[TopInterest] Cache key:', cacheKey);
-    console.log('[TopInterest] Last fetched:', lastFetchedDocsRef.current);
-    console.log('[TopInterest] Global cache:', globalVipCache);
     
     if (lastFetchedDocsRef.current === cacheKey || isFetchingRef.current) {
-      console.log('[TopInterest] Skipping - already fetched or fetching');
       return;
     }
     
     // Kiểm tra cache trước (dùng global cache)
     if (globalVipCache[cacheKey]) {
-      console.log('[TopInterest] Found in cache, using cached data');
       setAugDocs(globalVipCache[cacheKey]);
       lastFetchedDocsRef.current = cacheKey;
       return;
     }
-    
-    console.log('[TopInterest] Cache miss, fetching VIP status...');
     lastFetchedDocsRef.current = cacheKey;
     isFetchingRef.current = true;
     
@@ -164,14 +156,11 @@ const TopInterestDocumentsList = memo(({ documents, isLoading }) => {
         );
         if (mounted) {
           const cacheKey = documents.slice(0, 5).map(d => d.documentId).join(',');
-          console.log('[TopInterest] Fetched VIP status, caching with key:', cacheKey);
-          console.log('[TopInterest] Detailed data:', detailed);
           setAugDocs(detailed);
           globalVipCache[cacheKey] = detailed;
           isFetchingRef.current = false;
         }
-      } catch (err) {
-        console.error('Error fetching VIP status:', err);
+      } catch {
         isFetchingRef.current = false;
       }
     };
@@ -301,15 +290,11 @@ function Home() {
         Page: currentPage,
         PageSize: documentsPerPage,
       };
-      console.log('Fetching documents with params:', params);
       const res = await searchDocuments(params);
-      console.log('API Response:', res.data);
       const { documents: docs = [], total = 0 } = res.data;
-      console.log('Raw documents from API:', docs);
       
       // Chỉ hiển thị tài liệu đã được duyệt (Approved hoặc SemiApproved) và không bị khóa
       const approvedDocs = docs.filter((d) => (d.approvalStatus === 'Approved' || d.approvalStatus === 'SemiApproved') && !d.isLock);
-      console.log('Filtered approved documents:', approvedDocs);
       
       setDocuments(approvedDocs);
       const pages = Math.ceil(total / documentsPerPage);
@@ -323,8 +308,7 @@ function Home() {
         currentPage,
         hydratedAt: Date.now(),
       }));
-    } catch (error) {
-      console.error('Error fetching documents:', error);
+    } catch {
       toast.error('Không thể tải tài liệu.');
       setDocuments([]);
       setTotalPages(1);
@@ -415,15 +399,10 @@ function Home() {
   }, []);
 
   const scrollToGridTop = () => {
-    // Cuộn mượt lên đầu khu vực danh sách tài liệu
-    try {
-      const el = document.querySelector('.main-area');
-      if (el) {
-        const top = el.getBoundingClientRect().top + window.pageYOffset - 12;
-        window.scrollTo({ top, behavior: 'smooth' });
-      }
-    } catch {
-      // Ignore scroll errors
+    const el = document.querySelector('.main-area');
+    if (el) {
+      const top = el.getBoundingClientRect().top + window.pageYOffset - 12;
+      window.scrollTo({ top, behavior: 'smooth' });
     }
   };
 
@@ -811,20 +790,22 @@ function Home() {
               </div>
             </div>
 
-            <div className="cta-section">
-              <h3 className="cta-title">Sẵn Sàng Bắt Đầu?</h3>
-              <p className="cta-description">
-                Tham gia cùng hàng ngàn người học khác và khám phá kho tài liệu phong phú của chúng tôi ngay hôm nay!
-              </p>
-              <div className="cta-buttons">
-                <Link to="/register" className="btn-cta-primary">
-                  <FontAwesomeIcon icon={faUpload} /> Đăng Ký Ngay
-                </Link>
-                <Link to="/upgrade-account" className="btn-cta-secondary">
-                  <FontAwesomeIcon icon={faCrown} /> Nâng Cấp Premium
-                </Link>
+            {!user?.isVip && (
+              <div className="cta-section">
+                <h3 className="cta-title">Sẵn Sàng Bắt Đầu?</h3>
+                <p className="cta-description">
+                  Tham gia cùng hàng ngàn người học khác và khám phá kho tài liệu phong phú của chúng tôi ngay hôm nay!
+                </p>
+                <div className="cta-buttons">
+                  <Link to="/register" className="btn-cta-primary">
+                    <FontAwesomeIcon icon={faUpload} /> Đăng Ký Ngay
+                  </Link>
+                  <Link to="/upgrade-account" className="btn-cta-secondary">
+                    <FontAwesomeIcon icon={faCrown} /> Nâng Cấp Premium
+                  </Link>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
