@@ -16,9 +16,9 @@ const RightSidebar = ({ variant = 'default' }) => {
       title: 'Mẹo Diễn Đàn',
       icon: faLightbulb,
       items: [
-        { icon: faCheckCircle, text: 'Viết tiêu đề rõ ràng và súc tích' },
-        { icon: faCheckCircle, text: 'Sử dụng ngôn ngữ lịch sự, tôn trọng' },
-        { icon: faCheckCircle, text: 'Trả lời bình luận để tăng tương tác' },
+        { icon: faCheckCircle, text: 'Viết tiêu đề rõ ràng và súc tích'},
+        { icon: faCheckCircle, text: 'Sử dụng ngôn ngữ lịch sự'},
+        { icon: faCheckCircle, text: 'Bình luận để tăng tương tác' },
         { icon: faCheckCircle, text: 'Chia sẻ kiến thức hữu ích' }
       ],
       stats: []
@@ -27,7 +27,7 @@ const RightSidebar = ({ variant = 'default' }) => {
       title: 'Hướng Dẫn Tải Lên',
       icon: faInfoCircle,
       items: [
-        { icon: faCheckCircle, text: 'File PDF chất lượng cao được ưu tiên' },
+        { icon: faCheckCircle, text: 'Up file PDF và docx' },
         { icon: faCheckCircle, text: 'Đặt tên file rõ ràng, dễ hiểu' },
         { icon: faCheckCircle, text: 'Thêm mô tả chi tiết về tài liệu' },
         { icon: faCheckCircle, text: 'Chọn đúng danh mục và tags' }
@@ -72,7 +72,7 @@ const RightSidebar = ({ variant = 'default' }) => {
           {content.items.map((item, index) => (
             <div key={index} className="sidebar-tip-item">
               <FontAwesomeIcon icon={item.icon} className="tip-icon" />
-              <span>{item.text}</span>
+              <span >{item.text}</span>
             </div>
           ))}
         </div>

@@ -74,7 +74,7 @@
 /* Admin Table base moved to GlobalStyles.css */
 
 .admin-table th {
-  color: #ffffff;
+  color: #000000;
   font-weight: 600;
   text-transform: uppercase;
   font-size: 0.9rem;
