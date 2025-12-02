@@ -130,13 +130,6 @@ function ReportManagement() {
       // Hành động này sẽ gọi API để khóa tài liệu
       // Backend (DocumentsController) đã được cập nhật để tự động chuyển status các báo cáo sang "Resolved"
       await lockDocument(selectedReportGroup.documentId, true);
-
-      // --- XÓA ĐOẠN CODE SAU ---
-      // Cập nhật trạng thái các báo cáo liên quan
-      // for (const report of individualReports) {
-      //   await apiUpdateReportStatus(report.reportId, 'Resolved');
-      // }
-      // --- HẾT PHẦN XÓA ---
       
       toast.success('Đã xử lý báo cáo và khóa tài liệu thành công.');
       

@@ -299,3 +299,5 @@ export const getProcessedReports = (params) => apiClient.get("/reports/processed
 export const updateReportStatus = (id, status) => apiClient.put(`/reports/${id}/status`, { status });
 export const resetDocumentReports = (documentId) => apiClient.put(`/documents/${documentId}/reset-reports`);
 export const getReportsByDocumentId = (documentId) => apiClient.get(`/reports/document/${documentId}`);
+
+export const getStatistics = () => apiClient.get("/documents/statistics");
