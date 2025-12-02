@@ -54,6 +54,7 @@ function Profile() {
   const [hideLeftSidebar, setHideLeftSidebar] = useState(false);
   const [hideRightSidebar, setHideRightSidebar] = useState(false);
   const [contextMenu, setContextMenu] = useState({ show: false, x: 0, y: 0, type: '' });
+  const [showAvatarModal, setShowAvatarModal] = useState(false);
   // schools removed
   const { register, handleSubmit, formState: { errors } } = useForm();
 
@@ -316,10 +317,13 @@ function Profile() {
                 alt="Avatar"
                 className={`avatar-img ${userData.isVip ? 'vip' : ''}`}
                 onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = getFullAvatarUrl(null); }}
+                onClick={() => setShowAvatarModal(true)}
+                style={{ cursor: 'pointer' }}
+                title="Click để xem ảnh lớn hơn"
               />
               {userData.isVip && (
                 <div className="vip-badge-profile">
-                  <FontAwesomeIcon icon={faAward} /> VIP
+                  <FontAwesomeIcon icon={faAward} /> Premium
                 </div>
               )}
 
@@ -488,6 +492,28 @@ function Profile() {
           {!hideRightSidebar && <RightSidebar variant="profile" />}
         </aside>
       </div>
+
+      {/* Avatar Modal */}
+      {showAvatarModal && (
+        <div className="avatar-modal-overlay" onClick={() => setShowAvatarModal(false)}>
+          <div className="avatar-modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="avatar-modal-close" onClick={() => setShowAvatarModal(false)}>
+              &times;
+            </button>
+            <img
+              src={
+                avatarFile
+                  ? URL.createObjectURL(avatarFile)
+                  : getFullAvatarUrl(userData.avatarUrl || userData.AvatarUrl || null)
+              }
+              alt="Avatar lớn"
+              className="avatar-modal-img"
+              onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = getFullAvatarUrl(null); }}
+            />
+            <p className="avatar-modal-name">{userData.fullName}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
