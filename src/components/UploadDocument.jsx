@@ -28,6 +28,7 @@ function UploadDocument() {
   const [categories, setCategories] = useState([]);
   const [previewCover, setPreviewCover] = useState(null);
   const [tagInputText, setTagInputText] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
   const [hideLeftSidebar, setHideLeftSidebar] = useState(false);
   const [hideRightSidebar, setHideRightSidebar] = useState(false);
   const [contextMenu, setContextMenu] = useState({ show: false, x: 0, y: 0, type: '' });
@@ -90,11 +91,9 @@ function UploadDocument() {
   useEffect(() => {
     if (coverImageFile && coverImageFile.length > 0) {
       const file = coverImageFile[0];
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewCover(reader.result);
-      };
-      reader.readAsDataURL(file);
+      const objectUrl = URL.createObjectURL(file);
+      setPreviewCover(objectUrl);
+      return () => URL.revokeObjectURL(objectUrl);
     } else {
       setPreviewCover(null);
     }
@@ -156,8 +155,9 @@ function UploadDocument() {
 
 
     try {
+      setIsUploading(true);
       await uploadDocument(formData);
-      toast.success('Tải tài liệu thành công, xin chờ duyệt!');
+      toast.success('Tải tài liệu thành công!');
       reset();
       setPreviewCover(null);
       setTagInputText('');
@@ -173,6 +173,8 @@ function UploadDocument() {
         error.message ||
         'Tải tài liệu thất bại.';
       toast.error(`Lỗi: ${errorMessage}`, { toastId: 'upload-error' });
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -381,8 +383,14 @@ function UploadDocument() {
             )}
           </div>
 
-          <button type="submit" className="submit-button">
-            Tải lên
+          <button type="submit" className="submit-button" disabled={isUploading}>
+            {isUploading ? (
+              <>
+                <FontAwesomeIcon icon={faCloudArrowUp} spin /> Đang tải lên...
+              </>
+            ) : (
+              'Tải lên'
+            )}
           </button>
         </form>
           </div>

@@ -293,15 +293,6 @@
   transition: all 0.3s;
 }
 
-.btn-primary {
-  background: #0d6efd;
-  color: white;
-}
-
-.btn-primary:hover:not(:disabled) {
-  background: #0b5ed7;
-}
-
 .btn-danger {
   background: #dc3545;
   color: white;

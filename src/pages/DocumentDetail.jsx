@@ -9,12 +9,12 @@ import {
   unfollow,
   getUserFollowing,
   addComment,
-  getRelatedDocumentsByTags,
-  getRelatedDocuments
+  getRelatedDocuments,
+  checkUserHasDownloaded
 } from '../services/api';
 import { getActiveVipSubscription } from '../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faDownload, faFolder, faFile, faDatabase, faCalendar, faTags, faArrowRight, faUser, faPaperPlane, faCommentDots, faPlusCircle, faFlag, faCircleExclamation, faExclamationTriangle, faClock, faLock, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faDownload, faFolder, faFile, faDatabase, faCalendar, faTags, faArrowRight, faUser, faPaperPlane, faCommentDots, faPlusCircle, faFlag, faCircleExclamation, faExclamationTriangle, faClock, faLock, faCheckCircle, faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 import { AuthContext } from '../context/AuthContext';
 import { toast } from 'react-toastify';
@@ -54,11 +54,12 @@ function DocumentDetail() {
   const [averageRating, setAverageRating] = useState(0);
   const [totalRatedComments, setTotalRatedComments] = useState(0);
   const [relatedDocsByCategory, setRelatedDocsByCategory] = useState([]);
-  const [relatedDocsByTag, setRelatedDocsByTag] = useState([]);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
   const [hasAlreadyReported, setHasAlreadyReported] = useState(false); // <-- STATE MỚI
   const [hasActiveVip, setHasActiveVip] = useState(false);
+  const [hasDownloaded, setHasDownloaded] = useState(false);
+  const [isLoadingPreview, setIsLoadingPreview] = useState(false);
 
 
   useEffect(() => {
@@ -66,12 +67,12 @@ function DocumentDetail() {
     setComments([]);
     clearPdfData();
     setRelatedDocsByCategory([]);
-    setRelatedDocsByTag([]);
     setIsDescriptionExpanded(false);
     setAverageRating(0);
     setTotalRatedComments(0);
     setIsFollowing(false);
     setFollowId(null); // Reset follow ID
+    setHasDownloaded(false);
 
     // --- BẮT ĐẦU THAY ĐỔI ---
     // Chỉ fetch dữ liệu khi có ID và thông tin user đã sẵn sàng (hoặc user là null cho khách)
@@ -122,6 +123,25 @@ function DocumentDetail() {
   }, [user, doc]);
 
   useEffect(() => {
+    const checkDownloadStatus = async () => {
+      if (user && user.userId && doc?.documentId) {
+        try {
+          const response = await checkUserHasDownloaded(doc.documentId, user.userId);
+          const downloaded = response.data.hasDownloaded || false;
+          console.log('Check download status:', { documentId: doc.documentId, userId: user.userId, hasDownloaded: downloaded });
+          setHasDownloaded(downloaded);
+        } catch (error) {
+          console.error('Error checking download status:', error);
+          setHasDownloaded(false);
+        }
+      } else {
+        setHasDownloaded(false);
+      }
+    };
+    checkDownloadStatus();
+  }, [user, doc]);
+
+  useEffect(() => {
     if (comments && comments.length > 0) {
       const validCommentsWithRating = comments.filter(c => c.Rating != null && !isNaN(parseInt(c.Rating)) && c.Rating > 0);
       if (validCommentsWithRating.length > 0) {
@@ -140,28 +160,13 @@ function DocumentDetail() {
 
   useEffect(() => {
     const fetchRelated = async () => {
-      if (doc && doc.documentId) {
-        if (doc.categoryId) {
-          try {
-            const responseCategory = await getRelatedDocuments(doc.documentId, 4);
-            let dataArrayCategory = responseCategory.data?.$values || responseCategory.data || [];
-            setRelatedDocsByCategory(Array.isArray(dataArrayCategory) ? dataArrayCategory : []);
-          } catch {
-            setRelatedDocsByCategory([]);
-          }
-        }
-
-        if (doc.tags && doc.tags.length > 0) {
-          const tagNames = doc.tags.map(t => t.name);
-          try {
-            const responseTags = await getRelatedDocumentsByTags(tagNames, doc.documentId, 4);
-            let dataArrayTags = responseTags.data?.$values || responseTags.data || [];
-            setRelatedDocsByTag(Array.isArray(dataArrayTags) ? dataArrayTags : []);
-          } catch {
-            setRelatedDocsByTag([]);
-          }
-        } else {
-          setRelatedDocsByTag([]);
+      if (doc && doc.documentId && doc.categoryId) {
+        try {
+          const responseCategory = await getRelatedDocuments(doc.documentId, 4);
+          let dataArrayCategory = responseCategory.data?.$values || responseCategory.data || [];
+          setRelatedDocsByCategory(Array.isArray(dataArrayCategory) ? dataArrayCategory : []);
+        } catch {
+          setRelatedDocsByCategory([]);
         }
       }
     };
@@ -170,8 +175,6 @@ function DocumentDetail() {
       fetchRelated();
     }
   }, [doc]);
-
-
 
   const fetchDocument = async () => {
     setLoadingState('loading'); // Bắt đầu với trạng thái loading
@@ -286,6 +289,9 @@ function DocumentDetail() {
         ...prevDoc,
         downloadCount: (prevDoc.downloadCount || 0) + 1,
       }));
+      console.log('Download successful, setting hasDownloaded to true');
+      setHasDownloaded(true);
+      toast.success('Tải tài liệu thành công! Bạn có thể bình luận ngay bây giờ.');
     } catch (error) {
       let message = 'Đã xảy ra lỗi khi tải tài liệu.';
       if (error.response?.data) {
@@ -328,6 +334,7 @@ function DocumentDetail() {
       return;
     }
     try {
+      setIsLoadingPreview(true);
       const response = await previewDocument(id);
 
       // Backend trả JSON với url
@@ -361,6 +368,8 @@ function DocumentDetail() {
       setErrorMessage(msg);
       setShowErrorModal(true);
       setPdfData(null);
+    } finally {
+      setIsLoadingPreview(false);
     }
   };
 
@@ -418,6 +427,10 @@ function DocumentDetail() {
     if (!user || !user.userId) {
       toast.error('Vui lòng đăng nhập để bình luận.');
       navigate('/login');
+      return;
+    }
+    if (!hasDownloaded) {
+      toast.error('Bạn cần tải tài liệu trước khi bình luận.');
       return;
     }
     if (!comment.Content.trim()) {
@@ -645,7 +658,7 @@ function DocumentDetail() {
                   <CustomButton
                     variant="primary"
                     onClick={handlePreview}
-                    disabled={doc.fileType?.toLowerCase() !== 'pdf' || doc.approvalStatus === 'Pending'}
+                    disabled={doc.fileType?.toLowerCase() !== 'pdf' || doc.approvalStatus === 'Pending' || isLoadingPreview}
                     className="action-btn preview-btn"
                     title={
                       doc.approvalStatus === 'Pending'
@@ -655,8 +668,8 @@ function DocumentDetail() {
                           : "Xem Online"
                     }
                   >
-                    <FontAwesomeIcon icon={faEye} />
-                    <span className="btn-text">Xem Online (PDF)</span>
+                    {!isLoadingPreview && <FontAwesomeIcon icon={faEye} />}
+                    <span className="btn-text">{isLoadingPreview ? 'Đang tải...' : 'Xem Online (PDF)'}</span>
                   </CustomButton>
                 </div>
 
@@ -795,58 +808,8 @@ function DocumentDetail() {
             {/* === MAIN LAYOUT GRID: Image/Preview and Info === */}
 
 
-            {/* ... Các section Tài liệu liên quan và Bình luận ... */}
-            {relatedDocsByTag && relatedDocsByTag.length > 0 && (
-              <div className="related-documents-section">
-                <div className="section-header">
-                  <div className="section-icon">
-                    <FontAwesomeIcon icon={faTags} />
-                  </div>
-                  <h3 className="section-title">Các tài liệu liên quan</h3>
-                  <div className="section-subtitle">Tài liệu cùng chủ đề và tags</div>
-                </div>
-
-                <div className="related-documents-grid">
-                  {relatedDocsByTag.map(relatedDoc => (
-                    <div key={`tag-${relatedDoc.documentId}`} className="related-document-card">
-                      <Link to={`/document/${relatedDoc.documentId}`} className="card-link">
-                        <div className="card-image-container">
-                          <img
-                            src={getFullImageUrl(relatedDoc.coverImageUrl)}
-                            className="card-image"
-                            alt={relatedDoc.title}
-                            onError={(e) => {
-                              e.target.onerror = null;
-                              e.target.src = getFullImageUrl(null);
-                            }}
-                          />
-                          <div className="card-overlay">
-                            <div className="overlay-icon">
-                              <FontAwesomeIcon icon={faArrowRight} />
-                            </div>
-                          </div>
-                        </div>
-                        <div className="card-content">
-                          <h6 className="card-title" title={relatedDoc.title}>
-                            {relatedDoc.title.length > 45 ? relatedDoc.title.substring(0, 45) + '...' : relatedDoc.title}
-                          </h6>
-                          {relatedDoc.uploaderFullName && (
-                            <div className="card-author">
-                              <FontAwesomeIcon icon={faUser} />
-                              <span className="author-name">{relatedDoc.uploaderFullName}</span>
-                            </div>
-                          )}
-                        </div>
-                      </Link>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
             {relatedDocsByCategory && relatedDocsByCategory.length > 0 && (
               <div className="related-documents-section">
-                <div className="section-divider"></div>
                 <div className="section-header">
                   <div className="section-icon">
                     <FontAwesomeIcon icon={faFile} />
@@ -882,7 +845,11 @@ function DocumentDetail() {
                           {relatedDoc.uploadedByEmail && (
                             <div className="card-author">
                               <FontAwesomeIcon icon={faUser} />
-                              <span className="author-name-detail">{relatedDoc.uploadedByEmail}</span>
+                              <span className="author-name-detail" title={relatedDoc.uploadedByEmail}>
+                                {relatedDoc.uploadedByEmail.length > 20 
+                                  ? relatedDoc.uploadedByEmail.substring(0, 20) + '...' 
+                                  : relatedDoc.uploadedByEmail}
+                              </span>
                             </div>
                           )}
                         </div>
@@ -956,15 +923,28 @@ function DocumentDetail() {
 
 
                   <div className="form-actions">
-                    <CustomButton
-                      type="submit"
-                      variant="primary"
-                      disabled={!user || !comment.Content.trim() || doc.approvalStatus === 'Pending'}
-                      className="submit-comment-btn"
+                    <div 
+                      className="submit-btn-wrapper"
+                      title={
+                        !user
+                          ? "Vui lòng đăng nhập để bình luận"
+                          : !hasDownloaded
+                            ? "Bạn cần tải tài liệu trước khi đánh giá"
+                            : doc.approvalStatus === 'Pending'
+                              ? "Tài liệu đang chờ duyệt"
+                              : ""
+                      }
                     >
-                      <FontAwesomeIcon icon={faPaperPlane} />
-                      <span>Gửi bình luận</span>
-                    </CustomButton>
+                      <CustomButton
+                        type="submit"
+                        variant="primary"
+                        disabled={!user || !comment.Content.trim() || doc.approvalStatus === 'Pending' || !hasDownloaded}
+                        className="submit-comment-btn"
+                      >
+                        <FontAwesomeIcon icon={faPaperPlane} />
+                        <span className='comment-detail'>Gửi bình luận</span>
+                      </CustomButton>
+                    </div>
                   </div>
                 </CustomForm>
               </div>
