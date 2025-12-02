@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
 import useOnScreen from '../hooks/useOnScreen';
+import { getStatistics } from '../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faUsers,
@@ -20,25 +21,20 @@ const AdminStatistics = () => {
   useEffect(() => {
     const fetchStatistics = async () => {
       try {
-        const response = await fetch('https://localhost:7013/api/documents/statistics', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
+        // Sử dụng API service đã cấu hình base URL tự động
+        const response = await getStatistics();
+        const data = response.data; // Axios trả về dữ liệu trong thuộc tính .data
 
-        if (!response.ok) {
-          throw new Error('Không thể lấy dữ liệu thống kê.');
-        }
-
-        const data = await response.json();
         setStatistics({
           totalUsers: data.totalUsers || 0,
           totalDocuments: data.totalDocuments || 0,
           totalDownloads: data.totalDownloads || 0,
         });
       } catch (err) {
-        toast.error(err.message);
+        // Xử lý lỗi tốt hơn
+        const errorMsg = err.response?.data?.message || err.message || 'Không thể lấy dữ liệu thống kê.';
+        console.error("Lỗi thống kê:", err);
+        toast.error(errorMsg);
       }
     };
     fetchStatistics();
