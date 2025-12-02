@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import DocumentApproval from '../components/DocumentApproval';
 import AccountManagement from '../components/AccountManagement';
 import CategoryManagement from '../components/CategoryManagement';
 import DocumentManagement from '../components/DocumentManagement';
@@ -10,7 +9,6 @@ import AdminStatistics from '../components/AdminStatistics';
 import ReportManagement from '../components/ReportManagement';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faFileCircleCheck,
   faUsers,
   faTags,
   faFileShield,
@@ -23,12 +21,10 @@ import '../styles/pages/AdminDashboard.css';
 function AdminDashboard() {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
-  const [activeSection, setActiveSection] = useState('document-approval');
+  const [activeSection, setActiveSection] = useState('account-management');
 
   const getSectionTitle = () => {
     switch (activeSection) {
-      case 'document-approval':
-        return 'Duyệt Tài Liệu';
       case 'account-management':
         return 'Quản Lý Tài Khoản';
       case 'category-management':
@@ -59,12 +55,6 @@ function AdminDashboard() {
 
         <div className='admin-navi'>
           <div className="admin-nav">
-            <button
-              className={`nav-button ${activeSection === 'document-approval' ? 'active' : ''}`}
-              onClick={() => setActiveSection('document-approval')}
-            >
-              <FontAwesomeIcon icon={faFileCircleCheck} className="nav-icon" /> Duyệt tài liệu
-            </button>
             <button
               className={`nav-button ${activeSection === 'account-management' ? 'active' : ''}`}
               onClick={() => setActiveSection('account-management')}
@@ -104,7 +94,6 @@ function AdminDashboard() {
             <h3 className="section-action-title">{getSectionTitle()}</h3>
           </div>
           <div className="section-body">
-            {activeSection === 'document-approval' && <DocumentApproval />}
             {activeSection === 'account-management' && <AccountManagement />}
             {activeSection === 'category-management' && <CategoryManagement />}
             {activeSection === 'document-management' && <DocumentManagement />}

@@ -155,6 +155,12 @@ export const getRelatedDocuments = (documentId, count = 4) => {
   });
 };
 
+export const checkUserHasDownloaded = (documentId, userId) => {
+  return apiClient.get(`/documents/${documentId}/check-downloaded`, {
+    params: { userId },
+  });
+};
+
 // --- API cho danh mục ---
 export const getCategories = () => apiClient.get("/categories");
 export const createCategory = (data) => apiClient.post("/categories", data);
@@ -178,10 +184,6 @@ export const getPostComments = (postId) =>
 export const addPostComment = (data) => apiClient.post("/postcomments", data);
 
 // --- API cho quản trị ---
-export const getPendingDocuments = () => apiClient.get("/documents/pending");
-export const getSemiApprovedDocuments = () => apiClient.get("/documents/semiapproved");
-export const approveDocument = (id) =>
-  apiClient.put(`/documents/${id}/approve`);
 export const lockDocument = (id, isLocked) =>
   apiClient.put(`/documents/${id}/lock`, { isLocked });
 

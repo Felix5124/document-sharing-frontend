@@ -32,7 +32,6 @@
   justify-content: center;
   flex-wrap: wrap;
   gap: 1.5rem; /* Thay thế cho g-4 */
-  margin-bottom: 1.5rem; /* Thay thế cho mb-4 */
 }
 
 .layout-column {
@@ -411,12 +410,7 @@ textarea.form-control {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   border: 1px solid #f0fdfa;
 }
-.action-buttons-grid {
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: 1fr 1fr;
-  margin-bottom: 1rem;
-}
+
 
 .btn-text {
   color: white;
@@ -577,11 +571,11 @@ textarea.form-control {
   background: #dc2626;
   border: 1px solid #dc2626;
   color: white;
-  padding: 8px 16px;
+  padding: 5px;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-size: 0.9rem;
+  font-size: 0.7rem;
   font-weight: 500;
   display: flex;
   align-items: center;
@@ -605,7 +599,7 @@ textarea.form-control {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   gap: 1rem;
 }
 .document-title-wrapper {
@@ -697,6 +691,7 @@ textarea.form-control {
 }
 .document-stats-row {
   display: flex;
+  margin-top: 8px;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
@@ -763,7 +758,7 @@ textarea.form-control {
   margin-bottom: 1.5rem;
 }
 .details-header {
-  margin-bottom: 1.5rem;
+  margin-bottom: 10px;
 }
 .details-header h3 {
   color: #0f766e;
@@ -774,7 +769,7 @@ textarea.form-control {
 .details-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
+  gap: 0.5rem;
 }
 .detail-item {
   display: flex;
@@ -815,8 +810,7 @@ textarea.form-control {
 
 /* Tags */
 .tags-section {
-  margin-top: 1.5rem;
-  padding-top: 1.5rem;
+  padding-top: 10px;
   border-top: 1px solid #f0fdfa;
 }
 .tags-label {
@@ -893,21 +887,16 @@ textarea.form-control {
 .related-documents-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 1.5rem;
+  gap: 0.1rem;
 }
 .related-document-card {
-  background: white;
-  border: 1px solid #e5e7eb;
+  margin: 10px;
   border-radius: 12px;
   overflow: hidden;
   transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
-.related-document-card:hover {
-  border-color: #14b8a6;
-  transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(20, 184, 166, 0.15);
-}
+
 .card-link {
   text-decoration: none;
   color: inherit;
@@ -1033,12 +1022,57 @@ textarea.form-control {
 .form-actions {
   display: flex;
   justify-content: flex-end;
-  margin-top: 0.5rem;
+}
+.submit-btn-wrapper {
+  position: relative;
+  display: inline-block;
+}
+.submit-btn-wrapper[title]:not([title=""]):hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  background-color: #1f2937;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  margin-bottom: 8px;
+  opacity: 0;
+  animation: tooltipFadeIn 0.2s ease-in forwards;
+  pointer-events: none;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+.submit-btn-wrapper[title]:not([title=""]):hover::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  right: 20px;
+  border: 6px solid transparent;
+  border-top-color: #1f2937;
+  margin-bottom: 2px;
+  opacity: 0;
+  animation: tooltipFadeIn 0.2s ease-in forwards;
+  pointer-events: none;
+  z-index: 1000;
+}
+@keyframes tooltipFadeIn {
+  to {
+    opacity: 1;
+  }
 }
 .submit-comment-btn {
   display: flex;
+  border: none;
+  background-color: #14b8a6;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 10px;
   align-items: center;
   gap: 0.5rem;
+  cursor: pointer;
 }
 
 .comments-container {
@@ -1086,8 +1120,11 @@ textarea.form-control {
   transition: all 0.2s ease;
   font-weight: 500;
 }
-
-
+.comment-detail{
+  padding: 6px;
+  border: none;
+  outline: none;
+}
 .comment-date {
   text-align: left;
   font-size: 0.6rem;
@@ -1319,6 +1356,26 @@ textarea.form-control {
 .form-disabled-overlay svg {
   font-size: 1.5rem;
   margin-bottom: 8px;
+}
+
+.form-disabled-overlay.download-required {
+  background-color: rgba(254, 243, 199, 0.95);
+  color: #92400e;
+  border: 2px dashed #fbbf24;
+}
+
+.form-disabled-overlay.download-required svg {
+  color: #f59e0b;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
 }
 
 /* Thêm style cho các CustomButton khi bị disable */
