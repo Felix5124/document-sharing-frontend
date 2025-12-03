@@ -136,7 +136,7 @@ function Follow() {
               {following.map((follow) => (
                 <div key={follow.followId} className="follow-card">
                   <div className="follow-card-content">
-                    <div className="follow-avatar">
+                    <div className="follow-avatar" onClick={() => navigate(`/profile/${follow.followedUserId}`)} style={{ cursor: 'pointer' }}>
                       <img
                         src={safeAvatar(follow.avatarUrl)}
                         alt={follow.fullName}
@@ -148,13 +148,16 @@ function Follow() {
                         }}
                       />
                     </div>
-                    <div className="follow-info">
+                    <div className="follow-info" onClick={() => navigate(`/profile/${follow.followedUserId}`)} style={{ cursor: 'pointer' }}>
                       <p className="follow-name">{follow.fullName}</p>
                       <p className="follow-email">{follow.email}</p>
                     </div>
                     <button
                       className="unfollow-button"
-                      onClick={() => handleUnfollow(follow.followId)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleUnfollow(follow.followId);
+                      }}
                     >
                       Bỏ theo dõi
                     </button>
@@ -188,7 +191,7 @@ function Follow() {
                   {followers.map((follower) => (
                     <div key={follower.followId} className="follow-card">
                       <div className="follow-card-content">
-                        <div className="follow-avatar">
+                        <div className="follow-avatar" onClick={() => navigate(`/profile/${follower.userId}`)} style={{ cursor: 'pointer' }}>
                           <img
                             src={safeAvatar(follower.avatarUrl)}
                             alt={follower.fullName}
@@ -200,7 +203,7 @@ function Follow() {
                             }}
                           />
                         </div>
-                        <div className="follow-info">
+                        <div className="follow-info" onClick={() => navigate(`/profile/${follower.userId}`)} style={{ cursor: 'pointer' }}>
                           <p className="follow-name">{follower.fullName}</p>
                           <p className="follow-email">{follower.email}</p>
                         </div>

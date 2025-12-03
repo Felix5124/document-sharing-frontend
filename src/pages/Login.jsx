@@ -25,11 +25,6 @@ function Login() {
   // Điều hướng sau khi đăng nhập
   useEffect(() => {
     if (!isAuthContextLoading && authUser) {
-      console.log("[Login.jsx useEffect] AuthUser:", {
-        userId: authUser.userId,
-        isAdmin: authUser.isAdmin,
-        email: authUser.email
-      }, "isAuthContextLoading:", isAuthContextLoading);
       if (authUser.isAdmin) {
         navigate('/admin');
       } else {
@@ -63,7 +58,6 @@ function Login() {
     const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
-      console.log("Google popup login successful:", result.user.uid);
     } catch (error) {
       console.error("Lỗi đăng nhập Google:", error);
       if (error.code === 'auth/popup-closed-by-user' || error.code === 'auth/cancelled-popup-request') {
