@@ -283,19 +283,27 @@ function Profile() {
 
       <div className={`page-layout-with-sidebar ${userData?.isVip ? 'no-left-sidebar' : ''}`}>
         {/* Sidebar - VIP Welcome or Promo Banner */}
-        {canEdit && user?.isVip && (
-          <aside 
-            className="page-sidebar"
-            onContextMenu={(e) => handleContextMenu(e, 'left')}
-            style={{ cursor: 'context-menu' }}
-          >
-            {!hideLeftSidebar && <VipWelcomeBanner />}
-          </aside>
-        )}
-        {canEdit && user && !userData.isVip && (
+        {viewingOther ? (
           <aside className="page-sidebar">
-            <VipPromoBanner variant="profile" />
+            {/* Div rỗng khi xem profile người khác */}
           </aside>
+        ) : (
+          <>
+            {canEdit && user?.isVip && (
+              <aside 
+                className="page-sidebar"
+                onContextMenu={(e) => handleContextMenu(e, 'left')}
+                style={{ cursor: 'context-menu' }}
+              >
+                {!hideLeftSidebar && <VipWelcomeBanner />}
+              </aside>
+            )}
+            {canEdit && user && !userData.isVip && (
+              <aside className="page-sidebar">
+                <VipPromoBanner variant="profile" />
+              </aside>
+            )}
+          </>
         )}
 
         {/* Main Content */}
@@ -489,7 +497,12 @@ function Profile() {
           onContextMenu={(e) => handleContextMenu(e, 'right')}
           style={{ cursor: user?.isVip ? 'context-menu' : 'default' }}
         >
-          {!hideRightSidebar && <RightSidebar variant="profile" />}
+          {viewingOther ? (
+            /* Div rỗng khi xem profile người khác */
+            <></>
+          ) : (
+            !hideRightSidebar && <RightSidebar variant="profile" />
+          )}
         </aside>
       </div>
 

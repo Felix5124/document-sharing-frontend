@@ -60,6 +60,8 @@ function DocumentDetail() {
   const [hasActiveVip, setHasActiveVip] = useState(false);
   const [hasDownloaded, setHasDownloaded] = useState(false);
   const [isLoadingPreview, setIsLoadingPreview] = useState(false);
+  const [countdown, setCountdown] = useState(0);
+  const [downloadReady, setDownloadReady] = useState(false);
 
 
   useEffect(() => {
@@ -128,7 +130,7 @@ function DocumentDetail() {
         try {
           const response = await checkUserHasDownloaded(doc.documentId, user.userId);
           const downloaded = response.data.hasDownloaded || false;
-          console.log('Check download status:', { documentId: doc.documentId, userId: user.userId, hasDownloaded: downloaded });
+
           setHasDownloaded(downloaded);
         } catch (error) {
           console.error('Error checking download status:', error);
@@ -184,7 +186,7 @@ function DocumentDetail() {
         ? await getDocumentById(id, user.userId)
         : await getDocumentById(id);
 
-      console.log('Document data:', response.data);
+
       setDoc(response.data);
 
       // --- CẬP NHẬT STATE MỚI ---
@@ -250,33 +252,68 @@ function DocumentDetail() {
       setShowErrorModal(true);
       return;
     }
-    // points feature removed: allow download flow to proceed for authenticated users
-    setShowConfirmModal(true);
+    // Không dùng modal nữa, gọi trực tiếp performDownload
+    performDownload();
   };
 
   const performDownload = async () => {
     try {
+      // BẮT ĐẦU COUNTDOWN NGAY LẬP TỨC
+      setCountdown(5);
+      setDownloadReady(false);
+      
+      let currentCount = 5;
+      const countdownInterval = setInterval(() => {
+        currentCount -= 1;
+        setCountdown(currentCount);
+        if (currentCount <= 0) {
+          clearInterval(countdownInterval);
+        }
+      }, 1000);
+
+      // Gọi API để chuẩn bị file (chạy song song với countdown)
       const response = await downloadDocument(id, user.userId);
 
       // Backend trả JSON với url và fileName
       const { url, fileName } = response.data;
 
       if (!url) {
+        clearInterval(countdownInterval);
         setErrorMessage('Không thể lấy URL tải xuống từ server.');
         setShowErrorModal(true);
+        setCountdown(0);
         return;
       }
 
-      // Download file từ SAS URL
+      // Download file từ SAS URL (load trong khi countdown)
       const fileResponse = await fetch(url);
       if (!fileResponse.ok) {
+        clearInterval(countdownInterval);
         throw new Error(`Không thể tải file: ${fileResponse.status} ${fileResponse.statusText}`);
       }
 
       const blob = await fileResponse.blob();
 
-      // Tạo download link
+      // Tạo download link và lưu sẵn
       const downloadUrl = window.URL.createObjectURL(blob);
+      
+      // Đợi countdown hoàn thành (nếu chưa xong)
+      const waitForCountdown = () => {
+        return new Promise((resolve) => {
+          const checkInterval = setInterval(() => {
+            if (currentCount <= 0) {
+              clearInterval(checkInterval);
+              resolve();
+            }
+          }, 100);
+        });
+      };
+
+      await waitForCountdown();
+      
+      setDownloadReady(true);
+      
+      // Sau khi đếm xong mới cho tải
       const link = document.createElement('a');
       link.href = downloadUrl;
       link.setAttribute('download', fileName || `${doc.title || 'document'}.${doc.fileType || 'bin'}`);
@@ -291,7 +328,9 @@ function DocumentDetail() {
       }));
       console.log('Download successful, setting hasDownloaded to true');
       setHasDownloaded(true);
-      toast.success('Tải tài liệu thành công! Bạn có thể bình luận ngay bây giờ.');
+      
+      setCountdown(0);
+
     } catch (error) {
       let message = 'Đã xảy ra lỗi khi tải tài liệu.';
       if (error.response?.data) {
@@ -301,6 +340,8 @@ function DocumentDetail() {
       }
       setErrorMessage(message);
       setShowErrorModal(true);
+      setCountdown(0);
+      setDownloadReady(false);
     }
   };
 
@@ -570,8 +611,8 @@ function DocumentDetail() {
                 <div className="author-info">
                   <div className="author-details">
                     <span className="author-name">Tác giả :</span>
-                    <span 
-                      className="author-name clickable-author" 
+                    <span
+                      className="author-name clickable-author"
                       onClick={() => doc.uploadedBy && navigate(`/profile/${doc.uploadedBy}`)}
                       style={{ cursor: doc.uploadedBy ? 'pointer' : 'default' }}
                       title={doc.uploadedBy ? 'Xem profile tác giả' : ''}
@@ -640,38 +681,76 @@ function DocumentDetail() {
 
               </div>
               <div className="action-buttons-section">
-                <div className="action-buttons-grid">
-                  <CustomButton
-                    variant="outline-secondary"
-                    onClick={handleDownload}
-                    className="action-btn download-btn"
-                    disabled={doc.approvalStatus === 'Pending'}
-                    title={doc.approvalStatus === 'Pending' ? "Tài liệu đang chờ duyệt" : "Tải xuống tài liệu"}
-                  >
-                    <FontAwesomeIcon icon={faDownload} />
-                    <div className="btn-content">
-                      <span className="btn-text">Tải xuống</span>
-                      <span className="file-info">{formatFileSize(doc.fileSize || 0)}</span>
+                {countdown > 0 ? (
+                  <div style={{
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    padding: '40px',
+                    borderRadius: '15px',
+                    textAlign: 'center',
+                    color: 'white',
+                    marginBottom: '20px',
+                    boxShadow: '0 10px 30px rgba(0,0,0,0.2)'
+                  }}>
+                    <div style={{ fontSize: '72px', fontWeight: 'bold', marginBottom: '20px', textShadow: '2px 2px 4px rgba(0,0,0,0.3)' }}>
+                      {countdown}
                     </div>
-                  </CustomButton>
+                    <h3 style={{ fontSize: '24px', marginBottom: '10px', fontWeight: '600' }}>
+                      File sẽ tự động tải về sau {countdown} giây
+                    </h3>
+                    <p style={{ fontSize: '16px', opacity: 0.9 }}>
+                      Vui lòng chờ trong giây lát...
+                    </p>
+                    <div style={{ 
+                      width: '100%', 
+                      height: '6px', 
+                      background: 'rgba(255,255,255,0.3)', 
+                      borderRadius: '3px',
+                      overflow: 'hidden',
+                      marginTop: '25px'
+                    }}>
+                      <div style={{
+                        width: `${((5 - countdown) / 5) * 100}%`,
+                        height: '100%',
+                        background: 'linear-gradient(90deg, #48ff48 0%, #00ff88 100%)',
+                        transition: 'width 1s linear',
+                        boxShadow: '0 0 10px rgba(72, 255, 72, 0.5)'
+                      }}></div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="action-buttons-grid">
+                    <CustomButton
+                      variant="outline-secondary"
+                      onClick={handleDownload}
+                      className="action-btn download-btn"
+                      disabled={doc.approvalStatus === 'Pending'}
+                      title={doc.approvalStatus === 'Pending' ? "Tài liệu đang chờ duyệt" : "Tải xuống tài liệu"}
+                    >
+                      <FontAwesomeIcon icon={faDownload} />
+                      <div className="btn-content">
+                        <span className="btn-text">Tải xuống</span>
+                        <span className="file-info">{formatFileSize(doc.fileSize || 0)}</span>
+                      </div>
+                    </CustomButton>
 
-                  <CustomButton
-                    variant="primary"
-                    onClick={handlePreview}
-                    disabled={doc.fileType?.toLowerCase() !== 'pdf' || doc.approvalStatus === 'Pending' || isLoadingPreview}
-                    className="action-btn preview-btn"
-                    title={
-                      doc.approvalStatus === 'Pending'
-                        ? "Tài liệu đang chờ duyệt"
-                        : doc.fileType?.toLowerCase() !== 'pdf'
-                          ? "Chỉ hỗ trợ xem trước file PDF"
-                          : "Xem Online"
-                    }
-                  >
-                    {!isLoadingPreview && <FontAwesomeIcon icon={faEye} />}
-                    <span className="btn-text">{isLoadingPreview ? 'Đang tải...' : 'Xem Online (PDF)'}</span>
-                  </CustomButton>
-                </div>
+                    <CustomButton
+                      variant="primary"
+                      onClick={handlePreview}
+                      disabled={doc.fileType?.toLowerCase() !== 'pdf' || doc.approvalStatus === 'Pending' || isLoadingPreview}
+                      className="action-btn preview-btn"
+                      title={
+                        doc.approvalStatus === 'Pending'
+                          ? "Tài liệu đang chờ duyệt"
+                          : doc.fileType?.toLowerCase() !== 'pdf'
+                            ? "Chỉ hỗ trợ xem trước file PDF"
+                            : "Xem Online"
+                      }
+                    >
+                      {!isLoadingPreview && <FontAwesomeIcon icon={faEye} />}
+                      <span className="btn-text">{isLoadingPreview ? 'Đang tải...' : 'Xem Online (PDF)'}</span>
+                    </CustomButton>
+                  </div>
+                )}
 
                 {/* points badge removed */}
               </div>
@@ -846,8 +925,8 @@ function DocumentDetail() {
                             <div className="card-author">
                               <FontAwesomeIcon icon={faUser} />
                               <span className="author-name-detail" title={relatedDoc.uploadedByEmail}>
-                                {relatedDoc.uploadedByEmail.length > 20 
-                                  ? relatedDoc.uploadedByEmail.substring(0, 20) + '...' 
+                                {relatedDoc.uploadedByEmail.length > 20
+                                  ? relatedDoc.uploadedByEmail.substring(0, 20) + '...'
                                   : relatedDoc.uploadedByEmail}
                               </span>
                             </div>
@@ -923,7 +1002,7 @@ function DocumentDetail() {
 
 
                   <div className="form-actions">
-                    <div 
+                    <div
                       className="submit-btn-wrapper"
                       title={
                         !user
@@ -968,7 +1047,7 @@ function DocumentDetail() {
                               />
                             </div>
                             <div className="author-info-comment">
-                              <div 
+                              <div
                                 className="author-name-comment clickable-author-comment"
                                 onClick={() => cmt.UserId && navigate(`/profile/${cmt.UserId}`)}
                                 style={{ cursor: cmt.UserId ? 'pointer' : 'default' }}
@@ -1033,12 +1112,36 @@ function DocumentDetail() {
         show={showConfirmModal}
         onHide={handleCancelDownload}
         title="Xác nhận tải tài liệu"
-        footer={<>
+        footer={countdown > 0 ? null : <>
           <CustomButton variant="cancel" onClick={handleCancelDownload}>Hủy</CustomButton>
           <CustomButton variant="secondary" onClick={handleConfirmDownload}>Xác nhận</CustomButton>
         </>}
       >
-        Bạn có muốn tải tài liệu này?
+        {countdown > 0 ? (
+          <div style={{ textAlign: 'center', padding: '20px' }}>
+            <div style={{ fontSize: '48px', fontWeight: 'bold', color: '#4CAF50', marginBottom: '10px' }}>
+              {countdown}
+            </div>
+            <p>Đang chuẩn bị tải xuống... Vui lòng chờ {countdown} giây</p>
+            <div style={{ 
+              width: '100%', 
+              height: '4px', 
+              background: '#e0e0e0', 
+              borderRadius: '2px',
+              overflow: 'hidden',
+              marginTop: '15px'
+            }}>
+              <div style={{
+                width: `${((5 - countdown) / 5) * 100}%`,
+                height: '100%',
+                background: '#4CAF50',
+                transition: 'width 1s linear'
+              }}></div>
+            </div>
+          </div>
+        ) : (
+          'Bạn có muốn tải tài liệu này?'
+        )}
       </CustomModal>
 
       {/* Modal xem PDF toàn bộ trang */}
