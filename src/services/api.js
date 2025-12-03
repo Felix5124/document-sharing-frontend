@@ -63,10 +63,6 @@ export const getUserByFirebaseUid = (uid) =>
   apiClient.get(`/Users/by-uid/${uid}`);
 export const createBackendUserForAuthProvider = async (payload) => {
   try {
-    console.log(
-      "API Call: Sending payload to /users/authprovider-register:",
-      payload
-    );
     const response = await apiClient.post(
       "/users/authprovider-register",
       payload
