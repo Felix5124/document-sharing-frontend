@@ -103,11 +103,6 @@ export const AuthProvider = ({ children }) => {
             const providerId = firebaseUser.providerData[0]?.providerId;
 
             if (providerId === 'google.com') {
-              const toastKey = `google-setup-${firebaseUser.uid}`;
-              if (!toastShown.current[toastKey]) {
-                toast.info("Đang thiết lập tài khoản Google...");
-                toastShown.current[toastKey] = true;
-              }
               try {
                 const payload = {
                   FirebaseUid: firebaseUser.uid,
@@ -118,11 +113,6 @@ export const AuthProvider = ({ children }) => {
                 if (newUserProfile && newUserProfile.userId) {
                   const freshIdToken = await firebaseUser.getIdToken(true);
                   contextLogin(newUserProfile, freshIdToken);
-                  const successKey = `google-success-${firebaseUser.uid}`;
-                  if (!toastShown.current[successKey]) {
-                    toast.success('Đăng nhập Google thành công, tài khoản đã được tạo!');
-                    toastShown.current[successKey] = true;
-                  }
                 } else {
                   throw new Error('Dữ liệu trả về không hợp lệ từ API tạo user.');
                 }
