@@ -186,6 +186,8 @@ export const addPostComment = (data) => apiClient.post("/postcomments", data);
 // --- API cho quản trị ---
 export const lockDocument = (id, isLocked) =>
   apiClient.put(`/documents/${id}/lock`, { isLocked });
+export const getAdminDocuments = (params) =>
+  apiClient.get('/documents/admin/list', { params });
 
 // --- API cho tài liệu của người dùng ---
 export const getUploads = () => apiClient.get("/UserDocuments/uploads");
