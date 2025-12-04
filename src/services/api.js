@@ -182,6 +182,8 @@ export const addPostComment = (data) => apiClient.post("/postcomments", data);
 // --- API cho quản trị ---
 export const lockDocument = (id, isLocked) =>
   apiClient.put(`/documents/${id}/lock`, { isLocked });
+export const getAdminDocuments = (params) =>
+  apiClient.get('/documents/admin/list', { params });
 
 // --- API cho tài liệu của người dùng ---
 export const getUploads = () => apiClient.get("/UserDocuments/uploads");
@@ -288,6 +290,8 @@ export const getAllPayments = (page = 1, pageSize = 20) =>
 
 // --- API cho Báo cáo Vi phạm ---
 export const createReport = (data) => apiClient.post("/reports", data);
+// API cho quản trị viên lấy danh sách người dùng với phân trang và lọc
+export const getAdminUsers = (params) => apiClient.get('/users/admin/list', { params });
 
 // (Tùy chọn - Dành cho trang quản trị)
 export const getAllReports = (params) => apiClient.get("/reports", { params });
