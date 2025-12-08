@@ -682,6 +682,32 @@ textarea.form-control {
   color: #111827;
   transform: translateY(-1px);
 }
+
+/* Follow button loading animation */
+.follow-btn-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.follow-btn-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #f3f4f6;
+  border-top-color: #10b981;
+  border-radius: 50%;
+  animation: follow-btn-spin 0.8s linear infinite;
+}
+
+@keyframes follow-btn-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
 .stats-item {
   flex: 1;
   text-align: center;
@@ -869,7 +895,6 @@ textarea.form-control {
   color: #111827;
   font-weight: 700;
   font-size: 1.2rem;
-  margin: 0 0 0.5rem;
 }
 .section-subtitle {
   color: #6b7280;

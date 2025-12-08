@@ -125,46 +125,71 @@ function Follow() {
 
         {/* Following List */}
         <div className="follow-section">
-          <h4 className="section-title">Đang theo dõi ({following.length})</h4>
+          <div className="section-header">
+            <h4 className="section-title">Đang theo dõi ({following.length})</h4>
+            {following.length > 0 && (
+              <button 
+                className="view-all-button"
+                onClick={() => navigate('/follow-list?type=following')}
+              >
+                <i className="bi bi-eye"></i>
+                Xem tất cả
+              </button>
+            )}
+          </div>
           {loadingFollowing ? (
             <div className="loading-container">
               <div className="spinner"></div>
               <p className="loading-text">Đang tải...</p>
             </div>
           ) : following.length > 0 ? (
-            <div className="follow-grid">
-              {following.map((follow) => (
-                <div key={follow.followId} className="follow-card">
-                  <div className="follow-card-content">
-                    <div className="follow-avatar" onClick={() => navigate(`/profile/${follow.followedUserId}`)} style={{ cursor: 'pointer' }}>
-                      <img
-                        src={safeAvatar(follow.avatarUrl)}
-                        alt={follow.fullName}
-                        className="avatar-img"
-                        onError={(e) => {
-                          // Fallback về ảnh mặc định nội bộ
-                          e.currentTarget.onerror = null;
-                          e.currentTarget.src = getFullAvatarUrl('');
+            <>
+              <div className="follow-grid">
+                {following.slice(0, 10).map((follow) => (
+                  <div key={follow.followId} className="follow-card">
+                    <div className="follow-card-content">
+                      <div className="follow-avatar" onClick={() => navigate(`/profile/${follow.followedUserId}`)} style={{ cursor: 'pointer' }}>
+                        <img
+                          src={safeAvatar(follow.avatarUrl)}
+                          alt={follow.fullName}
+                          className="avatar-img"
+                          onError={(e) => {
+                            // Fallback về ảnh mặc định nội bộ
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = getFullAvatarUrl('');
+                          }}
+                        />
+                      </div>
+                      <div className="follow-info" onClick={() => navigate(`/profile/${follow.followedUserId}`)} style={{ cursor: 'pointer' }}>
+                        <p className="follow-name">{follow.fullName}</p>
+                        <p className="follow-email">{follow.email}</p>
+                      </div>
+                      <button
+                        className="unfollow-button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleUnfollow(follow.followId);
                         }}
-                      />
+                      >
+                        Bỏ theo dõi
+                      </button>
                     </div>
-                    <div className="follow-info" onClick={() => navigate(`/profile/${follow.followedUserId}`)} style={{ cursor: 'pointer' }}>
-                      <p className="follow-name">{follow.fullName}</p>
-                      <p className="follow-email">{follow.email}</p>
-                    </div>
-                    <button
-                      className="unfollow-button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleUnfollow(follow.followId);
-                      }}
-                    >
-                      Bỏ theo dõi
-                    </button>
                   </div>
+                ))}
+              </div>
+              {following.length > 10 && (
+                <div className="view-more-notice">
+                  <i className="bi bi-info-circle"></i>
+                  <span>Còn {following.length - 10} người nữa.</span>
+                  <button 
+                    className="view-more-link"
+                    onClick={() => navigate('/follow-list?type=following')}
+                  >
+                    Bấm "Xem tất cả" để xem thêm
+                  </button>
                 </div>
-              ))}
-            </div>
+              )}
+            </>
           ) : (
             <div className="empty-state">
               <i className="bi bi-person-x empty-icon"></i>
@@ -175,10 +200,21 @@ function Follow() {
 
         {/* Followers List */}
         <div className="follow-section">
-          <h4 className="section-title follow-toggle" onClick={toggleFollowers}>
-            Người theo dõi ({followerCount})
-            <i className={`bi bi-chevron-${showFollowers ? 'up' : 'down'} icon-margin-left`}></i>
-          </h4>
+          <div className="section-header">
+            <h4 className="section-title follow-toggle" onClick={toggleFollowers}>
+              Người theo dõi ({followerCount})
+              <i className={`bi bi-chevron-${showFollowers ? 'up' : 'down'} icon-margin-left`}></i>
+            </h4>
+            {followerCount > 0 && (
+              <button 
+                className="view-all-button"
+                onClick={() => navigate('/follow-list?type=followers')}
+              >
+                <i className="bi bi-eye"></i>
+                Xem tất cả
+              </button>
+            )}
+          </div>
           {showFollowers && (
             <div className="follow-list">
               {loadingFollowers ? (
@@ -187,30 +223,44 @@ function Follow() {
                   <p className="loading-text">Đang tải...</p>
                 </div>
               ) : followers.length > 0 ? (
-                <div className="follow-grid">
-                  {followers.map((follower) => (
-                    <div key={follower.followId} className="follow-card">
-                      <div className="follow-card-content">
-                        <div className="follow-avatar" onClick={() => navigate(`/profile/${follower.userId}`)} style={{ cursor: 'pointer' }}>
-                          <img
-                            src={safeAvatar(follower.avatarUrl)}
-                            alt={follower.fullName}
-                            className="avatar-img"
-                            onError={(e) => {
-                              // Fallback về ảnh mặc định nội bộ
-                              e.currentTarget.onerror = null;
-                              e.currentTarget.src = getFullAvatarUrl('');
-                            }}
-                          />
-                        </div>
-                        <div className="follow-info" onClick={() => navigate(`/profile/${follower.userId}`)} style={{ cursor: 'pointer' }}>
-                          <p className="follow-name">{follower.fullName}</p>
-                          <p className="follow-email">{follower.email}</p>
+                <>
+                  <div className="follow-grid">
+                    {followers.slice(0, 10).map((follower) => (
+                      <div key={follower.followId} className="follow-card">
+                        <div className="follow-card-content">
+                          <div className="follow-avatar" onClick={() => navigate(`/profile/${follower.userId}`)} style={{ cursor: 'pointer' }}>
+                            <img
+                              src={safeAvatar(follower.avatarUrl)}
+                              alt={follower.fullName}
+                              className="avatar-img"
+                              onError={(e) => {
+                                // Fallback về ảnh mặc định nội bộ
+                                e.currentTarget.onerror = null;
+                                e.currentTarget.src = getFullAvatarUrl('');
+                              }}
+                            />
+                          </div>
+                          <div className="follow-info" onClick={() => navigate(`/profile/${follower.userId}`)} style={{ cursor: 'pointer' }}>
+                            <p className="follow-name">{follower.fullName}</p>
+                            <p className="follow-email">{follower.email}</p>
+                          </div>
                         </div>
                       </div>
+                    ))}
+                  </div>
+                  {followers.length > 10 && (
+                    <div className="view-more-notice">
+                      <i className="bi bi-info-circle"></i>
+                      <span>Còn {followers.length - 10} người nữa.</span>
+                      <button 
+                        className="view-more-link"
+                        onClick={() => navigate('/follow-list?type=followers')}
+                      >
+                        Bấm "Xem tất cả" để xem thêm
+                      </button>
                     </div>
-                  ))}
-                </div>
+                  )}
+                </>
               ) : (
                 <div className="empty-state">
                   <i className="bi bi-person-x empty-icon"></i>

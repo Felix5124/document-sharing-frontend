@@ -3,7 +3,7 @@ import { useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { AuthContext } from '../context/AuthContext';
-import { getUserNotifications, markNotificationAsRead } from '../services/api';
+import { getUserNotifications, markNotificationAsRead, markAllNotificationsAsRead } from '../services/api';
 import '../styles/components/Notifications.css';
 
 function Notifications() {
@@ -59,12 +59,47 @@ function Notifications() {
     }
   };
 
+  const handleMarkAllAsRead = async () => {
+    try {
+      await markAllNotificationsAsRead(user.userId);
+      setNotifications(notifications.map(n => ({ ...n, isRead: true })));
+      toast.success('Đã đánh dấu tất cả thông báo là đã đọc.');
+    } catch (error) {
+      console.error('Error marking all as read:', error);
+      toast.error('Không thể đánh dấu tất cả thông báo.');
+    }
+  };
+
   return (
     <div className="all-container">
       <div className="all-container-card">
-        <h2 className="upload-title">
-          <i className="bi bi-bell icon-margin-right"></i> Thông báo
-        </h2>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <h2 className="upload-title" style={{ margin: 0 }}>
+            <i className="bi bi-bell icon-margin-right"></i> Thông báo
+          </h2>
+          {notifications.length > 0 && notifications.some(n => !n.isRead) && (
+            <button 
+              className="mark-all-read-btn"
+              onClick={handleMarkAllAsRead}
+              style={{
+                padding: '8px 16px',
+                backgroundColor: '#4CAF50',
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontSize: '14px',
+                fontWeight: '500',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => e.target.style.backgroundColor = '#45a049'}
+              onMouseLeave={(e) => e.target.style.backgroundColor = '#4CAF50'}
+            >
+              <i className="bi bi-check-all" style={{ marginRight: '6px' }}></i>
+              Đánh dấu đã đọc tất cả
+            </button>
+          )}
+        </div>
         {loading ? (
           <div className="loading-container">
             <div className="spinner"></div>
