@@ -47,6 +47,7 @@ function DocumentDetail() {
   const [isFollowing, setIsFollowing] = useState(false);
   const [followId, setFollowId] = useState(null); // Store follow ID for unfollow
   const [loadingFollow, setLoadingFollow] = useState(false);
+  const [loadingFollowStatus, setLoadingFollowStatus] = useState(true);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [numPages, setNumPages] = useState(null);
@@ -74,6 +75,7 @@ function DocumentDetail() {
     setTotalRatedComments(0);
     setIsFollowing(false);
     setFollowId(null); // Reset follow ID
+    setLoadingFollowStatus(true); // Reset loading status
     setHasDownloaded(false);
 
     // --- BẮT ĐẦU THAY ĐỔI ---
@@ -229,7 +231,11 @@ function DocumentDetail() {
   };
 
   const checkFollowStatus = async () => {
-    if (!user || !user.userId || !doc || !doc.uploadedBy) return;
+    if (!user || !user.userId || !doc || !doc.uploadedBy) {
+      setLoadingFollowStatus(false);
+      return;
+    }
+    setLoadingFollowStatus(true);
     try {
       const response = await getUserFollowing(user.userId);
       const follows = Array.isArray(response.data?.$values) ? response.data.$values : (Array.isArray(response.data) ? response.data : []);
@@ -243,6 +249,8 @@ function DocumentDetail() {
       }
     } catch {
       // Ignore follow status check errors
+    } finally {
+      setLoadingFollowStatus(false);
     }
   };
 
@@ -624,11 +632,20 @@ function DocumentDetail() {
                         variant={isFollowing ? "success" : "outline-success"}
                         size="sm"
                         onClick={handleFollowAuthor}
-                        disabled={loadingFollow}
+                        disabled={loadingFollow || loadingFollowStatus}
                         className="follow-btn"
                       >
-                        <span className={`follow-icon ${isFollowing ? 'icon-person-check' : 'icon-person-plus'}`}></span>
-                        {isFollowing ? 'Đã theo dõi' : loadingFollow ? 'Đang xử lý...' : 'Theo dõi'}
+                        {loadingFollowStatus ? (
+                          <div className="follow-btn-loading">
+                            <div className="follow-btn-spinner"></div>
+                            <span>Đang tải...</span>
+                          </div>
+                        ) : (
+                          <>
+                            <span className={`follow-icon ${isFollowing ? 'icon-person-check' : 'icon-person-plus'}`}></span>
+                            {isFollowing ? 'Đã theo dõi' : loadingFollow ? 'Đang xử lý...' : 'Theo dõi'}
+                          </>
+                        )}
                       </CustomButton>
                     )}
                   </div>

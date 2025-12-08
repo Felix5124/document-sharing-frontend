@@ -58,11 +58,6 @@
   color: white;
   box-shadow: 0 2px 4px rgba(52, 152, 219, 0.3);
 }
-
-.tab-button.active:hover {
-  background-color: #2980b9;
-}
-
 /* Loading State */
 .loading-container {
   display: flex;

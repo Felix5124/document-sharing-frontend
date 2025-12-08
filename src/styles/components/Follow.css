@@ -61,6 +61,99 @@
   border: 1px solid #e5e7eb;
 }
 
+/* Section Header */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+/* View All Button */
+.view-all-button {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.view-all-button:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.view-all-button i {
+  font-size: 0.9rem;
+}
+
+/* View More Notice */
+.view-more-notice {
+  margin-top: 16px;
+  padding: 16px;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border: 1px solid #bae6fd;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  text-align: center;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.view-more-notice i {
+  color: #0284c7;
+  font-size: 1.2rem;
+}
+
+.view-more-notice span {
+  color: #0c4a6e;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.view-more-link {
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  color: #ffffff;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.view-more-link:hover {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+}
+
 /* Follow Toggle */
 .follow-toggle {
   cursor: pointer;
@@ -155,27 +248,6 @@
   flex: 1;
   min-width: 0;
 }
-
-.follow-name {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #111827;
-
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  transition: color 0.3s ease;
-}
-
-.follow-email {
-  font-size: 0.8rem;
-  color: #6b7280;
-  margin: 0 0 4px 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .follow-id {
   font-size: 0.85rem;
   color: #9ca3af;
@@ -183,58 +255,6 @@
   font-family: "Courier New", monospace;
 }
 
-/* Unfollow Button */
-.unfollow-button {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-  color: #ffffff;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.9rem;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.unfollow-button::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.2),
-    transparent
-  );
-  transition: left 0.5s ease;
-}
-
-.unfollow-button:hover::before {
-  left: 100%;
-}
-
-.unfollow-button:hover {
-  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
-}
-
-.unfollow-button:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
-}
-
-.unfollow-button i {
-  font-size: 1rem;
-}
 
 /* Empty State moved to GlobalStyles.css */
 
