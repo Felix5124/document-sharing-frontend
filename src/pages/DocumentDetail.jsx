@@ -29,7 +29,11 @@ import CustomModal from '../components/DocumentDetail/CustomModal';
 import CustomButton from '../components/DocumentDetail/CustomButton';
 import CustomForm, { FormGroup, FormLabel, FormControl } from '../components/DocumentDetail/CustomForm';
 import ReportModal from '../components/ReportModal';
+import VipPromoBanner from '../components/VipPromoBanner';
+import VipWelcomeBanner from '../components/VipWelcomeBanner';
+import RightSidebar from '../components/RightSidebar';
 import '../styles/pages/DocumentDetail.css';
+import '../styles/layouts/PageWithSidebar.css';
 
 
 
@@ -63,7 +67,35 @@ function DocumentDetail() {
   const [isLoadingPreview, setIsLoadingPreview] = useState(false);
   const [countdown, setCountdown] = useState(0);
   const [downloadReady, setDownloadReady] = useState(false);
+  const [hideLeftSidebar, setHideLeftSidebar] = useState(false);
+  const [hideRightSidebar, setHideRightSidebar] = useState(false);
+  const [contextMenu, setContextMenu] = useState({ show: false, x: 0, y: 0, type: '' });
 
+
+  // Handle context menu
+  const handleContextMenu = (e, type) => {
+    if (!user?.isVip) return;
+    e.preventDefault();
+    setContextMenu({ show: true, x: e.clientX, y: e.clientY, type });
+  };
+
+  const handleToggleSidebar = (type) => {
+    if (type === 'left') {
+      setHideLeftSidebar(!hideLeftSidebar);
+    } else if (type === 'right') {
+      setHideRightSidebar(!hideRightSidebar);
+    }
+    setContextMenu({ show: false, x: 0, y: 0, type: '' });
+  };
+
+  // Close context menu when clicking outside
+  useEffect(() => {
+    const handleClick = () => setContextMenu({ show: false, x: 0, y: 0, type: '' });
+    if (contextMenu.show) {
+      document.addEventListener('click', handleClick);
+      return () => document.removeEventListener('click', handleClick);
+    }
+  }, [contextMenu.show]);
 
   useEffect(() => {
     setDoc(null);
@@ -571,8 +603,47 @@ function DocumentDetail() {
   }
 
   return (
-    <div className="document-detail-page">
-      <div className="document-detail-container">
+    <div className="all-container">
+      {/* Context Menu */}
+      {contextMenu.show && (
+        <div 
+          className="sidebar-context-menu"
+          style={{ top: contextMenu.y, left: contextMenu.x }}
+        >
+          <button onClick={() => handleToggleSidebar(contextMenu.type)}>
+            {(contextMenu.type === 'left' && hideLeftSidebar) || (contextMenu.type === 'right' && hideRightSidebar) 
+              ? '👁️ Hiển thị' 
+              : '🚫 Ẩn'}
+          </button>
+        </div>
+      )}
+
+      <div className={`page-layout-with-sidebar ${user?.isVip ? 'no-left-sidebar' : ''}`}>
+        {/* Left Sidebar - VIP Banner */}
+        {!user && (
+          <aside className="page-sidebar">
+            <VipPromoBanner variant="document" />
+          </aside>
+        )}
+        {user && !user.isVip && (
+          <aside className="page-sidebar">
+            <VipPromoBanner variant="document" />
+          </aside>
+        )}
+        {user?.isVip && (
+          <aside 
+            className="page-sidebar"
+            onContextMenu={(e) => handleContextMenu(e, 'left')}
+            style={{ cursor: 'context-menu' }}
+          >
+            {!hideLeftSidebar && <VipWelcomeBanner />}
+          </aside>
+        )}
+
+        {/* Main Content */}
+        <div className="page-main-content">
+          <div className="document-detail-page">
+            <div className="document-detail-container">
         {/* === MAIN CONTENT SECTION === */}
         <div className="layout-grid main-content-section">
           <div className="layout-column full-width">
@@ -906,12 +977,8 @@ function DocumentDetail() {
 
             {relatedDocsByCategory && relatedDocsByCategory.length > 0 && (
               <div className="related-documents-section">
-                <div className="section-header">
-                  <div className="section-icon">
-                    <FontAwesomeIcon icon={faFile} />
-                  </div>
-                  <h3 className="section-title">Có thể bạn quan tâm</h3>
-                  <div className="section-subtitle">Tài liệu cùng danh mục</div>
+                <div className="section-header-detail">
+                  <h3 className="section-title">Tài liệu cùng danh mục</h3>
                 </div>
 
                 <div className="related-documents-grid">
@@ -1122,9 +1189,21 @@ function DocumentDetail() {
 
           </div>
         </div>
+            </div>
+          </div>
+        </div>
 
+        {/* Right Sidebar */}
+        <aside 
+          className="page-sidebar-right"
+          onContextMenu={(e) => handleContextMenu(e, 'right')}
+          style={{ cursor: user?.isVip ? 'context-menu' : 'default' }}
+        >
+          {!hideRightSidebar && <RightSidebar variant="document" />}
+        </aside>
       </div>
 
+      {/* Modals - Outside layout */}
       <CustomModal
         show={showConfirmModal}
         onHide={handleCancelDownload}

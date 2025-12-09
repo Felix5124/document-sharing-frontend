@@ -45,6 +45,17 @@ const RightSidebar = ({ variant = 'default' }) => {
       ],
       stats: []
     },
+    document: {
+      title: 'Mẹo Sử Dụng Tài Liệu',
+      icon: faFileAlt,
+      items: [
+        { icon: faCheckCircle, text: 'Tải về để xem toàn bộ nội dung' },
+        { icon: faCheckCircle, text: 'Đánh giá và bình luận sau khi tải' },
+        { icon: faCheckCircle, text: 'Theo dõi tác giả để nhận cập nhật' },
+        { icon: faCheckCircle, text: 'Báo cáo nếu phát hiện vi phạm' },
+      ],
+      stats: []
+    },
     default: {
       title: 'Thông Tin Hữu Ích',
       icon: faInfoCircle,

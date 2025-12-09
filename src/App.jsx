@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate, Link, useLocation } from 'react
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import VerifyEmail from './pages/VerifyEmail';
 import Profile from './pages/Profile';
 import DocumentDetail from './pages/DocumentDetail';
 import PostCommentDetail from './pages/PostCommentDetail';
@@ -81,6 +82,7 @@ function App() {
           <Route path="/" element={<ErrorBoundary><Home /></ErrorBoundary>} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/document/:id" element={<ErrorBoundary><DocumentDetail /></ErrorBoundary>} />
           <Route path="/postcommentdetail/:id" element={<ErrorBoundary><PostCommentDetail /></ErrorBoundary>} />
           <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
