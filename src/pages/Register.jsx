@@ -25,7 +25,10 @@ function Register() {
         FullName: data.FullName
       };
       const response = await register(payload);
-      toast.success('Đăng ký thành công! Vui lòng đăng nhập.');
+      toast.success('Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.', {
+        autoClose: 4000,
+      });
+      // Navigate ngay, toast sẽ vẫn hiển thị trên trang login
       navigate('/login');
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Tài khoản đã tồn tại. Vui lòng thử lại.';
