@@ -402,7 +402,7 @@ function UploadDocument() {
           onContextMenu={(e) => handleContextMenu(e, 'right')}
           style={{ cursor: user?.isVip ? 'context-menu' : 'default' }}
         >
-          {!hideRightSidebar && <RightSidebar variant="upload" />}
+          {!hideRightSidebar && <RightSidebar variant="upload" user={user} />}
         </aside>
       </div>
     </div>

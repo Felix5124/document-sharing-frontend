@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate, Link, useLocation } from 'react
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import VerifyEmail from './pages/VerifyEmail';
 import Profile from './pages/Profile';
 import DocumentDetail from './pages/DocumentDetail';
 import PostCommentDetail from './pages/PostCommentDetail';
@@ -14,6 +15,7 @@ import NotificationDetail from './components/NotificationDetail';
 import Follow from './components/Follow';
 import Post from './components/Post';
 import RankingsPage from './pages/RankingsPage';
+import FollowList from './pages/FollowList';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -80,6 +82,7 @@ function App() {
           <Route path="/" element={<ErrorBoundary><Home /></ErrorBoundary>} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/document/:id" element={<ErrorBoundary><DocumentDetail /></ErrorBoundary>} />
           <Route path="/postcommentdetail/:id" element={<ErrorBoundary><PostCommentDetail /></ErrorBoundary>} />
           <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
@@ -113,6 +116,7 @@ function App() {
           <Route path="/notifications" element={<PrivateRoute><Notifications /></PrivateRoute>} />
           <Route path="/notifications/:notificationId" element={<PrivateRoute><NotificationDetail /></PrivateRoute>} />
           <Route path="/follow" element={<PrivateRoute><Follow /></PrivateRoute>} />
+          <Route path="/follow-list" element={<PrivateRoute><FollowList /></PrivateRoute>} />
           <Route path="/search" element={<SearchResultsPage />} />
           <Route path="/about" element={<ErrorBoundary><div>Giới thiệu</div></ErrorBoundary>} />
           <Route path="/contact" element={<ErrorBoundary><div>Liên hệ</div></ErrorBoundary>} />

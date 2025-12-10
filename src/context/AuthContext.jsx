@@ -90,12 +90,30 @@ export const AuthProvider = ({ children }) => {
           const backendUserData = userDetailsResponse.data;
 
           if (backendUserData && backendUserData.userId && !backendUserData.isLocked) {
+            // Kiểm tra email đã được xác thực chưa
+            if (!backendUserData.isEmailVerified) {
+              // Dùng toastId để prevent duplicate
+              const toastId = `email-not-verified-${firebaseUser.uid}`;
+              if (!toast.isActive(toastId)) {
+                toast.error('Vui lòng xác thực email trước khi đăng nhập. Kiểm tra hộp thư của bạn.', {
+                  toastId: toastId
+                });
+              }
+              await contextLogout(false);
+              return;
+            }
             contextLogin(backendUserData, idToken);
           } else if (backendUserData && backendUserData.isLocked) {
-            toast.error('Tài khoản của bạn đã bị khóa.');
+            const toastId = `account-locked-${firebaseUser.uid}`;
+            if (!toast.isActive(toastId)) {
+              toast.error('Tài khoản của bạn đã bị khóa.', { toastId: toastId });
+            }
             await contextLogout(false);
           } else {
-            toast.error('Dữ liệu người dùng từ backend không hợp lệ.');
+            const toastId = `invalid-data-${firebaseUser.uid}`;
+            if (!toast.isActive(toastId)) {
+              toast.error('Dữ liệu người dùng từ backend không hợp lệ.', { toastId: toastId });
+            }
             await contextLogout(false);
           }
         } catch (error) {

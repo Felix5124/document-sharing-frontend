@@ -191,7 +191,7 @@
 /* Section Header */
 .section-header {
   text-align: center;
-  padding: 20px 32px;
+  padding: 6px 12px;
   border-top-left-radius: 16px;
   border-top-right-radius: 16px;
   border-bottom: 2px solid rgba(129, 140, 248, 0.3);

@@ -134,7 +134,7 @@ function AdminPayments() {
     <div className="all-container">
       <div className="all-container-card admin-payments-container">
         <div className="upload-title">
-          <h4>Quản lý thanh toán VIP</h4>
+          <h4>Quản lý thanh toán Premium</h4>
         </div>
 
         {loading && pendingPayments.length === 0 ? (

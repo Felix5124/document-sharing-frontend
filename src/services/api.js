@@ -59,6 +59,7 @@ apiClient.interceptors.request.use(
 // --- API cho người dùng ---
 // (Giữ nguyên các API người dùng, không thay đổi)
 export const register = (data) => apiClient.post("/users/register", data);
+export const verifyEmail = (token, email) => apiClient.post("/users/verify-email", { token, email });
 export const getUserByFirebaseUid = (uid) =>
   apiClient.get(`/Users/by-uid/${uid}`);
 export const createBackendUserForAuthProvider = async (payload) => {
@@ -197,6 +198,8 @@ export const getNotificationById = (notificationId) =>
   apiClient.get(`/notifications/${notificationId}`);
 export const markNotificationAsRead = (notificationId) =>
   apiClient.put(`/notifications/${notificationId}/read`);
+export const markAllNotificationsAsRead = (userId) =>
+  apiClient.put(`/notifications/mark-all-read`, null, { params: { userId } });
 export const deleteNotification = (notificationId) =>
   apiClient.delete(`/notifications/${notificationId}`);
 
