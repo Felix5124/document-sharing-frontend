@@ -78,15 +78,16 @@
 /* Responsive Design */
 @media (max-width: 1200px) {
   .page-sidebar {
-    flex: 0 0 220px;
+    flex: 0 0 200px;
   }
   
   .page-sidebar-right {
-    flex: 0 0 240px;
+    flex: 0 0 220px;
   }
   
   .page-layout-with-sidebar {
-    gap: 16px;
+    gap: 12px;
+    padding: 0 15px;
   }
 
   .page-layout-with-sidebar.no-left-sidebar .page-main-content {
@@ -95,41 +96,55 @@
 }
 
 @media (max-width: 992px) {
+  /* Giữ layout ngang nhưng sidebar nhỏ hơn */
+  .page-sidebar {
+    flex: 0 0 180px;
+    position: static;
+  }
+
+  .page-sidebar-right {
+    flex: 0 0 200px;
+    position: static;
+  }
+
+  .page-main-content {
+    flex: 1;
+    min-width: 300px; /* Đảm bảo content không bị quá nhỏ */
+  }
+
   .page-layout-with-sidebar {
-    flex-direction: column-reverse;
+    gap: 10px;
+  }
+
+  /* Reset layout trên mobile */
+  .page-layout-with-sidebar.no-left-sidebar .page-main-content {
+    flex: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Ở màn hình rất nhỏ mới chuyển sang dạng dọc */
+  .page-layout-with-sidebar {
+    flex-direction: column;
+    padding: 0 12px;
   }
 
   .page-sidebar {
     flex: 1 1 auto;
     position: static;
-    max-width: 500px;
-    margin: 0 auto;
+    max-width: 100%;
+    order: 2; /* Sidebar trái xuống giữa */
+  }
+
+  .page-main-content {
+    flex: 1 1 auto;
+    order: 1; /* Content lên trên */
   }
 
   .page-sidebar-right {
     flex: 1 1 auto;
     position: static;
-    max-width: 500px;
-    margin: 0 auto;
-  }
-
-  .page-main-content {
-    flex: 1 1 auto;
-  }
-
-  /* Reset layout trên mobile */
-  .page-layout-with-sidebar.no-left-sidebar .page-main-content {
-    flex: 1 1 auto;
-  }
-}
-
-@media (max-width: 768px) {
-  .page-layout-with-sidebar {
-    padding: 0 15px;
-  }
-
-  .page-sidebar,
-  .page-sidebar-right {
     max-width: 100%;
+    order: 3; /* Sidebar phải xuống dưới */
   }
 }

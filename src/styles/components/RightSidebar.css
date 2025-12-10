@@ -67,6 +67,96 @@
   flex-shrink: 0;
 }
 
+/* Download Limit Card */
+.download-limit-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+}
+
+.download-limit-card .right-sidebar-header {
+  border-bottom-color: rgba(255, 255, 255, 0.2);
+}
+
+.download-limit-card .right-sidebar-header svg,
+.download-limit-card .right-sidebar-header h3 {
+  color: white;
+}
+
+.download-limit-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.download-limit-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+}
+
+.download-limit-item.bonus-item {
+  background: rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.download-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.download-count {
+  font-size: 1.1rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.25);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.download-count small {
+  font-size: 0.75rem;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.download-count .bonus-text {
+  font-size: 0.7rem;
+  font-weight: 400;
+  opacity: 0.85;
+}
+
+.download-count.vip {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);
+}
+
+.download-count.regular {
+  background: rgba(255, 255, 255, 0.9);
+  color: #667eea;
+}
+
+.download-limit-note {
+  text-align: center;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  margin-top: 4px;
+}
+
+.download-limit-note small {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.75rem;
+  font-style: italic;
+}
+
 /* Responsive */
 @media (max-width: 992px) {
   .right-sidebar {
@@ -83,5 +173,18 @@
   .sidebar-tip-item {
     font-size: 0.75rem;
     padding: 6px;
+  }
+
+  .download-limit-item {
+    padding: 10px;
+  }
+
+  .download-label {
+    font-size: 0.8rem;
+  }
+
+  .download-count {
+    font-size: 1rem;
+    padding: 3px 10px;
   }
 }

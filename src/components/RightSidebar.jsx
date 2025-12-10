@@ -6,11 +6,12 @@ import {
   faUsers,
   faFileAlt,
   faTrophy,
-  faCheckCircle
+  faCheckCircle,
+  faDownload
 } from '@fortawesome/free-solid-svg-icons';
 import '../styles/components/RightSidebar.css';
 
-const RightSidebar = ({ variant = 'default' }) => {
+const RightSidebar = ({ variant = 'default', user = null }) => {
   const sidebarContent = {
     forum: {
       title: 'Mẹo Diễn Đàn',
@@ -71,8 +72,114 @@ const RightSidebar = ({ variant = 'default' }) => {
 
   const content = sidebarContent[variant] || sidebarContent.default;
 
+  // Calculate remaining downloads
+  const calculateRemainingDownloads = () => {
+    if (!user) return null;
+
+    const isVip = user.isVip && user.vipExpiryDate && new Date(user.vipExpiryDate) > new Date();
+    
+    let vipDownloadsRemaining = 0;
+    let regularDownloadsRemaining = 0;
+    let vipBonusCount = 0;
+    let regularBonusCount = 0;
+
+    if (isVip) {
+      // VIP users: 10 VIP downloads + 10 regular downloads per day (không tính bonus vào)
+      vipDownloadsRemaining = Math.max(0, 10 - (user.vipDownloadsUsedToday || 0));
+      regularDownloadsRemaining = Math.max(0, 10 - (user.regularDownloadsUsedToday || 0));
+      vipBonusCount = user.vipBonusDownloads || 0;
+      regularBonusCount = user.regularBonusDownloads || 0;
+    } else {
+      // Regular users: 2 downloads per day (không tính bonus vào)
+      const dailyUsed = user.regularDownloadsUsedToday || 0;
+      regularDownloadsRemaining = Math.max(0, 2 - dailyUsed);
+      regularBonusCount = user.regularBonusDownloads || 0;
+      vipBonusCount = user.vipBonusDownloads || 0;
+    }
+
+    return {
+      isVip,
+      vipDownloadsRemaining,
+      regularDownloadsRemaining,
+      vipBonusCount,
+      regularBonusCount,
+      totalRemaining: vipDownloadsRemaining + regularDownloadsRemaining + vipBonusCount + regularBonusCount
+    };
+  };
+
+  const downloadInfo = calculateRemainingDownloads();
+  
+  // Only show download limit on document and profile pages
+  const showDownloadLimit = variant === 'document' || variant === 'profile';
+
   return (
     <div className="right-sidebar">
+      {/* Download Limit Card - Only show if user is logged in and on specific pages */}
+      {user && downloadInfo && showDownloadLimit && (
+        <div className="right-sidebar-card download-limit-card">
+          <div className="right-sidebar-header">
+            <FontAwesomeIcon icon={faDownload} />
+            <h3>Lượt Tải Còn Lại</h3>
+          </div>
+          <div className="right-sidebar-content">
+            <div className="download-limit-info">
+              {downloadInfo.isVip ? (
+                <>
+                  <div className="download-limit-item vip-downloads">
+                    <span className="download-label">Tài liệu Premium:</span>
+                    <span className="download-count vip">{downloadInfo.vipDownloadsRemaining}/10</span>
+                  </div>
+                  <div className="download-limit-item regular-downloads">
+                    <span className="download-label">Tài liệu thường:</span>
+                    <span className="download-count regular">{downloadInfo.regularDownloadsRemaining}/10</span>
+                  </div>
+                  {/* Bonus downloads - separate row */}
+                  {(downloadInfo.vipBonusCount > 0 || downloadInfo.regularBonusCount > 0) && (
+                    <>
+                      {downloadInfo.vipBonusCount > 0 && (
+                        <div className="download-limit-item bonus-item vip-downloads">
+                          <span className="download-label">Bonus (Premium):</span>
+                          <span className="download-count vip">{downloadInfo.vipBonusCount}</span>
+                        </div>
+                      )}
+                      {downloadInfo.regularBonusCount > 0 && (
+                        <div className="download-limit-item bonus-item regular-downloads">
+                          <span className="download-label">Bonus (Thường):</span>
+                          <span className="download-count regular">{downloadInfo.regularBonusCount}</span>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </>
+              ) : (
+                <>
+                  <div className="download-limit-item regular-downloads">
+                    <span className="download-label">Tài liệu thường:</span>
+                    <span className="download-count regular">{downloadInfo.regularDownloadsRemaining}/2</span>
+                  </div>
+                  {/* Bonus downloads - separate row */}
+                  {downloadInfo.regularBonusCount > 0 && (
+                    <div className="download-limit-item bonus-item regular-downloads">
+                      <span className="download-label">Bonus (Thường):</span>
+                      <span className="download-count regular">{downloadInfo.regularBonusCount}</span>
+                    </div>
+                  )}
+                  {downloadInfo.vipBonusCount > 0 && (
+                    <div className="download-limit-item bonus-item vip-downloads">
+                      <span className="download-label">Bonus (Premium):</span>
+                      <span className="download-count vip">{downloadInfo.vipBonusCount}</span>
+                    </div>
+                  )}
+                </>
+              )}
+              <div className="download-limit-note">
+                <small>{downloadInfo.isVip ? 'Giới hạn hàng ngày' : 'Tải lên tài liệu để nhận thêm lượt tải'}</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Tips Card */}
       <div className="right-sidebar-card">
         <div className="right-sidebar-header">

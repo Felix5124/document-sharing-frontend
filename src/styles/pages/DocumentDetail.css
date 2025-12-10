@@ -16,9 +16,24 @@
 
 .document-detail-container {
   max-width: 800px;
+  width: 100%;
   border-radius: 12px;
   background: linear-gradient(180deg, #ffffff 0%, #f9fafb 100%);
   padding: 24px;
+}
+
+@media (max-width: 992px) {
+  .document-detail-container {
+    max-width: 100%;
+    padding: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .document-detail-container {
+    padding: 12px;
+    border-radius: 8px;
+  }
 }
 
 /* ========================================
@@ -1415,6 +1430,7 @@ textarea.form-control {
   cursor: not-allowed;
   box-shadow: none;
   transform: none;
+  pointer-events: auto !important; /* Cho phép hover để hiện tooltip */
 }
 .action-btn:disabled:hover {
   background: #d1d5db;
