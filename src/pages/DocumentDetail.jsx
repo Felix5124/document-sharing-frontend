@@ -10,7 +10,8 @@ import {
   getUserFollowing,
   addComment,
   getRelatedDocuments,
-  checkUserHasDownloaded
+  checkUserHasDownloaded,
+  getUser
 } from '../services/api';
 import { getActiveVipSubscription } from '../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -41,7 +42,7 @@ function DocumentDetail() {
   // ... (Toàn bộ hooks và functions xử lý logic giữ nguyên, không thay đổi) ...
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useContext(AuthContext);
+  const { user, updateUserContext } = useContext(AuthContext);
   const [loadingState, setLoadingState] = useState('loading'); // Các giá trị có thể là: 'loading', 'success', 'error'
   const [errorMessage, setErrorMessage] = useState('');
   const [doc, setDoc] = useState(null);
@@ -286,12 +287,65 @@ function DocumentDetail() {
     }
   };
 
-  const handleDownload = () => {
+  // Hàm kiểm tra xem user có thể tải không
+  const canUserDownload = () => {
     if (!user || !user.userId) {
-      setErrorMessage('Vui lòng đăng nhập để tải tài liệu.');
+      return { canDownload: false, reason: 'Vui lòng đăng nhập để tải tài liệu.' };
+    }
+
+    // Kiểm tra nếu là tài liệu VIP mà user không phải VIP
+    if (doc?.isVipOnly && !user.isVip) {
+      return { canDownload: false, reason: 'Đây là tài liệu Premium. Vui lòng nâng cấp tài khoản để tải.' };
+    }
+
+    // Tính lượt tải còn lại
+    const now = new Date();
+    const lastReset = user.lastDownloadResetDate ? new Date(user.lastDownloadResetDate) : null;
+    const isSameDay = lastReset && 
+      now.getFullYear() === lastReset.getFullYear() &&
+      now.getMonth() === lastReset.getMonth() &&
+      now.getDate() === lastReset.getDate();
+
+    let dailyUsed, bonusCount, dailyLimit, remaining;
+    
+    if (doc?.isVipOnly) {
+      // Tài liệu Premium
+      dailyUsed = isSameDay ? (user.vipDownloadsUsedToday || 0) : 0;
+      bonusCount = user.vipBonusDownloads || 0;
+      dailyLimit = user.isVip ? 10 : 0;
+      remaining = Math.max(0, dailyLimit - dailyUsed) + bonusCount;
+      
+      console.log('🔍 Check Premium download:', { dailyUsed, bonusCount, dailyLimit, remaining, isSameDay, user });
+      
+      if (remaining <= 0) {
+        return { canDownload: false, reason: 'Bạn đã hết lượt tải tài liệu Premium.' };
+      }
+    } else {
+      // Tài liệu thường
+      dailyUsed = isSameDay ? (user.regularDownloadsUsedToday || 0) : 0;
+      bonusCount = user.regularBonusDownloads || 0;
+      dailyLimit = user.isVip ? 10 : 2;
+      remaining = Math.max(0, dailyLimit - dailyUsed) + bonusCount;
+      
+      console.log('🔍 Check Regular download:', { dailyUsed, bonusCount, dailyLimit, remaining, isSameDay, user });
+      
+      if (remaining <= 0) {
+        return { canDownload: false, reason: 'Bạn đã hết lượt tải tài liệu thường.' };
+      }
+    }
+
+    return { canDownload: true, reason: '' };
+  };
+
+  const handleDownload = () => {
+    const { canDownload, reason } = canUserDownload();
+    
+    if (!canDownload) {
+      setErrorMessage(reason);
       setShowErrorModal(true);
       return;
     }
+    
     // Không dùng modal nữa, gọi trực tiếp performDownload
     performDownload();
   };
@@ -366,8 +420,19 @@ function DocumentDetail() {
         ...prevDoc,
         downloadCount: (prevDoc.downloadCount || 0) + 1,
       }));
-      console.log('Download successful, setting hasDownloaded to true');
       setHasDownloaded(true);
+      
+      // Refresh user data to update download counts
+      if (user?.userId) {
+        try {
+          const userResponse = await getUser(user.userId);
+          if (userResponse?.data) {
+            updateUserContext(userResponse.data);
+          }
+        } catch (error) {
+          console.error('Failed to refresh user data:', error);
+        }
+      }
       
       setCountdown(0);
 
@@ -811,8 +876,14 @@ function DocumentDetail() {
                       variant="outline-secondary"
                       onClick={handleDownload}
                       className="action-btn download-btn"
-                      disabled={doc.approvalStatus === 'Pending'}
-                      title={doc.approvalStatus === 'Pending' ? "Tài liệu đang chờ duyệt" : "Tải xuống tài liệu"}
+                      disabled={doc.approvalStatus === 'Pending' || !canUserDownload().canDownload}
+                      title={
+                        doc.approvalStatus === 'Pending' 
+                          ? "Tài liệu đang chờ duyệt" 
+                          : !canUserDownload().canDownload 
+                            ? canUserDownload().reason
+                            : "Tải xuống tài liệu"
+                      }
                     >
                       <FontAwesomeIcon icon={faDownload} />
                       <div className="btn-content">
@@ -855,11 +926,6 @@ function DocumentDetail() {
                   ) : (
                     <span className="no-rating">Chưa có đánh giá</span>
                   )}
-                </div>
-                <div className="stats-separator">|</div>
-                <div className="stats-item">
-                  <FontAwesomeIcon icon={faCommentDots} />
-                  <span>{comments.length} bình luận</span>
                 </div>
                 <div className="stats-separator">|</div>
                 <div className="stats-item">
@@ -1199,7 +1265,7 @@ function DocumentDetail() {
           onContextMenu={(e) => handleContextMenu(e, 'right')}
           style={{ cursor: user?.isVip ? 'context-menu' : 'default' }}
         >
-          {!hideRightSidebar && <RightSidebar variant="document" />}
+          {!hideRightSidebar && <RightSidebar variant="document" user={user} />}
         </aside>
       </div>
 

@@ -511,7 +511,7 @@ function Profile() {
             /* Div rỗng khi xem profile người khác */
             <></>
           ) : (
-            !hideRightSidebar && <RightSidebar variant="profile" />
+            !hideRightSidebar && <RightSidebar variant="profile" user={user} />
           )}
         </aside>
       </div>

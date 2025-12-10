@@ -335,7 +335,7 @@ const Post = () => {
           onContextMenu={(e) => handleContextMenu(e, 'right')}
           style={{ cursor: user?.isVip ? 'context-menu' : 'default' }}
         >
-          {!hideRightSidebar && <RightSidebar variant="forum" />}
+          {!hideRightSidebar && <RightSidebar variant="forum" user={user} />}
         </aside>
       </div>
     </div>
