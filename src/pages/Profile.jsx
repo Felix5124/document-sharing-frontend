@@ -99,9 +99,10 @@ function Profile() {
           getUserFollows(targetUserId),
         ]);
         setUserData(userResponse.data);
+        console.log('userData.isEmailVerified:', userResponse.data.isEmailVerified);
         setUploads(uploadResponse.data.uploads);
         setUploadCount(uploadResponse.data.uploadCount);
-
+        
         // Only fetch downloads when viewing own profile (private data)
         if (canEdit) {
           try {
@@ -368,7 +369,7 @@ function Profile() {
 
                 <div className="form-group">
                   <label className="form-label">Email</label>
-                  <div className="input-wrapper">
+                  <div className="input-wrapper email-verification-wrapper">
                     <FontAwesomeIcon icon={faEnvelope} className="input-icon" />
                     <input
                       type="email"
@@ -376,6 +377,15 @@ function Profile() {
                       value={userData.email}
                       disabled
                     />
+                    {userData.isEmailVerified ? (
+                      <span className="email-verified-badge" title="Email đã được xác thực">
+                        <FontAwesomeIcon icon={faCheckCircle} /> Đã xác thực
+                      </span>
+                    ) : (
+                      <span className="email-unverified-badge" title="Vui lòng xác thực email">
+                        Chưa xác thực
+                      </span>
+                    )}
                   </div>
                 </div>
                 <div className='profile-follow-stats'>
@@ -501,7 +511,7 @@ function Profile() {
             /* Div rỗng khi xem profile người khác */
             <></>
           ) : (
-            !hideRightSidebar && <RightSidebar variant="profile" />
+            !hideRightSidebar && <RightSidebar variant="profile" user={user} />
           )}
         </aside>
       </div>

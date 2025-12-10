@@ -10,7 +10,8 @@ import {
   getUserFollowing,
   addComment,
   getRelatedDocuments,
-  checkUserHasDownloaded
+  checkUserHasDownloaded,
+  getUser
 } from '../services/api';
 import { getActiveVipSubscription } from '../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -29,7 +30,11 @@ import CustomModal from '../components/DocumentDetail/CustomModal';
 import CustomButton from '../components/DocumentDetail/CustomButton';
 import CustomForm, { FormGroup, FormLabel, FormControl } from '../components/DocumentDetail/CustomForm';
 import ReportModal from '../components/ReportModal';
+import VipPromoBanner from '../components/VipPromoBanner';
+import VipWelcomeBanner from '../components/VipWelcomeBanner';
+import RightSidebar from '../components/RightSidebar';
 import '../styles/pages/DocumentDetail.css';
+import '../styles/layouts/PageWithSidebar.css';
 
 
 
@@ -37,7 +42,7 @@ function DocumentDetail() {
   // ... (Toàn bộ hooks và functions xử lý logic giữ nguyên, không thay đổi) ...
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useContext(AuthContext);
+  const { user, updateUserContext } = useContext(AuthContext);
   const [loadingState, setLoadingState] = useState('loading'); // Các giá trị có thể là: 'loading', 'success', 'error'
   const [errorMessage, setErrorMessage] = useState('');
   const [doc, setDoc] = useState(null);
@@ -47,6 +52,7 @@ function DocumentDetail() {
   const [isFollowing, setIsFollowing] = useState(false);
   const [followId, setFollowId] = useState(null); // Store follow ID for unfollow
   const [loadingFollow, setLoadingFollow] = useState(false);
+  const [loadingFollowStatus, setLoadingFollowStatus] = useState(true);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [numPages, setNumPages] = useState(null);
@@ -62,7 +68,35 @@ function DocumentDetail() {
   const [isLoadingPreview, setIsLoadingPreview] = useState(false);
   const [countdown, setCountdown] = useState(0);
   const [downloadReady, setDownloadReady] = useState(false);
+  const [hideLeftSidebar, setHideLeftSidebar] = useState(false);
+  const [hideRightSidebar, setHideRightSidebar] = useState(false);
+  const [contextMenu, setContextMenu] = useState({ show: false, x: 0, y: 0, type: '' });
 
+
+  // Handle context menu
+  const handleContextMenu = (e, type) => {
+    if (!user?.isVip) return;
+    e.preventDefault();
+    setContextMenu({ show: true, x: e.clientX, y: e.clientY, type });
+  };
+
+  const handleToggleSidebar = (type) => {
+    if (type === 'left') {
+      setHideLeftSidebar(!hideLeftSidebar);
+    } else if (type === 'right') {
+      setHideRightSidebar(!hideRightSidebar);
+    }
+    setContextMenu({ show: false, x: 0, y: 0, type: '' });
+  };
+
+  // Close context menu when clicking outside
+  useEffect(() => {
+    const handleClick = () => setContextMenu({ show: false, x: 0, y: 0, type: '' });
+    if (contextMenu.show) {
+      document.addEventListener('click', handleClick);
+      return () => document.removeEventListener('click', handleClick);
+    }
+  }, [contextMenu.show]);
 
   useEffect(() => {
     setDoc(null);
@@ -74,6 +108,7 @@ function DocumentDetail() {
     setTotalRatedComments(0);
     setIsFollowing(false);
     setFollowId(null); // Reset follow ID
+    setLoadingFollowStatus(true); // Reset loading status
     setHasDownloaded(false);
 
     // --- BẮT ĐẦU THAY ĐỔI ---
@@ -229,7 +264,11 @@ function DocumentDetail() {
   };
 
   const checkFollowStatus = async () => {
-    if (!user || !user.userId || !doc || !doc.uploadedBy) return;
+    if (!user || !user.userId || !doc || !doc.uploadedBy) {
+      setLoadingFollowStatus(false);
+      return;
+    }
+    setLoadingFollowStatus(true);
     try {
       const response = await getUserFollowing(user.userId);
       const follows = Array.isArray(response.data?.$values) ? response.data.$values : (Array.isArray(response.data) ? response.data : []);
@@ -243,15 +282,70 @@ function DocumentDetail() {
       }
     } catch {
       // Ignore follow status check errors
+    } finally {
+      setLoadingFollowStatus(false);
     }
   };
 
-  const handleDownload = () => {
+  // Hàm kiểm tra xem user có thể tải không
+  const canUserDownload = () => {
     if (!user || !user.userId) {
-      setErrorMessage('Vui lòng đăng nhập để tải tài liệu.');
+      return { canDownload: false, reason: 'Vui lòng đăng nhập để tải tài liệu.' };
+    }
+
+    // Kiểm tra nếu là tài liệu VIP mà user không phải VIP
+    if (doc?.isVipOnly && !user.isVip) {
+      return { canDownload: false, reason: 'Đây là tài liệu Premium. Vui lòng nâng cấp tài khoản để tải.' };
+    }
+
+    // Tính lượt tải còn lại
+    const now = new Date();
+    const lastReset = user.lastDownloadResetDate ? new Date(user.lastDownloadResetDate) : null;
+    const isSameDay = lastReset && 
+      now.getFullYear() === lastReset.getFullYear() &&
+      now.getMonth() === lastReset.getMonth() &&
+      now.getDate() === lastReset.getDate();
+
+    let dailyUsed, bonusCount, dailyLimit, remaining;
+    
+    if (doc?.isVipOnly) {
+      // Tài liệu Premium
+      dailyUsed = isSameDay ? (user.vipDownloadsUsedToday || 0) : 0;
+      bonusCount = user.vipBonusDownloads || 0;
+      dailyLimit = user.isVip ? 10 : 0;
+      remaining = Math.max(0, dailyLimit - dailyUsed) + bonusCount;
+      
+      console.log('🔍 Check Premium download:', { dailyUsed, bonusCount, dailyLimit, remaining, isSameDay, user });
+      
+      if (remaining <= 0) {
+        return { canDownload: false, reason: 'Bạn đã hết lượt tải tài liệu Premium.' };
+      }
+    } else {
+      // Tài liệu thường
+      dailyUsed = isSameDay ? (user.regularDownloadsUsedToday || 0) : 0;
+      bonusCount = user.regularBonusDownloads || 0;
+      dailyLimit = user.isVip ? 10 : 2;
+      remaining = Math.max(0, dailyLimit - dailyUsed) + bonusCount;
+      
+      console.log('🔍 Check Regular download:', { dailyUsed, bonusCount, dailyLimit, remaining, isSameDay, user });
+      
+      if (remaining <= 0) {
+        return { canDownload: false, reason: 'Bạn đã hết lượt tải tài liệu thường.' };
+      }
+    }
+
+    return { canDownload: true, reason: '' };
+  };
+
+  const handleDownload = () => {
+    const { canDownload, reason } = canUserDownload();
+    
+    if (!canDownload) {
+      setErrorMessage(reason);
       setShowErrorModal(true);
       return;
     }
+    
     // Không dùng modal nữa, gọi trực tiếp performDownload
     performDownload();
   };
@@ -326,8 +420,19 @@ function DocumentDetail() {
         ...prevDoc,
         downloadCount: (prevDoc.downloadCount || 0) + 1,
       }));
-      console.log('Download successful, setting hasDownloaded to true');
       setHasDownloaded(true);
+      
+      // Refresh user data to update download counts
+      if (user?.userId) {
+        try {
+          const userResponse = await getUser(user.userId);
+          if (userResponse?.data) {
+            updateUserContext(userResponse.data);
+          }
+        } catch (error) {
+          console.error('Failed to refresh user data:', error);
+        }
+      }
       
       setCountdown(0);
 
@@ -563,8 +668,47 @@ function DocumentDetail() {
   }
 
   return (
-    <div className="document-detail-page">
-      <div className="document-detail-container">
+    <div className="all-container">
+      {/* Context Menu */}
+      {contextMenu.show && (
+        <div 
+          className="sidebar-context-menu"
+          style={{ top: contextMenu.y, left: contextMenu.x }}
+        >
+          <button onClick={() => handleToggleSidebar(contextMenu.type)}>
+            {(contextMenu.type === 'left' && hideLeftSidebar) || (contextMenu.type === 'right' && hideRightSidebar) 
+              ? '👁️ Hiển thị' 
+              : '🚫 Ẩn'}
+          </button>
+        </div>
+      )}
+
+      <div className={`page-layout-with-sidebar ${user?.isVip ? 'no-left-sidebar' : ''}`}>
+        {/* Left Sidebar - VIP Banner */}
+        {!user && (
+          <aside className="page-sidebar">
+            <VipPromoBanner variant="document" />
+          </aside>
+        )}
+        {user && !user.isVip && (
+          <aside className="page-sidebar">
+            <VipPromoBanner variant="document" />
+          </aside>
+        )}
+        {user?.isVip && (
+          <aside 
+            className="page-sidebar"
+            onContextMenu={(e) => handleContextMenu(e, 'left')}
+            style={{ cursor: 'context-menu' }}
+          >
+            {!hideLeftSidebar && <VipWelcomeBanner />}
+          </aside>
+        )}
+
+        {/* Main Content */}
+        <div className="page-main-content">
+          <div className="document-detail-page">
+            <div className="document-detail-container">
         {/* === MAIN CONTENT SECTION === */}
         <div className="layout-grid main-content-section">
           <div className="layout-column full-width">
@@ -624,11 +768,20 @@ function DocumentDetail() {
                         variant={isFollowing ? "success" : "outline-success"}
                         size="sm"
                         onClick={handleFollowAuthor}
-                        disabled={loadingFollow}
+                        disabled={loadingFollow || loadingFollowStatus}
                         className="follow-btn"
                       >
-                        <span className={`follow-icon ${isFollowing ? 'icon-person-check' : 'icon-person-plus'}`}></span>
-                        {isFollowing ? 'Đã theo dõi' : loadingFollow ? 'Đang xử lý...' : 'Theo dõi'}
+                        {loadingFollowStatus ? (
+                          <div className="follow-btn-loading">
+                            <div className="follow-btn-spinner"></div>
+                            <span>Đang tải...</span>
+                          </div>
+                        ) : (
+                          <>
+                            <span className={`follow-icon ${isFollowing ? 'icon-person-check' : 'icon-person-plus'}`}></span>
+                            {isFollowing ? 'Đã theo dõi' : loadingFollow ? 'Đang xử lý...' : 'Theo dõi'}
+                          </>
+                        )}
                       </CustomButton>
                     )}
                   </div>
@@ -723,8 +876,14 @@ function DocumentDetail() {
                       variant="outline-secondary"
                       onClick={handleDownload}
                       className="action-btn download-btn"
-                      disabled={doc.approvalStatus === 'Pending'}
-                      title={doc.approvalStatus === 'Pending' ? "Tài liệu đang chờ duyệt" : "Tải xuống tài liệu"}
+                      disabled={doc.approvalStatus === 'Pending' || !canUserDownload().canDownload}
+                      title={
+                        doc.approvalStatus === 'Pending' 
+                          ? "Tài liệu đang chờ duyệt" 
+                          : !canUserDownload().canDownload 
+                            ? canUserDownload().reason
+                            : "Tải xuống tài liệu"
+                      }
                     >
                       <FontAwesomeIcon icon={faDownload} />
                       <div className="btn-content">
@@ -767,11 +926,6 @@ function DocumentDetail() {
                   ) : (
                     <span className="no-rating">Chưa có đánh giá</span>
                   )}
-                </div>
-                <div className="stats-separator">|</div>
-                <div className="stats-item">
-                  <FontAwesomeIcon icon={faCommentDots} />
-                  <span>{comments.length} bình luận</span>
                 </div>
                 <div className="stats-separator">|</div>
                 <div className="stats-item">
@@ -889,12 +1043,8 @@ function DocumentDetail() {
 
             {relatedDocsByCategory && relatedDocsByCategory.length > 0 && (
               <div className="related-documents-section">
-                <div className="section-header">
-                  <div className="section-icon">
-                    <FontAwesomeIcon icon={faFile} />
-                  </div>
-                  <h3 className="section-title">Có thể bạn quan tâm</h3>
-                  <div className="section-subtitle">Tài liệu cùng danh mục</div>
+                <div className="section-header-detail">
+                  <h3 className="section-title">Tài liệu cùng danh mục</h3>
                 </div>
 
                 <div className="related-documents-grid">
@@ -1105,9 +1255,21 @@ function DocumentDetail() {
 
           </div>
         </div>
+            </div>
+          </div>
+        </div>
 
+        {/* Right Sidebar */}
+        <aside 
+          className="page-sidebar-right"
+          onContextMenu={(e) => handleContextMenu(e, 'right')}
+          style={{ cursor: user?.isVip ? 'context-menu' : 'default' }}
+        >
+          {!hideRightSidebar && <RightSidebar variant="document" user={user} />}
+        </aside>
       </div>
 
+      {/* Modals - Outside layout */}
       <CustomModal
         show={showConfirmModal}
         onHide={handleCancelDownload}
