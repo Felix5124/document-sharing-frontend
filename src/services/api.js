@@ -291,6 +291,9 @@ export const getUserPayments = (userId) =>
 export const getAllPayments = (page = 1, pageSize = 20) =>
   apiClient.get(`/payments/all?page=${page}&pageSize=${pageSize}`);
 
+export const getAdminPaymentsList = (params) =>
+  apiClient.get('/payments/admin/list', { params });
+
 // --- API cho Báo cáo Vi phạm ---
 export const createReport = (data) => apiClient.post("/reports", data);
 // API cho quản trị viên lấy danh sách người dùng với phân trang và lọc
