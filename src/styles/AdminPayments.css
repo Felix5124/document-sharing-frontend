@@ -293,6 +293,15 @@
   transition: all 0.3s;
 }
 
+.btn-primary {
+  background: #0d6efd;
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #0b5ed7;
+}
+
 .btn-danger {
   background: #dc3545;
   color: white;
@@ -346,4 +355,241 @@
   .modal-content {
     padding: 20px;
   }
+}
+
+/* Thêm style cho trạng thái Completed */
+.status-completed {
+  color: #059669; /* Màu xanh lá đậm */
+  font-weight: bold;
+}
+
+/* Tùy chỉnh input date trong bộ lọc */
+input[type="date"].select-filter {
+    font-family: inherit;
+    color: #374151;
+}
+
+/* Đảm bảo pagination hiển thị đẹp trong container này */
+.pagination-section {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
+
+.pagination-info {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.btn-page {
+    padding: 8px 16px;
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.btn-page:hover:not(:disabled) {
+    background: #e5e7eb;
+    border-color: #9ca3af;
+}
+
+.btn-page:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Loading container */
+.loading-container {
+    text-align: center;
+    padding: 40px;
+}
+
+.spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #0d6efd;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 15px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+    color: #6b7280;
+    font-size: 16px;
+}
+
+/* Thêm vào cuối file AdminPayments.css */
+
+/* --- CẢI TIẾN GIAO DIỆN DATE PICKER --- */
+
+/* 1. Tùy chỉnh ô Input */
+.date-picker-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.date-input-custom {
+    width: 100%;
+    padding: 10px 12px 10px 40px !important; /* Padding trái để chừa chỗ icon */
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    color: #374151;
+    background-color: #fff;
+    transition: all 0.2s ease;
+}
+
+.date-input-custom:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    outline: none;
+}
+
+/* Icon lịch bên trong input */
+.calendar-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6b7280;
+    pointer-events: none;
+    font-size: 1rem;
+    z-index: 1;
+}
+
+/* 2. Tùy chỉnh Popup Lịch (Calendar) */
+.custom-datepicker-popper {
+    z-index: 9999 !important; /* Đảm bảo luôn nổi lên trên */
+}
+
+.react-datepicker {
+    font-family: 'Inter', sans-serif !important;
+    border: none !important;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+    overflow: hidden;
+    background-color: white;
+}
+
+/* Header (Tháng/Năm) */
+.react-datepicker__header {
+    background: #fff !important; /* Nền trắng sạch */
+    border-bottom: 1px solid #f3f4f6 !important;
+    padding-top: 15px !important;
+}
+
+.react-datepicker__current-month {
+    color: #111827 !important;
+    font-weight: 700 !important;
+    font-size: 1rem !important;
+    margin-bottom: 5px;
+    text-transform: capitalize;
+}
+
+/* Tên thứ trong tuần (Mo, Tu, We...) */
+.react-datepicker__day-name {
+    color: #9ca3af !important;
+    width: 36px !important;
+    font-weight: 600 !important;
+    margin: 2px !important;
+}
+
+/* Dropdown chọn tháng/năm */
+.react-datepicker__header select {
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 2px 5px;
+    font-size: 0.85rem;
+    color: #374151;
+    margin: 0 5px;
+    cursor: pointer;
+}
+
+/* Các ngày trong tháng */
+.react-datepicker__day {
+    width: 36px !important;
+    height: 36px !important;
+    line-height: 36px !important;
+    margin: 2px !important;
+    border-radius: 50% !important; /* Hình tròn */
+    color: #374151 !important;
+    font-weight: 500;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.react-datepicker__day:hover {
+    background-color: #eff6ff !important; /* Xanh nhạt khi hover */
+    color: #3b82f6 !important;
+}
+
+/* Ngày được chọn */
+.react-datepicker__day--selected,
+.react-datepicker__day--keyboard-selected {
+    background-color: #3b82f6 !important; /* Màu xanh chủ đạo */
+    color: white !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+}
+
+/* Ngày hôm nay */
+.react-datepicker__day--today {
+    color: #3b82f6 !important;
+    font-weight: bold !important;
+    background-color: transparent;
+    border: 1px solid #3b82f6;
+}
+
+.react-datepicker__day--today.react-datepicker__day--selected {
+    background-color: #3b82f6 !important;
+    color: white !important;
+}
+
+/* Ngày bị disable (ví dụ: ngày tương lai) */
+.react-datepicker__day--disabled {
+    color: #d1d5db !important;
+    pointer-events: none;
+}
+
+/* Các ngày ngoài tháng hiện tại */
+.react-datepicker__day--outside-month {
+    color: #d1d5db !important;
+}
+
+/* Nút điều hướng (Tháng trước/sau) */
+.react-datepicker__navigation {
+    top: 13px !important;
+}
+
+.react-datepicker__navigation-icon::before {
+    border-color: #6b7280 !important;
+    border-width: 2px 2px 0 0 !important;
+}
+
+/* Nút "Hôm nay" */
+.react-datepicker__today-button {
+    background: #f9fafb !important;
+    border-top: 1px solid #e5e7eb !important;
+    color: #3b82f6 !important;
+    font-weight: 600 !important;
+    padding: 8px 0 !important;
+    font-size: 0.9rem;
+}
+
+/* Tam giác chỉ hướng popup */
+.react-datepicker__triangle {
+    display: none !important; /* Ẩn tam giác cho gọn */
 }
