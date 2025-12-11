@@ -93,11 +93,13 @@ function RankingsPage() {
 
     const currentTabData = tabConfig[activeTab];
 
-    // Component RankingList giữ nguyên
+    // Component RankingList với khả năng click vào profile người dùng
     const RankingList = ({ title, data, valueKey = "value", unit = "", itemType = "user", iconModifier }) => {
         const handleItemClick = (item) => {
             if (itemType === "document" && item.documentId) {
                 navigate(`/document/${item.documentId}`);
+            } else if (itemType === "user" && item.userId) {
+                navigate(`/profile/${item.userId}`);
             }
         };
 
@@ -113,8 +115,8 @@ function RankingsPage() {
                             {data.map((item, index) => (
                                 <li
                                     key={itemType === "user" ? item.userId : item.documentId || index}
-                                    className={`ranking-card__item ${itemType === "document" ? 'ranking-card__item--clickable' : ''}`}
-                                    onClick={itemType === "document" ? () => handleItemClick(item) : undefined}
+                                    className="ranking-card__item ranking-card__item--clickable"
+                                    onClick={() => handleItemClick(item)}
                                 >
                                     <span className="ranking-card__position">#{index + 1}</span>
                                     <img

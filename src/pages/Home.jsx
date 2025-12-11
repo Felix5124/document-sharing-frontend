@@ -486,25 +486,36 @@ function Home() {
           <div className="contributor-card">
             {linkTo ? (
               <>
-                <img
-                  src={getFullImageUrl(data.coverImageUrl)}
-                  alt={data.title}
-                  className="contributor-image"
-                  onError={(e) => (e.target.src = getFullImageUrl(null))}
-                />
-                <p className="contributor-name">{data.title}</p>
+                <Link to={linkTo}>
+                  <img
+                    src={getFullImageUrl(data.coverImageUrl)}
+                    alt={data.title}
+                    className="contributor-image"
+                    onError={(e) => (e.target.src = getFullImageUrl(null))}
+                  />
+                </Link>
+                <Link to={linkTo} className="contributor-name-link">
+                  {data.title}
+                </Link>
                 <p className="contributor-stat">{statLabel}: {statValue}</p>
                 <Link to={linkTo} className="contributor-link">Xem chi tiết</Link>
               </>
             ) : (
               <>
-                <img
-                  src={getFullAvatarUrl(data.avatarUrl)}
-                  alt={data.fullName || 'User Avatar'}
-                  className="contributor-avatar"
-                  onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = getFullAvatarUrl(null); }}
-                />
-                <p className="contributor-name">{data.fullName || data.email}</p>
+                <Link to={data.userId ? `/profile/${data.userId}` : '/profile'}>
+                  <img
+                    src={getFullAvatarUrl(data.avatarUrl)}
+                    alt={data.fullName || 'User Avatar'}
+                    className="contributor-avatar"
+                    onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = getFullAvatarUrl(null); }}
+                  />
+                </Link>
+                <Link 
+                  to={data.userId ? `/profile/${data.userId}` : '/profile'} 
+                  className="contributor-name-link"
+                >
+                  {data.fullName || data.email}
+                </Link>
                 <p className="contributor-stat">{statLabel}: {statValue}</p>
               </>
             )}
