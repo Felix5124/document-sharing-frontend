@@ -14,7 +14,8 @@ import {
   faRightFromBracket,
   faRightToBracket,
   faUserPlus,
-  faBars
+  faBars,
+  faKey
 } from '@fortawesome/free-solid-svg-icons';
 import { getUserNotifications } from '../services/api';
 import logo from '../assets/images/logoweb.png';
@@ -28,6 +29,8 @@ function Navbar() {
   const navbarRef = useRef(null);
   const dropdownRef = useRef(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const [isVisible, setIsVisible] = useState(true);
 
   // --- Đóng dropdown khi click ra ngoài ---
   useEffect(() => {
@@ -65,17 +68,36 @@ function Navbar() {
   // --- Navbar cuộn ---
   useEffect(() => {
     const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
       if (navbarRef.current) {
-        if (window.scrollY > 50) {
+        // Thêm class 'scrolled' khi cuộn xuống
+        if (currentScrollY > 50) {
           navbarRef.current.classList.add('scrolled');
         } else {
           navbarRef.current.classList.remove('scrolled');
         }
+
+        // Lấy vị trí của banner-content
+        const bannerContent = document.querySelector('.banner-content');
+        const bannerHeight = bannerContent ? bannerContent.offsetHeight + bannerContent.offsetTop : 300;
+
+        // Ẩn/hiện navbar dựa trên hướng cuộn và vị trí banner
+        if (currentScrollY > lastScrollY && currentScrollY > bannerHeight) {
+          // Cuộn xuống và đã qua banner - ẩn navbar
+          setIsVisible(false);
+        } else if (currentScrollY < lastScrollY) {
+          // Cuộn lên - hiện navbar
+          setIsVisible(true);
+        }
       }
+      
+      setLastScrollY(currentScrollY);
     };
+    
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [lastScrollY]);
 
   // --- Fetch lại khi user hoặc path thay đổi ---
   useEffect(() => {
@@ -100,7 +122,7 @@ function Navbar() {
   const toggleMenu = () => setMenuOpen((prev) => !prev);
 
   return (
-    <nav ref={navbarRef} className="navbar">
+    <nav ref={navbarRef} className={`navbar ${!isVisible ? 'hidden' : ''}`}>
       <div className="navbar-container">
         <div className="navbar-logo">
           <Link className="navbar-logo-item" to="/">
@@ -228,6 +250,15 @@ function Navbar() {
                             </Link>
                           </li>
                         )}
+                        <li>
+                          <Link
+                            className={`drop-menu-btn ${location.pathname === '/change-password' ? 'active' : ''}`}
+                            to="/change-password"
+                            onClick={() => setMenuOpen(false)}
+                          >
+                            <FontAwesomeIcon icon={faKey} /> Đổi mật khẩu
+                          </Link>
+                        </li>
                         <li>
                           <button
                             className="logout-button"

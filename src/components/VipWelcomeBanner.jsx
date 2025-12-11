@@ -22,15 +22,11 @@ const VipWelcomeBanner = () => {
         <div className="vip-perks">
           <div className="vip-perk-item">
             <FontAwesomeIcon icon={faStar} />
-            <span>Tải 20 file/ngày</span>
+            <span>Tải 13 file/ngày</span>
           </div>
           <div className="vip-perk-item">
             <FontAwesomeIcon icon={faGift} />
-            <span>Xem 10 trang PDF</span>
-          </div>
-          <div className="vip-perk-item">
-            <FontAwesomeIcon icon={faTrophy} />
-            <span>Ưu tiên duyệt bài</span>
+            <span>Xem 15 trang PDF</span>
           </div>
           <div className="vip-perk-item">
             <FontAwesomeIcon icon={faHeart} />

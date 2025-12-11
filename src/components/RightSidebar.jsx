@@ -84,13 +84,13 @@ const RightSidebar = ({ variant = 'default', user = null }) => {
     let regularBonusCount = 0;
 
     if (isVip) {
-      // VIP users: 10 VIP downloads + 10 regular downloads per day (không tính bonus vào)
-      vipDownloadsRemaining = Math.max(0, 10 - (user.vipDownloadsUsedToday || 0));
-      regularDownloadsRemaining = Math.max(0, 10 - (user.regularDownloadsUsedToday || 0));
+      // VIP users: 5 VIP downloads + 8 regular downloads per day (reset mỗi ngày, không cộng dồn)
+      vipDownloadsRemaining = Math.max(0, 5 - (user.vipDownloadsUsedToday || 0));
+      regularDownloadsRemaining = Math.max(0, 8 - (user.regularDownloadsUsedToday || 0));
       vipBonusCount = user.vipBonusDownloads || 0;
       regularBonusCount = user.regularBonusDownloads || 0;
     } else {
-      // Regular users: 2 downloads per day (không tính bonus vào)
+      // Regular users: 2 downloads per day (reset mỗi ngày, không cộng dồn)
       const dailyUsed = user.regularDownloadsUsedToday || 0;
       regularDownloadsRemaining = Math.max(0, 2 - dailyUsed);
       regularBonusCount = user.regularBonusDownloads || 0;
@@ -127,11 +127,11 @@ const RightSidebar = ({ variant = 'default', user = null }) => {
                 <>
                   <div className="download-limit-item vip-downloads">
                     <span className="download-label">Tài liệu Premium:</span>
-                    <span className="download-count vip">{downloadInfo.vipDownloadsRemaining}/10</span>
+                    <span className="download-count vip">{downloadInfo.vipDownloadsRemaining}/5</span>
                   </div>
                   <div className="download-limit-item regular-downloads">
                     <span className="download-label">Tài liệu thường:</span>
-                    <span className="download-count regular">{downloadInfo.regularDownloadsRemaining}/10</span>
+                    <span className="download-count regular">{downloadInfo.regularDownloadsRemaining}/8</span>
                   </div>
                   {/* Bonus downloads - separate row */}
                   {(downloadInfo.vipBonusCount > 0 || downloadInfo.regularBonusCount > 0) && (

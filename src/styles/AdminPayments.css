@@ -248,14 +248,6 @@
   color: #495057;
 }
 
-.form-group label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 600;
-  color: #495057;
-  font-size: 14px;
-}
-
 .required {
   color: #dc3545;
 }
@@ -314,10 +306,6 @@
 .btn-secondary {
   background: #6c757d;
   color: white;
-}
-
-.btn-secondary:hover:not(:disabled) {
-  background: #5a6268;
 }
 
 .modal-actions button:disabled {

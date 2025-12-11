@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useContext, useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -136,6 +136,11 @@ function Login() {
                 )}
               </button>
             </div>
+            
+            <div className="forgot-password-link">
+              <Link to="/forgot-password">Quên mật khẩu?</Link>
+            </div>
+
             <div className="button-row divider-row">
               <span className="divider-text-auth">Hoặc</span>
             </div>
