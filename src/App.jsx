@@ -28,6 +28,7 @@ import UpdateDocument from './components/UpdateDocument';
 import SearchResultsPage from './pages/SearchResultsPage';
 import Chatbot from './components/Chatbot'
 import UpgradeAccount from './pages/UpgradeAccount';
+import About from './pages/About';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUp, faComment } from '@fortawesome/free-solid-svg-icons';
 
@@ -124,7 +125,7 @@ function App() {
           <Route path="/follow" element={<PrivateRoute><Follow /></PrivateRoute>} />
           <Route path="/follow-list" element={<PrivateRoute><FollowList /></PrivateRoute>} />
           <Route path="/search" element={<SearchResultsPage />} />
-          <Route path="/about" element={<ErrorBoundary><div>Giới thiệu</div></ErrorBoundary>} />
+          <Route path="/about" element={<ErrorBoundary><About /></ErrorBoundary>} />
           <Route path="/contact" element={<ErrorBoundary><div>Liên hệ</div></ErrorBoundary>} />
           <Route path="/privacy" element={<ErrorBoundary><div>Bảo mật</div></ErrorBoundary>} />
           <Route path="/help" element={<ErrorBoundary><div>Trợ giúp</div></ErrorBoundary>} />
@@ -155,7 +156,6 @@ function App() {
                 <h4 className="footer-title">Công ty</h4>
                 <ul className="footer-links">
                   <li><Link to="/about">Giới thiệu</Link></li>
-                  <li><Link to="/contact">Liên hệ</Link></li>
                   <li><Link to="/privacy">Bảo mật</Link></li>
                   <li><Link to="/help">Trợ giúp</Link></li>
                 </ul>
@@ -164,9 +164,9 @@ function App() {
               {/* Cột Liên hệ */}
               <div className="footer-column">
                 <h4 className="footer-title">Liên hệ</h4>
-                <p><i className="fas fa-map-marker-alt"></i> Trường Đại Học Hutech</p>
-                <p><i className="fas fa-phone-alt"></i> +012 345 67890</p>
-                <p><i className="fas fa-envelope"></i> hutech@example.com</p>
+                <p><i className="fas fa-map-marker-alt"></i>Quản trị viên</p>
+                <p><i className="fas fa-phone"></i> +84 123 456 789</p>
+                <p><i className="fas fa-envelope"></i> hungzk124@gmail.com</p>
                 <div className="footer-socials">
                   <a href="https://twitter.com" target="_blank" rel="noopener noreferrer"><i className="fab fa-twitter"></i></a>
                   <a href="https://facebook.com" target="_blank" rel="noopener noreferrer"><i className="fab fa-facebook-f"></i></a>

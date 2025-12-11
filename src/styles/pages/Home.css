@@ -353,7 +353,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 24px;
-  margin-top: 24px;
+  margin: 24px 30px 24px 30px;
 }
 
 .contrib-box {
@@ -802,7 +802,7 @@
 }
 
 .document-description {
-  height: 30px;
+  height: 28px;
   font-size: 0.75rem;
   color: var(--color-subtitle);
   margin: 10px 0;
@@ -897,7 +897,7 @@
    ======================================== */
 
 .vip-horizontal-banner-wrapper {
-  margin: 50px 0;
+  margin: 40px 0;
   animation: fadeInScale 0.8s ease-out;
 }
 
@@ -919,7 +919,7 @@
   gap: 40px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border-radius: 20px;
-  padding: 40px 50px;
+  padding: 30px 60px;
   text-decoration: none;
   color: white;
   box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
@@ -975,7 +975,7 @@
 }
 
 .vip-horizontal-title {
-  font-size: 2rem;
+  font-size: 1.6rem;
   font-weight: 700;
   margin-bottom: 12px;
   line-height: 1.2;

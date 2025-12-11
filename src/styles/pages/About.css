@@ -1,0 +1,75 @@
+.about-page {
+  padding: 2rem 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.about-page h1 {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+.about-section {
+  margin-top: 1.25rem;
+}
+.about-section.detail {
+  width: 70%;
+  margin-left: auto;
+  margin-right: auto;
+}
+.about-section.detail p{
+  text-align: center;
+}
+.about-section h2 {
+  font-size: 1.5rem;
+  text-align: center;
+  margin-bottom: 0.75rem;
+}
+.about-section p {
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+.members-grid {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.member-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
+  border: 1px solid #e6e6e6;
+  border-radius: 8px;
+  background: #fff;
+}
+.member-avatar {
+  width: 300px;
+  height: 400px;
+  object-fit: cover;
+}
+.member-info {
+  display: flex;
+  flex-direction: column;
+}
+.member-name,.member-role,.member-placeholder {
+  text-align: center;
+  margin-bottom: 5px;
+}
+.member-name {
+  font-size: 1.05rem;
+}
+.member-role {
+  font-size: 0.9rem;
+  color: #666;
+}
+.member-placeholder {
+  font-size: 0.85rem;
+  color: #888;
+  margin-top: 4px;
+}
+.note {
+  text-align: center;
+}
