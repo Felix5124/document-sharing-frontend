@@ -801,7 +801,7 @@ function Home() {
               </div>
             </div>
 
-            {!user?.isVip && (
+            {!user && (
               <div className="cta-section">
                 <h3 className="cta-title">Sẵn Sàng Bắt Đầu?</h3>
                 <p className="cta-description">
@@ -810,9 +810,6 @@ function Home() {
                 <div className="cta-buttons">
                   <Link to="/register" className="btn-cta-primary">
                     <FontAwesomeIcon icon={faUpload} /> Đăng Ký Ngay
-                  </Link>
-                  <Link to="/upgrade-account" className="btn-cta-secondary">
-                    <FontAwesomeIcon icon={faCrown} /> Nâng Cấp Premium
                   </Link>
                 </div>
               </div>
