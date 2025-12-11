@@ -42,7 +42,6 @@
 	cursor: pointer;
 	font-weight: 600;
 	font-size: 0.95rem;
-	transition: all 0.3s ease;
 	box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 .btn-danger:hover {

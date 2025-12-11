@@ -89,6 +89,9 @@ export const uploadAvatar = (userId, file) => {
     headers: { "Content-Type": "multipart/form-data" },
   });
 };
+export const changePassword = (data) => apiClient.post("/users/change-password", data);
+export const forgotPassword = (data) => apiClient.post("/users/forgot-password", data);
+export const resetPassword = (data) => apiClient.post("/users/reset-password", data);
 
 // --- API cho tài liệu ---
 export const getDocuments = (params) => apiClient.get("/documents", { params });

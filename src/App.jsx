@@ -16,6 +16,9 @@ import Follow from './components/Follow';
 import Post from './components/Post';
 import RankingsPage from './pages/RankingsPage';
 import FollowList from './pages/FollowList';
+import ChangePassword from './pages/ChangePassword';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -88,6 +91,9 @@ function App() {
           <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
           {/* View other user's profile (public) */}
           <Route path="/profile/:id" element={<ErrorBoundary><Profile /></ErrorBoundary>} />
+          <Route path="/change-password" element={<PrivateRoute><ChangePassword /></PrivateRoute>} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/upgrade-account" element={<PrivateRoute><UpgradeAccount /></PrivateRoute>} />
           <Route
             path="/admin"
