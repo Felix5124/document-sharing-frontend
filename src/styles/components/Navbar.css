@@ -9,6 +9,12 @@
   display: flex;
   z-index: 1000;
   align-items: center;
+  transform: translateY(0);
+  transition: transform 0.3s ease-in-out;
+}
+
+.navbar.hidden {
+  transform: translateY(-100%);
 }
 
 .navbar-container {
@@ -223,6 +229,7 @@
 .dropdown-menu {
   position: absolute;
   display: flex;
+  text-align: left;
   flex-direction: column;
   gap: 2px;
   top: 100%;

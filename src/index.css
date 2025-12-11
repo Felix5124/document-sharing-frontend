@@ -457,14 +457,6 @@ body {
   font-size: 0.875rem;
 }
 
-.button-group {
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* Căn giữa theo chiều ngang */
-  gap: 16px; /* Khoảng cách giữa các hàng */
-  margin-top: 24px;
-}
-
 .button-row {
   width: 100%;
   display: flex;

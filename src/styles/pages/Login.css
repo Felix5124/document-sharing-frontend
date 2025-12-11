@@ -61,7 +61,7 @@
   font-size: 1.6rem;
   font-weight: 700;
   color: var(--color-button);
-  margin-bottom: 24px;
+  margin-bottom: 5px;
 }
 
 .auth-link {
@@ -69,6 +69,25 @@
   margin-top: 16px;
   font-size: 0.95rem;
   color: var(--color-text);
+}
+
+.forgot-password-link {
+  text-align: right;
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+
+.forgot-password-link a {
+  color: #1a73e8;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.forgot-password-link a:hover {
+  color: #1557b0;
+  text-decoration: underline;
 }
 
 .link-text {
@@ -79,15 +98,6 @@
 
 .link-text:hover {
   text-decoration: underline;
-}
-
-/* Button styles */
-.button-group {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  margin-top: 24px;
 }
 
 .button-row {

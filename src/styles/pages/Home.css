@@ -661,11 +661,18 @@
 }
 
 .contributor-image {
-  width: 70%;
+  width: 100%;
   height: 120px;
   object-fit: cover;
   border-radius: 8px;
   margin-bottom: 1rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.contributor-image:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .contributor-avatar {
@@ -674,6 +681,13 @@
   border-radius: 50%;
   object-fit: cover;
   margin-bottom: 1rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.contributor-avatar:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .contributor-name {
@@ -687,6 +701,26 @@
   overflow: hidden;            /* Ẩn phần vượt quá */
   text-overflow: ellipsis;     /* Thêm dấu … */
   word-break: break-word;      /* Ngắt từ nếu cần */
+}
+
+.contributor-name-link {
+  font-size: 1.2rem;
+  color: var(--color-text);
+  margin-bottom: 0.5rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.contributor-name-link:hover {
+  transform: scale(1.05);
+  transition: all 0.2s ease-out;
 }
 
 .contributor-stat {

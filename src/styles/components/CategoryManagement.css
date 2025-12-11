@@ -133,6 +133,7 @@
 /* Button Groups */
 .button-group {
   display: flex;
+  justify-content: center;
   gap: 12px;
   align-items: center;
   flex-wrap: wrap;
