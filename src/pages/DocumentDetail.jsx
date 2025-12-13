@@ -761,7 +761,7 @@ function DocumentDetail() {
                       style={{ cursor: doc.uploadedBy ? 'pointer' : 'default' }}
                       title={doc.uploadedBy ? 'Xem profile tác giả' : ''}
                     >
-                      {doc.email || 'Ẩn danh'}
+                      {doc.user?.fullName || doc.user?.email || 'Ẩn danh'}
                     </span>
                     {user && user.userId !== doc.uploadedBy && doc.uploadedBy && (
                       <CustomButton
