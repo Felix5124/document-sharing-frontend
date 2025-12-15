@@ -133,8 +133,8 @@ function DocumentManagement() {
           </button>
         </td>
         <td>{doc.email || 'Không xác định'}</td>
-        <td className="download-count">{doc.downloadCount}</td>
-        <td className="download-count">{doc.uniqueDownloadCount ?? 0}</td>
+        <td >{doc.downloadCount}</td>
+        <td >{doc.uniqueDownloadCount ?? 0}</td>
         <td>
           <div className="status-container">
             <span className={`status-badge status-${doc.approvalStatus?.toLowerCase()}`}>
