@@ -26,7 +26,7 @@ const VipWelcomeBanner = () => {
           </div>
           <div className="vip-perk-item">
             <FontAwesomeIcon icon={faGift} />
-            <span>Xem 15 trang PDF</span>
+            <span>Xem 10 trang PDF</span>
           </div>
           <div className="vip-perk-item">
             <FontAwesomeIcon icon={faHeart} />
