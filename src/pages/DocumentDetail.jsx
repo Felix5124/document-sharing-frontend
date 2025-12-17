@@ -1114,7 +1114,7 @@ function DocumentDetail() {
                   <div className="comment-form-column">
                     <FormGroup className="comment-form-group rating-group">
                       <FormLabel>Đánh giá (sao)</FormLabel>
-                      <div className="rating-input-wrapper">
+                      <div className="rating-input-wrapper-star">
                         <StarRatingInput
                           rating={comment.Rating}
                           onChange={(rating) => setComment({ ...comment, Rating: rating })}

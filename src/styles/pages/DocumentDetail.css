@@ -338,6 +338,11 @@ textarea.form-control {
   align-items: center;
   margin-left: 100px;
 }
+.rating-input-wrapper-star {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
 .form-max {
   width: 150px;
   flex-shrink: 0;
