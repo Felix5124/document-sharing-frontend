@@ -3,7 +3,7 @@ import { useContext } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { AuthContext } from '../context/AuthContext';
-import { getUserFollowing, getUserFollows, unfollow } from '../services/api';
+import { getUserFollowing, getUserFollows, unfollow, getUser } from '../services/api';
 import { getFullAvatarUrl } from '../utils/avatarUtils';
 import '../styles/pages/FollowList.css';
 
@@ -13,9 +13,21 @@ function FollowList() {
   const type = searchParams.get('type') || 'following'; // 'following' or 'followers'
   const [following, setFollowing] = useState([]);
   const [followers, setFollowers] = useState([]);
+  const [followingCount, setFollowingCount] = useState(0);
+  const [followersCount, setFollowersCount] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [loadingCounts, setLoadingCounts] = useState(false);
   const [activeTab, setActiveTab] = useState(type);
   const navigate = useNavigate();
+
+  const navigateToProfile = (idCandidate) => {
+    const id = Number(idCandidate);
+    if (!id || Number.isNaN(id)) {
+      toast.error('Không xác định được người dùng.');
+      return;
+    }
+    navigate(`/profile/${id}`);
+  };
 
   useEffect(() => {
     setActiveTab(type);
@@ -28,6 +40,29 @@ function FollowList() {
       fetchFollowers();
     }
   }, [activeTab, user]);
+
+  // Also fetch both lists (lightweight) when user changes so tab counts show immediately
+  useEffect(() => {
+    const fetchCounts = async () => {
+      if (!user?.userId) return;
+      setLoadingCounts(true);
+      try {
+        const resp = await getUser(user.userId);
+        const u = resp.data;
+        // Backend returns followersCount and followingCount in user detail
+        const followingCnt = u?.followingCount ?? 0;
+        const followersCnt = u?.followersCount ?? 0;
+        setFollowingCount(followingCnt);
+        setFollowersCount(followersCnt);
+      } catch (err) {
+        console.warn('Could not fetch follow counts', err);
+      } finally {
+        setLoadingCounts(false);
+      }
+    };
+
+    fetchCounts();
+  }, [user]);
 
   const fetchFollowing = async () => {
     setLoading(true);
@@ -43,6 +78,7 @@ function FollowList() {
         avatarUrl: item.avatarUrl || item.followedUserAvatarUrl,
       }));
       setFollowing(data);
+      setFollowingCount(data.length);
     } catch (error) {
       if (error.response?.status === 401) {
         toast.error('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.', { toastId: 'auth-error' });
@@ -62,6 +98,7 @@ function FollowList() {
       const response = await getUserFollows(user.userId);
       const data = Array.isArray(response.data) ? response.data : [];
       setFollowers(data);
+      setFollowersCount(data.length);
     } catch (error) {
       if (error.response?.status === 401) {
         toast.error('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.', { toastId: 'auth-error' });
@@ -114,14 +151,14 @@ function FollowList() {
             onClick={() => handleTabChange('following')}
           >
             <i className="bi bi-person-check"></i>
-            Đang theo dõi ({following.length})
+            Đang theo dõi ({loadingCounts ? <span className="count-spinner" aria-hidden="true"></span> : followingCount})
           </button>
           <button
             className={`tab-button ${activeTab === 'followers' ? 'active' : ''}`}
             onClick={() => handleTabChange('followers')}
           >
             <i className="bi bi-people-fill"></i>
-            Người theo dõi ({followers.length})
+            Người theo dõi ({loadingCounts ? <span className="count-spinner" aria-hidden="true"></span> : followersCount})
           </button>
         </div>
 
@@ -140,7 +177,7 @@ function FollowList() {
                     <div className="follow-card-content">
                       <div 
                         className="follow-avatar" 
-                        onClick={() => navigate(`/profile/${follow.followedUserId}`)}
+                        onClick={() => navigateToProfile(follow.followedUserId || follow.userId)}
                       >
                         <img
                           src={safeAvatar(follow.avatarUrl)}
@@ -154,7 +191,7 @@ function FollowList() {
                       </div>
                       <div 
                         className="follow-info" 
-                        onClick={() => navigate(`/profile/${follow.followedUserId}`)}
+                        onClick={() => navigateToProfile(follow.followedUserId || follow.userId)}
                       >
                         <p className="follow-name">{follow.fullName}</p>
                         <p className="follow-email">{follow.email}</p>
@@ -187,7 +224,7 @@ function FollowList() {
                     <div className="follow-card-content">
                       <div 
                         className="follow-avatar" 
-                        onClick={() => navigate(`/profile/${follower.userId}`)}
+                        onClick={() => navigateToProfile(follower.userId)}
                       >
                         <img
                           src={safeAvatar(follower.avatarUrl)}
@@ -201,7 +238,7 @@ function FollowList() {
                       </div>
                       <div 
                         className="follow-info" 
-                        onClick={() => navigate(`/profile/${follower.userId}`)}
+                        onClick={() => navigateToProfile(follower.userId)}
                       >
                         <p className="follow-name">{follower.fullName}</p>
                         <p className="follow-email">{follower.email}</p>

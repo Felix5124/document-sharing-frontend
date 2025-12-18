@@ -48,10 +48,78 @@ apiClient.interceptors.request.use(
         // Conditions to set Authorization header not met (rare path)
       }
     }
+    // Extra debug: if sending FormData (multipart) log its contents (but do not log token)
+    try {
+      const method = (config.method || '').toLowerCase();
+      const isDocumentEndpoint = config.url && config.url.toString().includes('/documents');
+      const isMultipart = (config.headers && config.headers['Content-Type'] && config.headers['Content-Type'].includes('multipart/form-data')) || (typeof FormData !== 'undefined' && config.data instanceof FormData);
+      if (isMultipart && (method === 'post' || method === 'put') && isDocumentEndpoint) {
+        try {
+          // Ensure axios/browser will set the correct multipart boundary by removing any preset JSON Content-Type
+          try {
+            if (config.headers) {
+              delete config.headers['Content-Type'];
+              delete config.headers['content-type'];
+            }
+          } catch (hdrErr) {
+            console.warn('[api] Could not remove Content-Type header', hdrErr);
+          }
+          console.log('[api] Sending multipart FormData to', config.url, 'method', method);
+          if (config.data && typeof config.data.entries === 'function') {
+            for (const pair of config.data.entries()) {
+              const key = pair[0];
+              const value = pair[1];
+              if (value && typeof value === 'object' && value instanceof File) {
+                console.log(`[api] FormData file field: ${key} -> name=${value.name}, size=${value.size}, type=${value.type}`);
+              } else if (value && typeof value === 'object' && value.constructor && value.constructor.name === 'File') {
+                console.log(`[api] FormData file field: ${key} -> name=${value.name}, size=${value.size}, type=${value.type}`);
+              } else {
+                console.log(`[api] FormData field: ${key} ->`, value);
+              }
+            }
+          }
+        } catch (fdErr) {
+          console.warn('[api] Failed to enumerate FormData entries', fdErr);
+        }
+      }
+    } catch (e) {
+      console.warn('[api] Request debug logging failed', e);
+    }
+
     return config;
   },
   (error) => {
     console.error("Interceptor request error:", error);
+    return Promise.reject(error);
+  }
+);
+
+// Response interceptor to log errors and helpful debug info
+apiClient.interceptors.response.use(
+  (response) => {
+    // Log document update/create responses for debugging
+    try {
+      const url = response.config?.url || '';
+      if (url.includes('/documents') && (response.config.method === 'post' || response.config.method === 'put')) {
+        console.log('[api] Document response:', response.status, url, response.data);
+      }
+    } catch (e) {
+      // ignore
+    }
+    return response;
+  },
+  (error) => {
+    try {
+      const config = error.config || {};
+      const url = config.url || '';
+      if (url.includes('/documents')) {
+        console.error('[api] Document request failed:', url, error.response?.status, error.response?.data || error.message);
+      } else {
+        console.error('[api] Request failed:', url, error.response?.status, error.response?.data || error.message);
+      }
+    } catch (e) {
+      console.error('[api] Response interceptor error logging failed', e);
+    }
     return Promise.reject(error);
   }
 );
@@ -99,14 +167,8 @@ export const getDocumentById = (id, userId) => {
   const params = userId ? { userId } : {};
   return apiClient.get(`/documents/${id}`, { params });
 };
-export const uploadDocument = (data) =>
-  apiClient.post("/documents/upload", data, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
-export const updateDocument = (id, data) =>
-  apiClient.put(`/documents/${id}`, data, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+export const uploadDocument = (data) => apiClient.post("/documents/upload", data);
+export const updateDocument = (id, data) => apiClient.put(`/documents/${id}`, data);
 
 export const getRelatedDocumentsByTags = (
   tagNames,
