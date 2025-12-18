@@ -1,5 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { useState, useEffect, useContext } from 'react';
+import imageCompression from 'browser-image-compression';
 import { uploadDocument, getCategories } from '../services/api';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
@@ -140,7 +141,23 @@ function UploadDocument() {
     }
 
     if (data.CoverImage && data.CoverImage.length > 0) {
-      formData.append('CoverImage', data.CoverImage[0]);
+        // Compress cover image before upload to reduce size and improve UX
+        try {
+          const originalFile = data.CoverImage[0];
+          const options = {
+            maxSizeMB: 0.7,
+            maxWidthOrHeight: 1200,
+            useWebWorker: true,
+            initialQuality: 0.7
+          };
+          const compressedBlob = await imageCompression(originalFile, options);
+          const compressedFile = new File([compressedBlob], originalFile.name, { type: compressedBlob.type });
+          console.log('[UploadDocument] compressed cover from', originalFile.size, 'to', compressedFile.size);
+          formData.append('CoverImage', compressedFile);
+        } catch (compressErr) {
+          console.warn('[UploadDocument] image compression failed, using original file', compressErr);
+          formData.append('CoverImage', data.CoverImage[0]);
+        }
     }
 
     if (data.Tags && Array.isArray(data.Tags)) {

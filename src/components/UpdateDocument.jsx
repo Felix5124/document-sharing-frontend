@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { getDocumentById, updateDocument, getCategories } from '../services/api';
 import { getFullImageUrl } from '../utils/imageUtils';
+import imageCompression from 'browser-image-compression';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faPenToSquare,
@@ -25,17 +26,19 @@ function UpdateDocument() {
     defaultValues: {
       Title: '', Description: '', CategoryId: '', UploadedBy: '',
       Tags: [],
-      File: null,
       CoverImage: null,
     }
   });
   const [tagInputText, setTagInputText] = useState('');
   const [document, setDocument] = useState(null);
   const [categories, setCategories] = useState([]);
-  const [fileName, setFileName] = useState('');
+  
   const [currentCoverImageUrl, setCurrentCoverImageUrl] = useState('');
   const [previewNewCover, setPreviewNewCover] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const isSubmittingRef = useRef(false);
+  const navigatedRef = useRef(false);
 
   const newCoverImageFile = watch('CoverImage');
   const currentTags = watch('Tags');
@@ -49,6 +52,7 @@ function UpdateDocument() {
         ]);
 
         const docData = docResponse.data;
+          console.log('[UpdateDocument] fetched document:', docData);
         setDocument(docData);
 
         setValue('Title', docData.Title || docData.title || '');
@@ -69,13 +73,12 @@ function UpdateDocument() {
         const cats = catResponse.data.$values || catResponse.data || [];
         setCategories(Array.isArray(cats) ? cats : []);
 
-        const fileNameFromUrl = docData.FileUrl
-          ? docData.FileUrl.split('/').pop()
-          : 'Chưa có file';
-        setFileName(fileNameFromUrl);
+        
 
-        if (docData.CoverImageUrl && docData.CoverImageUrl.trim() !== '') {
-          setCurrentCoverImageUrl(getFullImageUrl(docData.CoverImageUrl));
+        // Support both camelCase and PascalCase keys from backend
+        const coverKey = docData.CoverImageUrl || docData.coverImageUrl || docData.Cover || docData.cover || docData.CoverImageUrl;
+        if (coverKey && typeof coverKey === 'string' && coverKey.trim() !== '') {
+          setCurrentCoverImageUrl(getFullImageUrl(coverKey));
         } else {
           setCurrentCoverImageUrl(getFullImageUrl(null));
         }
@@ -93,6 +96,7 @@ function UpdateDocument() {
   useEffect(() => {
     if (newCoverImageFile && newCoverImageFile.length > 0) {
       const file = newCoverImageFile[0];
+      console.log('[UpdateDocument] new cover file selected:', { name: file.name, size: file.size, type: file.type });
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreviewNewCover(reader.result);
@@ -103,24 +107,7 @@ function UpdateDocument() {
     }
   }, [newCoverImageFile]);
 
-  const handleFileChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      const selectedFile = e.target.files[0];
-      const extension = selectedFile.name.split('.').pop().toLowerCase();
-      if (!['pdf', 'docx', 'txt'].includes(extension)) {
-        toast.error('Chỉ chấp nhận file PDF, DOCX, hoặc TXT.');
-        e.target.value = '';
-        setFileName(document?.FileUrl ? document.FileUrl.split('/').pop() : 'Chưa có file');
-        setValue('File', null, { shouldValidate: true });
-        return;
-      }
-      setFileName(selectedFile.name);
-      setValue('File', e.target.files, { shouldValidate: true });
-    } else {
-      setFileName(document?.FileUrl ? document.FileUrl.split('/').pop() : 'Chưa có file');
-      setValue('File', null, { shouldValidate: true });
-    }
-  };
+  
 
   const handleExternalAddTag = () => {
     const newLabel = tagInputText.trim();
@@ -139,6 +126,17 @@ function UpdateDocument() {
   };
 
   const onSubmit = async (data) => {
+    // Ensure the page scrolls to top so the loading state is visible (instant)
+    if (typeof window !== 'undefined' && window.scrollTo) {
+      try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch(e) { /* ignore */ }
+    }
+
+    if (isSubmittingRef.current) {
+      console.log('[UpdateDocument] submit skipped: already submitting');
+      return;
+    }
+    isSubmittingRef.current = true;
+
     try {
       const formData = new FormData();
 
@@ -163,18 +161,20 @@ function UpdateDocument() {
       }
       formData.append('UploadedBy', uploadedBy.toString());
 
-      if (data.File && data.File.length > 0) {
-        const selectedFile = data.File[0];
-        const extension = selectedFile.name.split('.').pop().toLowerCase();
-        if (!['pdf', 'docx', 'txt'].includes(extension)) {
-          toast.error('File tài liệu chỉ chấp nhận định dạng PDF, DOCX, hoặc TXT.');
-          return;
-        }
-        formData.append('File', selectedFile);
-      }
+      // File replacement is not allowed during update — backend will keep existing file if none provided.
 
-      if (data.CoverImage && data.CoverImage.length > 0) {
-        formData.append('CoverImage', data.CoverImage[0]);
+      if (newCoverImageFile && newCoverImageFile.length > 0) {
+        try {
+          const originalFile = newCoverImageFile[0];
+          const options = { maxSizeMB: 0.7, maxWidthOrHeight: 1200, useWebWorker: true, initialQuality: 0.7 };
+          const compressedBlob = await imageCompression(originalFile, options);
+          const compressedFile = new File([compressedBlob], originalFile.name, { type: compressedBlob.type });
+          console.log('[UpdateDocument] compressed cover from', originalFile.size, 'to', compressedFile.size);
+          formData.append('CoverImage', compressedFile);
+        } catch (compressErr) {
+          console.warn('[UpdateDocument] image compression failed, using original file', compressErr);
+          formData.append('CoverImage', newCoverImageFile[0]);
+        }
       }
 
       if (data.Tags && Array.isArray(data.Tags)) {
@@ -187,21 +187,71 @@ function UpdateDocument() {
         }
       }
 
+      // Log FormData entries for debugging
+      for (const pair of formData.entries()) {
+        // Files will appear as File objects
+        console.log('[UpdateDocument] FormData entry:', pair[0], pair[1]);
+      }
+
+      console.log('[UpdateDocument] setLoading -> true');
       setLoading(true);
-      await updateDocument(id, formData);
+      console.log('[UpdateDocument] sending updateDocument request for id', id);
+      const resp = await updateDocument(id, formData);
+      console.log('[UpdateDocument] updateDocument response:', resp && resp.data ? resp.data : resp);
+
+      // Fire-and-forget refresh: don't block navigation to avoid UI flicker
+      getDocumentById(id).then((refreshed) => {
+        console.log('[UpdateDocument] background refresh after update:', refreshed.data);
+        const refreshedCover = refreshed.data?.CoverImageUrl || refreshed.data?.coverImageUrl || refreshed.data?.cover || '';
+        if (refreshedCover && refreshedCover.trim() !== '') {
+          setCurrentCoverImageUrl(getFullImageUrl(refreshedCover));
+        }
+      }).catch((refreshErr) => {
+        console.warn('[UpdateDocument] background refresh failed:', refreshErr);
+      });
+
       toast.success('Cập nhật tài liệu thành công.');
-      navigate('/profile');
+      if (!navigatedRef.current) {
+        navigatedRef.current = true;
+        navigate('/profile');
+      }
     } catch (error) {
-      const errorMessage =
-        error.response?.data?.errors?.File?.join(', ') ||
-        error.response?.data?.message ||
-        error.response?.data?.title ||
-        JSON.stringify(error.response?.data) ||
-        error.message ||
-        'Cập nhật tài liệu thất bại.';
+      console.error('[UpdateDocument] update error:', error);
+      console.error('[UpdateDocument] server response data:', error.response?.data);
+
+      // If server returned validation errors, build a readable message
+      let errorMessage = 'Cập nhật tài liệu thất bại.';
+      const serverData = error.response?.data;
+      if (serverData) {
+        if (serverData.errors && typeof serverData.errors === 'object') {
+          const parts = [];
+          for (const key of Object.keys(serverData.errors)) {
+            const val = serverData.errors[key];
+            if (Array.isArray(val)) parts.push(`${key}: ${val.join(', ')}`);
+            else parts.push(`${key}: ${val}`);
+          }
+          errorMessage = parts.join(' | ');
+        } else if (serverData.message) {
+          errorMessage = serverData.message;
+        } else if (serverData.title) {
+          errorMessage = serverData.title;
+        } else {
+          try { errorMessage = JSON.stringify(serverData); } catch(e) {}
+        }
+      } else {
+        errorMessage = error.message || errorMessage;
+      }
+
+      console.error('[UpdateDocument] parsed error message:', errorMessage);
       toast.error(`Lỗi: ${errorMessage}`, { toastId: 'update-error' });
     } finally {
-      setLoading(false);
+      if (!navigatedRef.current) {
+        console.log('[UpdateDocument] setLoading -> false');
+        setLoading(false);
+      } else {
+        console.log('[UpdateDocument] skipping setLoading false because navigated');
+      }
+      isSubmittingRef.current = false;
     }
   };
 
@@ -283,13 +333,7 @@ function UpdateDocument() {
             </div>
           </div>
 
-          <div className="form-group">
-            <label className="form-label">File tài liệu</label>
-            <div className="input-wrapper">
-              <FontAwesomeIcon icon={faPaperclip} className="input-icon" />
-              <input type="file" className="form-input" accept=".pdf,.docx,.txt" {...register('File')} onChange={handleFileChange} />
-            </div>
-          </div>
+          
 
           <div className="form-group margin-bottom">
             <label className="form-label">Ảnh bìa</label>

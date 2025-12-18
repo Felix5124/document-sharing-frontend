@@ -28,10 +28,10 @@ const VipPromoBanner = ({ variant = 'default' }) => {
     profile: {
       icon: faCrown,
       title: '💎 Đặc Quyền Premium Đang Chờ Bạn!',
-      subtitle: 'Xem trước 15 trang PDF, tải nhiều hơn 4x, không quảng cáo!',
+      subtitle: 'Xem trước 10 trang PDF, tải nhiều hơn 4x, không quảng cáo!',
       features: [
         { icon: faDownload, text: 'Tải 8 file thường + 5 Premium' },
-        { icon: faStar, text: 'Xem trước 15 trang PDF' },
+        { icon: faStar, text: 'Xem trước 10 trang PDF' },
         { icon: faAward, text: 'Badge Premium + Ưu tiên duyệt' }
       ]
     },
@@ -41,7 +41,7 @@ const VipPromoBanner = ({ variant = 'default' }) => {
       subtitle: 'Tải xuống nhiều hơn, xem nhiều hơn, không quảng cáo!',
       features: [
         { icon: faDownload, text: 'Tải 8 file thường + 5 Premium' },
-        { icon: faStar, text: 'Xem trước 15 trang' },
+        { icon: faStar, text: 'Xem trước 10 trang' },
         { icon: faRocket, text: 'Không quảng cáo' }
       ]
     }

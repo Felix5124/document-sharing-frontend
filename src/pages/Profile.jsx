@@ -15,6 +15,7 @@ import {
   unfollow
 } from '../services/api';
 import { toast } from 'react-toastify';
+import imageCompression from 'browser-image-compression';
 import Achievements from '../components/Achievements';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -169,14 +170,23 @@ function Profile() {
   const onSubmit = async (data) => {
     try {
       if (avatarFile) {
-        const avatarResponse = await uploadAvatar(user.userId, avatarFile);
-        const newAvatarUrl = avatarResponse.data.avatarUrl; // SAS URL
-        setUserData((prev) => ({
-          ...prev,
-          avatarUrl: newAvatarUrl
-        }));
-        // Cập nhật ngay Context để Navbar phản ánh lập tức
-        updateUserContext({ avatarUrl: newAvatarUrl });
+        try {
+          const originalFile = avatarFile;
+          const options = { maxSizeMB: 0.5, maxWidthOrHeight: 600, useWebWorker: true, initialQuality: 0.75 };
+          const compressedBlob = await imageCompression(originalFile, options);
+          const compressedFile = new File([compressedBlob], originalFile.name, { type: compressedBlob.type });
+          console.log('[Profile] compressed avatar from', originalFile.size, 'to', compressedFile.size);
+          const avatarResponse = await uploadAvatar(user.userId, compressedFile);
+          const newAvatarUrl = avatarResponse.data.avatarUrl; // SAS URL
+          setUserData((prev) => ({ ...prev, avatarUrl: newAvatarUrl }));
+          updateUserContext({ avatarUrl: newAvatarUrl });
+        } catch (compressErr) {
+          console.warn('[Profile] avatar compression failed, uploading original', compressErr);
+          const avatarResponse = await uploadAvatar(user.userId, avatarFile);
+          const newAvatarUrl = avatarResponse.data.avatarUrl;
+          setUserData((prev) => ({ ...prev, avatarUrl: newAvatarUrl }));
+          updateUserContext({ avatarUrl: newAvatarUrl });
+        }
       }
 
       const updateData = {
@@ -379,7 +389,7 @@ function Profile() {
                     />
                     {userData.isEmailVerified ? (
                       <span className="email-verified-badge" title="Email đã được xác thực">
-                        <FontAwesomeIcon icon={faCheckCircle} /> Đã xác thực
+                        <FontAwesomeIcon icon={faCheckCircle} />
                       </span>
                     ) : (
                       <span className="email-unverified-badge" title="Vui lòng xác thực email">

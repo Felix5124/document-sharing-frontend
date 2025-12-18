@@ -125,6 +125,19 @@
   font-weight: 500;
 }
 
+/* Inline small spinner used for counts */
+.count-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid #f3f4f6;
+  border-top-color: #10b981;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 6px;
+  vertical-align: middle;
+}
+
 /* Follow Grid */
 .follow-grid {
   display: grid;
