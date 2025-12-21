@@ -1,0 +1,455 @@
+.user-docs-page {
+  padding: 24px;
+}
+
+/* Tabs */
+.docs-tabs {
+  display: flex;
+  border-bottom: 2px solid #e5e7eb;
+  margin-bottom: 24px;
+}
+
+.docs-tab {
+  flex: 1;
+  padding: 16px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.docs-tab:hover {
+  background-color: #f9fafb;
+  color: #10b981;
+}
+
+.docs-tab.active {
+  color: #10b981;
+  border-bottom-color: #10b981;
+  background-color: #ecfdf5;
+}
+
+/* Filter Bar */
+.docs-filter-bar {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 24px;
+  border: 1px solid #e5e7eb;
+}
+
+.filter-top {
+  display: flex;
+  gap: 16px;
+}
+
+.search-box {
+  flex: 1;
+  position: relative;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  outline: none;
+  font-size: 0.95rem;
+}
+
+.search-box input:focus {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.filter-toggle {
+  padding: 0 20px;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-toggle.active {
+  background: #e0e7ff;
+  color: #4338ca;
+  border-color: #818cf8;
+}
+
+.filter-options {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+}
+
+.filter-options.show {
+  max-height: 200px;
+  padding-top: 16px;
+  border-top: 1px dashed #d1d5db;
+  margin-top: 16px;
+}
+
+.filter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  align-items: end;
+}
+
+.filter-item label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4b5563;
+  margin-bottom: 6px;
+}
+
+.filter-item select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  outline: none;
+}
+
+.btn-reset {
+  width: 100%;
+  padding: 10px;
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  color: #4b5563;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-reset:hover {
+  background: #e5e7eb;
+}
+
+/* ==========================================================================
+   DOCUMENT CARD STYLES (Copied & Adapted from Home.css)
+   ========================================================================== */
+
+/* Grid Layout */
+.user-docs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3x3 grid for 9 documents per page */
+  gap: 16px;
+  margin-top: 16px;
+}
+
+/* Document Card */
+.document-card {
+  display: flex;
+  position: relative;
+  width: 100%;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  text-decoration: none;
+  color: inherit;
+}
+
+.document-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Image Container */
+.document-card-image-container {
+  width: 100%;
+  height: 120px;
+  overflow: hidden;
+  position: relative;
+}
+
+.document-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* VIP Badge */
+.document-card-image-container .vip-badge {
+  position: absolute;
+  top: 8px;
+  right: -8px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  background-image: linear-gradient(#f5c542, #f5c542),
+    linear-gradient(45deg, #ffd700, #ff9d00, #ffdd55);
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  z-index: 2;
+  animation: vip-glow 2s linear infinite;
+}
+
+.document-card-image-container .vip-badge svg {
+  width: 14px;
+  height: 14px;
+}
+
+@keyframes vip-glow {
+  0% { filter: drop-shadow(0 0 2px #ffea00); }
+  50% { filter: drop-shadow(0 0 6px #ffdd00); }
+  100% { filter: drop-shadow(0 0 2px #ffea00); }
+}
+
+/* Status Labels */
+.status-label {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 15px;
+  font-size: 0.7rem;
+  font-weight: bold;
+  backdrop-filter: blur(2px);
+  z-index: 10;
+}
+
+.status-label.semi-approved {
+   background-color: rgba(245, 159, 11, 0.85); /* Cam */
+}
+
+.status-label.approved {
+  background-color: rgba(34, 197, 94, 0.85); /* Xanh lá */
+}
+
+.status-label.pending {
+  background-color: rgba(156, 163, 175, 0.85); /* Xám */
+}
+
+.status-label.rejected {
+  background-color: rgba(239, 68, 68, 0.85); /* Đỏ */
+}
+
+/* Card Body */
+.document-card-body {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.document-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.home-document-title {
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: #111827;
+  flex-grow: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 8px;
+  margin-bottom: 0;
+}
+
+.document-download {
+  font-size: 0.75rem;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.document-description {
+  height: 28px;
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin: 8px 0;
+  line-height: 1.4;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.document-meta {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.meta-author,
+.meta-date {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 50%;
+}
+
+/* Pagination */
+.pagination-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 32px;
+  flex-wrap: wrap;
+}
+
+.page-btn {
+  padding: 8px 12px;
+  min-width: 40px;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-btn:hover:not(:disabled) {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.page-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.page-btn.active {
+  background: #10b981;
+  color: white;
+  border-color: #10b981;
+}
+
+.page-btn.active:hover {
+  background: #0da271;
+}
+
+.page-info {
+  margin: 0 12px;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.pagination-ellipsis {
+  padding: 8px 4px;
+  color: #9ca3af;
+  user-select: none;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .user-docs-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 columns on tablets */
+  }
+}
+
+@media (max-width: 768px) {
+  .docs-tabs {
+    flex-direction: column;
+    border-bottom: none;
+    gap: 8px;
+  }
+  
+  .docs-tab {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+  }
+  
+  .docs-tab.active {
+    border: 1px solid #10b981;
+  }
+  
+  .filter-top {
+    flex-direction: column;
+  }
+  
+  .user-docs-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 columns on mobile */
+  }
+  
+  .pagination-wrapper {
+    gap: 6px;
+  }
+  
+  .page-btn {
+    padding: 7px 10px;
+    min-width: 36px;
+    font-size: 0.85rem;
+  }
+  
+  .page-info {
+    margin: 0 10px;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .user-docs-grid {
+    grid-template-columns: 1fr; /* 1 column on very small screens */
+  }
+  
+  .pagination-wrapper {
+    gap: 4px;
+  }
+  
+  .page-btn {
+    padding: 6px 8px;
+    min-width: 32px;
+    font-size: 0.8rem;
+  }
+  
+  .page-info {
+    margin: 0 8px;
+    font-size: 0.8rem;
+  }
+  
+  .pagination-ellipsis {
+    padding: 6px 2px;
+  }
+}
