@@ -1,6 +1,6 @@
 import { useEffect, useState, useContext } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import {
   getUser,
@@ -30,11 +30,14 @@ import {
   faTrash,
   faEyeSlash,
   faEye,
+  faArrowRight,
+  faCalendarDays,
 } from '@fortawesome/free-solid-svg-icons';
 
 import '../styles/pages/Profile.css';
 import '../styles/layouts/PageWithSidebar.css';
 import { getFullAvatarUrl } from '../utils/avatarUtils';
+import { getFullImageUrl } from '../utils/imageUtils';
 import VipPromoBanner from '../components/VipPromoBanner';
 import VipWelcomeBanner from '../components/VipWelcomeBanner';
 import RightSidebar from '../components/RightSidebar';
@@ -437,12 +440,35 @@ function Profile() {
         <hr className="profile-divider" />
 
         <div className="profile-stats">
-          <h4 className="profile-title">
-            <FontAwesomeIcon icon={faCloudUploadAlt} /> Tài liệu đã tải lên ({uploadCount})
-          </h4>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <h4 className="profile-title" style={{ margin: 0 }}>
+              <FontAwesomeIcon icon={faCloudUploadAlt} /> Tài liệu đã tải lên ({uploadCount})
+            </h4>
+            {uploadCount > 0 && (
+              <button
+                className="view-more-btn"
+                onClick={() => navigate(`/user-documents/${targetUserId}?tab=uploads`)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#10b981',
+                  cursor: 'pointer',
+                  fontWeight: '600',
+                  fontSize: '0.9rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '5px'
+                }}
+              >
+                Xem thêm <FontAwesomeIcon icon={faArrowRight} />
+              </button>
+            )}
+          </div>
+          
           <ul className="stats-list-profile">
-            {uploads.length > 0 ? (
-              uploads.map((upload) => (
+            {/* Giới hạn hiển thị 5 item ở đây */}
+            {uploads.slice(0, 5).length > 0 ? (
+              uploads.slice(0, 5).map((upload) => (
                 <li
                   key={upload.documentId}
                   className="stats-item-profile"
@@ -459,7 +485,7 @@ function Profile() {
                           'SemiApproved': 'Chưa kiểm duyệt',
                           'Pending': 'Đang chờ',
                           'Rejected': 'Bị từ chối',
-                          'Suspended': 'Bị tạm ngưng' // Thêm trạng thái mới
+                          'Suspended': 'Bị tạm ngưng'
                         }[upload.approvalStatus] || 'Không xác định'
                       }
                     </span>
@@ -486,12 +512,35 @@ function Profile() {
 
         {canEdit && (
           <div className="profile-stats">
-            <h4 className="profile-title">
-              <FontAwesomeIcon icon={faCloudDownloadAlt} /> Tài liệu đã tải xuống ({downloadCount})
-            </h4>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <h4 className="profile-title" style={{ margin: 0 }}>
+                <FontAwesomeIcon icon={faCloudDownloadAlt} /> Tài liệu đã tải xuống ({downloadCount})
+              </h4>
+              {downloadCount > 0 && (
+                <button
+                  className="view-more-btn"
+                  onClick={() => navigate(`/user-documents/${targetUserId}?tab=downloads`)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#10b981',
+                    cursor: 'pointer',
+                    fontWeight: '600',
+                    fontSize: '0.9rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '5px'
+                  }}
+                >
+                  Xem thêm <FontAwesomeIcon icon={faArrowRight} />
+                </button>
+              )}
+            </div>
+            
             <ul className="stats-list">
-              {downloads.length > 0 ? (
-                downloads.map((download) => (
+              {/* Giới hạn hiển thị 5 item ở đây */}
+              {downloads.slice(0, 5).length > 0 ? (
+                downloads.slice(0, 5).map((download) => (
                   <li key={download.documentId} className="stats-item-profile">
                     <span style={{ flex: 1 }}>
                       {download.title} - Tải xuống: {new Date(download.addedAt).toLocaleString()}

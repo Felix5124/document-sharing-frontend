@@ -29,6 +29,7 @@ import SearchResultsPage from './pages/SearchResultsPage';
 import Chatbot from './components/Chatbot'
 import UpgradeAccount from './pages/UpgradeAccount';
 import About from './pages/About';
+import UserDocumentsPage from './pages/UserDocumentsPage';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUp, faComment } from '@fortawesome/free-solid-svg-icons';
 
@@ -92,6 +93,7 @@ function App() {
           <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
           {/* View other user's profile (public) */}
           <Route path="/profile/:id" element={<ErrorBoundary><Profile /></ErrorBoundary>} />
+          <Route path="/user-documents/:userId" element={<ErrorBoundary><UserDocumentsPage /></ErrorBoundary>} />
           <Route path="/change-password" element={<PrivateRoute><ChangePassword /></PrivateRoute>} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />

@@ -256,6 +256,13 @@ export const getUploads = () => apiClient.get("/UserDocuments/uploads");
 export const getDownloads = (userId) =>
   apiClient.get("/UserDocuments/downloads", { params: { userId } });
 
+// --- THÊM MỚI ---
+export const searchUserUploads = (params) =>
+  apiClient.get("/UserDocuments/search-uploads", { params });
+
+export const searchUserDownloads = (params) =>
+  apiClient.get("/UserDocuments/search-downloads", { params });
+
 // --- API cho thông báo ---
 export const getUserNotifications = (userId) =>
   apiClient.get("/notifications", { params: { userId } });
