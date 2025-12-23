@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { useState, useEffect, useContext } from 'react';
 import imageCompression from 'browser-image-compression';
-import { uploadDocument, getCategories } from '../services/api';
+import { uploadDocument, getCategories, getUploadLimit } from '../services/api';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import '../styles/components/UploadDocument.css';
@@ -33,6 +33,7 @@ function UploadDocument() {
   const [hideLeftSidebar, setHideLeftSidebar] = useState(false);
   const [hideRightSidebar, setHideRightSidebar] = useState(false);
   const [contextMenu, setContextMenu] = useState({ show: false, x: 0, y: 0, type: '' });
+  const [uploadLimit, setUploadLimit] = useState(null);
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
   const userId = user?.userId;
@@ -87,7 +88,20 @@ function UploadDocument() {
       }
     };
     fetchCategoriesData();
-  }, []);
+
+    // Fetch upload limit
+    if (userId) {
+      const fetchUploadLimit = async () => {
+        try {
+          const response = await getUploadLimit(userId);
+          setUploadLimit(response.data);
+        } catch (error) {
+          console.error('Error fetching upload limit:', error);
+        }
+      };
+      fetchUploadLimit();
+    }
+  }, [userId]);
 
   useEffect(() => {
     if (coverImageFile && coverImageFile.length > 0) {
@@ -298,10 +312,10 @@ function UploadDocument() {
                   <input type="checkbox" {...register('IsVipOnly')} />
                   <span>
                     <FontAwesomeIcon icon={faStar} style={{ color: '#f59e0b', marginRight: 6 }} />
-                    Đánh dấu là tài liệu VIP
+                    Đánh dấu là tài liệu Premium
                   </span>
                 </label>
-                <small style={{ color: '#6b7280' }}>Tài liệu VIP chỉ cho phép tài khoản VIP tải xuống.</small>
+                <small style={{ color: '#6b7280' }}>Tài liệu Premium chỉ cho phép tài khoản Premium tải xuống.</small>
               </div>
             </div>
           )}
@@ -419,7 +433,7 @@ function UploadDocument() {
           onContextMenu={(e) => handleContextMenu(e, 'right')}
           style={{ cursor: user?.isVip ? 'context-menu' : 'default' }}
         >
-          {!hideRightSidebar && <RightSidebar variant="upload" user={user} />}
+          {!hideRightSidebar && <RightSidebar variant="upload" user={user} uploadLimit={uploadLimit} />}
         </aside>
       </div>
     </div>

@@ -390,3 +390,17 @@
   50% { transform: scale(1.02); }
   100% { transform: scale(1); }
 }
+
+
+.upload-limit-title {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.upload-limit-info {
+  line-height: 1.4;
+}
+
+.upload-limit-info strong {
+  font-weight: 700;
+}

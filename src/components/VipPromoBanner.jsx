@@ -17,11 +17,11 @@ const VipPromoBanner = ({ variant = 'default' }) => {
     },
     upload: {
       icon: faUpload,
-      title: '⚡ Nâng Cấp Premium - Thoải Mái Tải Xuống!',
-      subtitle: 'Tài khoản thường chỉ 2 file/ngày. Premium tải 8 file thường + 5 file Premium!',
+      title: '⚡ Nâng Cấp Premium - Upload & Tải Nhiều Hơn!',
+      subtitle: 'Tài khoản thường chỉ 1 file/ngày. Premium upload 4 file/ngày + tải 8 file thường + 5 Premium!',
       features: [
-        { icon: faDownload, text: 'Tải 8 file/ngày' },
-        { icon: faStar, text: 'Tải 5 file Premium/ngày' },
+        { icon: faUpload, text: 'Upload 4 file/ngày' },
+        { icon: faDownload, text: 'Tải 8 file thường + 5 Premium' },
         { icon: faRocket, text: 'Ưu tiên duyệt bài' }
       ]
     },
