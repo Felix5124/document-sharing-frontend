@@ -83,13 +83,31 @@
   color: white;
 }
 
-.download-limit-info {
+/* Upload Limit Card */
+.upload-limit-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+}
+
+.upload-limit-card .right-sidebar-header {
+  border-bottom-color: rgba(255, 255, 255, 0.2);
+}
+
+.upload-limit-card .right-sidebar-header svg,
+.upload-limit-card .right-sidebar-header h3 {
+  color: white;
+}
+
+.download-limit-info, 
+.upload-limit-info {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.download-limit-item {
+.download-limit-item, 
+.upload-limit-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -104,15 +122,17 @@
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-.download-label {
+.download-label,
+.upload-label {
   font-size: 0.85rem;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.95);
 }
 
-.download-count {
-  font-size: 1.1rem;
-  font-weight: 700;
+.download-count,
+.upload-count {
+  font-size: 0.85rem;
+  font-weight: 700; 
   padding: 4px 12px;
   border-radius: 20px;
   background: rgba(255, 255, 255, 0.25);
@@ -133,25 +153,30 @@
   opacity: 0.85;
 }
 
-.download-count.vip {
+.download-count.vip,
+.upload-count.vip {
   background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
   color: white;
   box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);
 }
 
-.download-count.regular {
+.download-count.regular,
+.upload-count.regular {
   background: rgba(255, 255, 255, 0.9);
   color: #667eea;
+  font-size: 0.85rem;
 }
 
-.download-limit-note {
+.download-limit-note,
+.upload-limit-note {
   text-align: center;
   padding-top: 8px;
   border-top: 1px solid rgba(255, 255, 255, 0.2);
   margin-top: 4px;
 }
 
-.download-limit-note small {
+.download-limit-note small,
+.upload-limit-note small {
   color: rgba(255, 255, 255, 0.85);
   font-size: 0.75rem;
   font-style: italic;
@@ -175,15 +200,18 @@
     padding: 6px;
   }
 
-  .download-limit-item {
+  .download-limit-item,
+  .upload-limit-item {
     padding: 10px;
   }
 
-  .download-label {
+  .download-label,
+  .upload-label {
     font-size: 0.8rem;
   }
 
-  .download-count {
+  .download-count,
+  .upload-count {
     font-size: 1rem;
     padding: 3px 10px;
   }
