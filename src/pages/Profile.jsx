@@ -59,6 +59,8 @@ function Profile() {
   const [hideRightSidebar, setHideRightSidebar] = useState(false);
   const [contextMenu, setContextMenu] = useState({ show: false, x: 0, y: 0, type: '' });
   const [showAvatarModal, setShowAvatarModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [documentToDelete, setDocumentToDelete] = useState(null);
   // schools removed
   const { register, handleSubmit, formState: { errors } } = useForm();
 
@@ -260,20 +262,28 @@ function Profile() {
     }
   };
 
-  const handleDeleteDocument = async (documentId) => {
-    const confirmDelete = window.confirm('Bạn có chắc chắn muốn xóa tài liệu này? Hành động này không thể hoàn tác.');
-    if (confirmDelete) {
-      try {
-        await deleteDocument(documentId);
-        setUploads((prevUploads) =>
-          prevUploads.filter(upload => upload.documentId !== documentId)
-        );
-        setUploadCount((prevCount) => prevCount - 1);
-        toast.success('Xóa tài liệu thành công.');
-      } catch (error) {
-        console.error('Delete error:', error.response?.data || error.message);
-        toast.error(error.response?.data?.message || 'Xóa tài liệu thất bại.');
-      }
+  const handleDeleteDocument = (documentId) => {
+    setDocumentToDelete(documentId);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteDocument = async () => {
+    if (!documentToDelete) return;
+    
+    try {
+      await deleteDocument(documentToDelete);
+      setUploads((prevUploads) =>
+        prevUploads.filter(upload => upload.documentId !== documentToDelete)
+      );
+      setUploadCount((prevCount) => prevCount - 1);
+      toast.success('Xóa tài liệu thành công.');
+      setShowDeleteModal(false);
+      setDocumentToDelete(null);
+    } catch (error) {
+      console.error('Delete error:', error.response?.data || error.message);
+      toast.error(error.response?.data?.message || 'Xóa tài liệu thất bại.');
+      setShowDeleteModal(false);
+      setDocumentToDelete(null);
     }
   };
 
@@ -593,6 +603,36 @@ function Profile() {
               onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = getFullAvatarUrl(null); }}
             />
             <p className="avatar-modal-name">{userData.fullName}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="modal-overlay" onClick={() => setShowDeleteModal(false)}>
+          <div className="delete-modal-content" onClick={(e) => e.stopPropagation()}>
+            <h3 className="delete-modal-title">
+              <FontAwesomeIcon icon={faTrash} />
+              Xác nhận xóa tài liệu
+            </h3>
+            <p className="delete-modal-message">
+              Bạn có chắc chắn muốn xóa tài liệu này không?<br/>
+              <strong>Hành động này không thể hoàn tác.</strong>
+            </p>
+            <div className="delete-modal-actions">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="delete-modal-btn-cancel"
+              >
+                Hủy
+              </button>
+              <button
+                onClick={confirmDeleteDocument}
+                className="delete-modal-btn-confirm"
+              >
+                Xóa tài liệu
+              </button>
+            </div>
           </div>
         </div>
       )}

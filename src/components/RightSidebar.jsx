@@ -7,11 +7,12 @@ import {
   faFileAlt,
   faTrophy,
   faCheckCircle,
-  faDownload
+  faDownload,
+  faCloudUploadAlt
 } from '@fortawesome/free-solid-svg-icons';
 import '../styles/components/RightSidebar.css';
 
-const RightSidebar = ({ variant = 'default', user = null }) => {
+const RightSidebar = ({ variant = 'default', user = null, uploadLimit = null }) => {
   const sidebarContent = {
     forum: {
       title: 'Mẹo Diễn Đàn',
@@ -111,9 +112,46 @@ const RightSidebar = ({ variant = 'default', user = null }) => {
   
   // Only show download limit on document and profile pages
   const showDownloadLimit = variant === 'document' || variant === 'profile';
+  
+  // Only show upload limit on upload page
+  const showUploadLimit = variant === 'upload' && uploadLimit;
 
   return (
     <div className="right-sidebar">
+      {/* Upload Limit Card - Only show on upload page */}
+      {user && showUploadLimit && uploadLimit && (
+        <div className="right-sidebar-card upload-limit-card">
+          <div className="right-sidebar-header">
+            <FontAwesomeIcon icon={faCloudUploadAlt} />
+            <h3>Lượt Upload Hôm Nay</h3>
+          </div>
+          <div className="right-sidebar-content">
+            <div className="upload-limit-info">
+              {uploadLimit.isVip ? (
+                <>
+                  <div className="upload-limit-item regular-uploads">
+                    <span className="upload-label">📄 Tài liệu thường:</span>
+                    <span className="upload-count regular">{uploadLimit.remainingRegular}/2</span>
+                  </div>
+                  <div className="upload-limit-item vip-uploads">
+                    <span className="upload-label">⭐ Tài liệu Premium:</span>
+                    <span className="upload-count vip">{uploadLimit.remainingVip}/2</span>
+                  </div>
+                </>
+              ) : (
+                <div className="upload-limit-item regular-uploads">
+                  <span className="upload-label">📄 Tài liệu thường:</span>
+                  <span className="upload-count regular">{uploadLimit.remainingRegular}/1</span>
+                </div>
+              )}
+              <div className="upload-limit-note">
+                <small>{uploadLimit.isVip ? 'Giới hạn hàng ngày' : 'Nâng cấp Premium để upload nhiều hơn'}</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Download Limit Card - Only show if user is logged in and on specific pages */}
       {user && downloadInfo && showDownloadLimit && (
         <div className="right-sidebar-card download-limit-card">

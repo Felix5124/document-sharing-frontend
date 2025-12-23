@@ -150,6 +150,7 @@ export const getUser = (id) => apiClient.get(`/users/${id}`);
 export const getAllUsers = () => apiClient.get("/users/all");
 export const lockUser = (userId, isLocked) =>
   apiClient.put(`/users/${userId}/lock`, { isLocked });
+export const getUploadLimit = (userId) => apiClient.get(`/users/${userId}/upload-limit`);
 export const uploadAvatar = (userId, file) => {
   const formData = new FormData();
   formData.append("file", file);

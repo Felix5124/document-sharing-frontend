@@ -41,7 +41,7 @@ function PrivateRoute({ children, requireAdmin = false, allowNonAdmin = false })
 
 
   if (isLoading) {
-    return <div>Đang kiểm tra đăng nhập...</div>;
+    return <div className="loading-page">Đang kiểm tra đăng nhập...</div>;
   }
 
   if (!isAuthenticated) {
