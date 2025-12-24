@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, useRef  } from 'react';
 import { useParams, useSearchParams, Link } from 'react-router-dom';
 import { searchUserUploads, searchUserDownloads, getCategories, getUser } from '../services/api';
 import { getFullImageUrl } from '../utils/imageUtils';
@@ -41,6 +41,8 @@ function UserDocumentsPage() {
   const [sortBy, setSortBy] = useState('newest');
   const [showFilters, setShowFilters] = useState(false);
 
+  const isFirstRender = useRef(true); // Biến cờ đánh dấu lần đầu render
+
   // Sync state with URL param if it changes
   useEffect(() => {
     const tabParam = searchParams.get('tab');
@@ -81,12 +83,18 @@ function UserDocumentsPage() {
 
   // Debounce search input
   useEffect(() => {
+    // Nếu là lần đầu render, bỏ qua không chạy logic bên trong (vì Effect 1 đã lo việc fetch rồi)
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+  
     const timer = setTimeout(() => {
       if (page === 1) fetchDocuments();
       else setPage(1);
     }, 500);
     return () => clearTimeout(timer);
-  }, [keyword]);
+  }, [keyword]); // Chỉ chạy khi keyword thay đổi (sau lần đầu)
 
   const fetchDocuments = async () => {
     setLoading(true);
