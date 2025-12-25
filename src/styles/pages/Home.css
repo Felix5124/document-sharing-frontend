@@ -268,7 +268,6 @@
 
 /* Pagination */
 .pagination-section {
-  margin-top: 16px;
   display: flex;
   gap: 8px;
   justify-content: center;

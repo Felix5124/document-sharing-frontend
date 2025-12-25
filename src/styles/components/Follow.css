@@ -60,7 +60,9 @@
   transition: all 0.3s ease;
   border: 1px solid #e5e7eb;
 }
-
+.follow-section:nth-last-child(1) {
+  margin-top: 24px;
+}
 /* Section Header */
 .section-header {
   display: flex;

@@ -204,6 +204,16 @@ export const downloadDocument = (id, userId) =>
     params: { userId },
   });
 
+export const prepareDownload = (id, userId) =>
+  apiClient.get(`/documents/${id}/prepare-download`, {
+    params: { userId },
+  });
+
+export const confirmDownload = (id, userId) =>
+  apiClient.post(`/documents/${id}/confirm-download`, null, {
+    params: { userId },
+  });
+
 export const adminDownloadDocument = (id, userId) =>
   apiClient.get(`/documents/${id}/admin-download`, {
     params: { userId },

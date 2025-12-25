@@ -127,26 +127,28 @@ const RightSidebar = ({ variant = 'default', user = null, uploadLimit = null }) 
           </div>
           <div className="right-sidebar-content">
             <div className="upload-limit-info">
-              {uploadLimit.isVip ? (
-                <>
+              {typeof uploadLimit.remainingTotal === 'number' && typeof uploadLimit.maxTotalUploads === 'number' ? (
+                uploadLimit.isVip ? (
+                  <div className="upload-limit-item total-uploads">
+                    <span className="upload-label">📁 Tổng tài liệu:</span>
+                    <span className="upload-count vip">{uploadLimit.remainingTotal}/{uploadLimit.maxTotalUploads}</span>
+                  </div>
+                ) : (
                   <div className="upload-limit-item regular-uploads">
                     <span className="upload-label">📄 Tài liệu thường:</span>
-                    <span className="upload-count regular">{uploadLimit.remainingRegular}/2</span>
+                    <span className="upload-count regular">{uploadLimit.remainingTotal}/{uploadLimit.maxTotalUploads}</span>
                   </div>
-                  <div className="upload-limit-item vip-uploads">
-                    <span className="upload-label">⭐ Tài liệu Premium:</span>
-                    <span className="upload-count vip">{uploadLimit.remainingVip}/2</span>
-                  </div>
-                </>
+                )
               ) : (
-                <div className="upload-limit-item regular-uploads">
-                  <span className="upload-label">📄 Tài liệu thường:</span>
-                  <span className="upload-count regular">{uploadLimit.remainingRegular}/1</span>
+                <div className="upload-limit-item">
+                  <span className="upload-label">⏳ Đang tải...</span>
                 </div>
               )}
-              <div className="upload-limit-note">
-                <small>{uploadLimit.isVip ? 'Giới hạn hàng ngày' : 'Nâng cấp Premium để upload nhiều hơn'}</small>
-              </div>
+              {typeof uploadLimit.remainingTotal === 'number' && typeof uploadLimit.maxTotalUploads === 'number' && (
+                <div className="upload-limit-note">
+                  <small>{uploadLimit.isVip ? '5 file mỗi ngày (bất kỳ loại nào)' : 'Nâng cấp Premium để upload 5 file/ngày'}</small>
+                </div>
+              )}
             </div>
           </div>
         </div>
