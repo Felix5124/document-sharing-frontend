@@ -219,6 +219,15 @@ function AdminPayments() {
                 >
                     <FontAwesomeIcon icon={faFilter} /> {showFilters ? 'Ẩn bộ lọc' : 'Hiện bộ lọc'}
                 </button>
+                {/* Reload payments list */}
+                <button
+                  className="reload-btn"
+                  onClick={() => loadPayments()}
+                  disabled={loading}
+                  title="Tải lại danh sách"
+                >
+                  <FontAwesomeIcon icon={faRotateRight} />
+                </button>
             </div>
 
             {/* Hàng 2: Filters (Luôn hiện trạng thái, các cái khác ẩn hiện) */}

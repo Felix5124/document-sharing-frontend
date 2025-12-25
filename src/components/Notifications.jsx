@@ -78,7 +78,7 @@ function Notifications() {
             <i className="bi bi-bell icon-margin-right"></i> Thông báo
           </h2>
           {notifications.length > 0 && notifications.some(n => !n.isRead) && (
-            <button 
+            <button
               className="mark-all-read-btn"
               onClick={handleMarkAllAsRead}
               style={{
@@ -136,7 +136,7 @@ function Notifications() {
           </div>
         ) : (
           <div className="empty-state">
-            <i className="bi bi-bell-slash empty-icon"></i>
+
             <p>Không có thông báo nào để hiển thị.</p>
           </div>
         )}

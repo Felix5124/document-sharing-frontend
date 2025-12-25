@@ -96,12 +96,19 @@ function UploadDocument() {
           const response = await getUploadLimit(userId);
           setUploadLimit(response.data);
         } catch (error) {
-          console.error('Error fetching upload limit:', error);
+          // Set a default so UI doesn't break
+          setUploadLimit(null);
         }
       };
       fetchUploadLimit();
     }
   }, [userId]);
+
+  // Derived upload limit values from backend response with safe defaults
+  const limitIsVip = !!uploadLimit?.isVip;
+  const limitMax = uploadLimit?.maxTotalUploads;
+  const limitRemaining = uploadLimit?.remainingTotal;
+  const hasValidLimit = uploadLimit && typeof limitMax === 'number' && typeof limitRemaining === 'number';
 
   useEffect(() => {
     if (coverImageFile && coverImageFile.length > 0) {
@@ -155,23 +162,23 @@ function UploadDocument() {
     }
 
     if (data.CoverImage && data.CoverImage.length > 0) {
-        // Compress cover image before upload to reduce size and improve UX
-        try {
-          const originalFile = data.CoverImage[0];
-          const options = {
-            maxSizeMB: 0.7,
-            maxWidthOrHeight: 1200,
-            useWebWorker: true,
-            initialQuality: 0.7
-          };
-          const compressedBlob = await imageCompression(originalFile, options);
-          const compressedFile = new File([compressedBlob], originalFile.name, { type: compressedBlob.type });
-          console.log('[UploadDocument] compressed cover from', originalFile.size, 'to', compressedFile.size);
-          formData.append('CoverImage', compressedFile);
-        } catch (compressErr) {
-          console.warn('[UploadDocument] image compression failed, using original file', compressErr);
-          formData.append('CoverImage', data.CoverImage[0]);
-        }
+      // Compress cover image before upload to reduce size and improve UX
+      try {
+        const originalFile = data.CoverImage[0];
+        const options = {
+          maxSizeMB: 0.7,
+          maxWidthOrHeight: 1200,
+          useWebWorker: true,
+          initialQuality: 0.7
+        };
+        const compressedBlob = await imageCompression(originalFile, options);
+        const compressedFile = new File([compressedBlob], originalFile.name, { type: compressedBlob.type });
+        console.log('[UploadDocument] compressed cover from', originalFile.size, 'to', compressedFile.size);
+        formData.append('CoverImage', compressedFile);
+      } catch (compressErr) {
+        console.warn('[UploadDocument] image compression failed, using original file', compressErr);
+        formData.append('CoverImage', data.CoverImage[0]);
+      }
     }
 
     if (data.Tags && Array.isArray(data.Tags)) {
@@ -194,6 +201,13 @@ function UploadDocument() {
       setTagInputText('');
       setValue('Tags', []);
       window.scrollTo(0, 0);
+      // Refresh upload limit after successful upload
+      try {
+        const resp = await getUploadLimit(userId);
+        setUploadLimit(resp.data);
+      } catch (e) {
+        console.warn('Could not refresh upload limit after upload', e);
+      }
       navigate('/');
     } catch (error) {
       const errorMessage =
@@ -217,13 +231,13 @@ function UploadDocument() {
     <div className="all-container">
       {/* Context Menu */}
       {contextMenu.show && (
-        <div 
+        <div
           className="sidebar-context-menu"
           style={{ top: contextMenu.y, left: contextMenu.x }}
         >
           <button onClick={() => handleToggleSidebar(contextMenu.type)}>
-            {(contextMenu.type === 'left' && hideLeftSidebar) || (contextMenu.type === 'right' && hideRightSidebar) 
-              ? '👁️ Hiển thị' 
+            {(contextMenu.type === 'left' && hideLeftSidebar) || (contextMenu.type === 'right' && hideRightSidebar)
+              ? '👁️ Hiển thị'
               : '🚫 Ẩn'}
           </button>
         </div>
@@ -232,7 +246,7 @@ function UploadDocument() {
       <div className={`page-layout-with-sidebar ${isVipActive ? 'no-left-sidebar' : ''}`}>
         {/* Sidebar - VIP Welcome or Promo Banner */}
         {user?.isVip && (
-          <aside 
+          <aside
             className="page-sidebar"
             onContextMenu={(e) => handleContextMenu(e, 'left')}
             style={{ cursor: 'context-menu' }}
@@ -253,182 +267,185 @@ function UploadDocument() {
               <i className="bi bi-upload icon-margin-right"></i> Tải lên tài liệu
             </h2>
 
+            {/* Upload limit banner */}
+            
+
             <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="form-group">
-            <label className="form-label">Tiêu đề</label>
-            <div className="input-wrapper">
-              <div className='input-icon'><FontAwesomeIcon icon={faHeading} /></div>
-              <input
-                type="text"
-                className="form-input"
-                {...register('Title', { required: 'Vui lòng nhập tiêu đề' })}
-              />
-            </div>
-            {errors.Title && <p className="error-text">{errors.Title.message}</p>}
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">Mô tả</label>
-            <div className="input-wrapper">
-              <div className='input-icon'><FontAwesomeIcon icon={faParagraph} /></div>
-              <textarea
-                className="form-input"
-                {...register('Description')}
-              ></textarea>
-            </div>
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">Danh mục</label>
-            <div className="input-wrapper">
-              <div className="input-icon"><FontAwesomeIcon icon={faFolder} /></div>
-              <select
-                className="form-select"
-                {...register('CategoryId', {
-                  required: 'Vui lòng chọn danh mục',
-                  validate: (value) => (value && parseInt(value, 10) !== 0) || 'Vui lòng chọn danh mục',
-                })}
-              >
-                <option value="">Chọn danh mục</option>
-                {Array.isArray(categories) && categories.length > 0 ? (
-                  categories.map((category, index) => (
-                    <option key={category.categoryId || index} value={category.categoryId}>
-                      {category.name || `Danh mục ${index + 1}`}
-                    </option>
-                  ))
-                ) : (
-                  <option disabled>Không có danh mục</option>
-                )}
-              </select>
-            </div>
-            {errors.CategoryId && <p className="error-text">{errors.CategoryId.message}</p>}
-          </div>
-
-          {isVipActive && (
-            <div className="form-group">
-              <label className="form-label">Loại tài liệu</label>
-              <div className="vip-toggle-row">
-                <label className="checkbox-inline" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <input type="checkbox" {...register('IsVipOnly')} />
-                  <span>
-                    <FontAwesomeIcon icon={faStar} style={{ color: '#f59e0b', marginRight: 6 }} />
-                    Đánh dấu là tài liệu Premium
-                  </span>
-                </label>
-                <small style={{ color: '#6b7280' }}>Tài liệu Premium chỉ cho phép tài khoản Premium tải xuống.</small>
-              </div>
-            </div>
-          )}
-
-          <div className="form-group">
-            <label className="form-label" htmlFor="tag-input-upload">Tags</label>
-            <div className="tag-input-row">
-              <div className="input-wrapper">
-                <div className="input-icon">
-                  <FontAwesomeIcon icon={faTags} />
+              <div className="form-group">
+                <label className="form-label">Tiêu đề</label>
+                <div className="input-wrapper">
+                  <div className='input-icon'><FontAwesomeIcon icon={faHeading} /></div>
+                  <input
+                    type="text"
+                    className="form-input"
+                    {...register('Title', { required: 'Vui lòng nhập tiêu đề' })}
+                  />
                 </div>
-                <input
-                  type="text"
-                  id="tag-input-upload"
-                  className="form-input"
-                  value={tagInputText}
-                  onChange={(e) => setTagInputText(e.target.value)}
-                  placeholder="Nhập tên tag rồi nhấn 'Thêm Tag' hoặc Enter"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      handleAddTag();
-                    }
-                  }}
-                />
+                {errors.Title && <p className="error-text">{errors.Title.message}</p>}
               </div>
-              <button
-                type="button"
-                className="tag-button"
-                onClick={handleAddTag}
-              >
-                Thêm Tag
-              </button>
-            </div>
-          </div>
 
+              <div className="form-group">
+                <label className="form-label">Mô tả</label>
+                <div className="input-wrapper">
+                  <div className='input-icon'><FontAwesomeIcon icon={faParagraph} /></div>
+                  <textarea
+                    className="form-input"
+                    {...register('Description')}
+                  ></textarea>
+                </div>
+              </div>
 
-          {currentTags && currentTags.length > 0 && (
-            <div className="tags-display-upload">
-              <strong>Tags:</strong>
-              <ul>
-                {currentTags.map((tag, index) => (
-                  <li key={index}>
-                    <span>{tag.label}</span>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const newTags = currentTags.filter((_, i) => i !== index);
-                        setValue('Tags', newTags, { shouldValidate: true, shouldDirty: true });
-                        toast.info(`Tag "${tag.label}" đã được xóa.`);
+              <div className="form-group">
+                <label className="form-label">Danh mục</label>
+                <div className="input-wrapper">
+                  <div className="input-icon"><FontAwesomeIcon icon={faFolder} /></div>
+                  <select
+                    className="form-select"
+                    {...register('CategoryId', {
+                      required: 'Vui lòng chọn danh mục',
+                      validate: (value) => (value && parseInt(value, 10) !== 0) || 'Vui lòng chọn danh mục',
+                    })}
+                  >
+                    <option value="">Chọn danh mục</option>
+                    {Array.isArray(categories) && categories.length > 0 ? (
+                      categories.map((category, index) => (
+                        <option key={category.categoryId || index} value={category.categoryId}>
+                          {category.name || `Danh mục ${index + 1}`}
+                        </option>
+                      ))
+                    ) : (
+                      <option disabled>Không có danh mục</option>
+                    )}
+                  </select>
+                </div>
+                {errors.CategoryId && <p className="error-text">{errors.CategoryId.message}</p>}
+              </div>
+
+              {isVipActive && (
+                <div className="form-group">
+                  <label className="form-label">Loại tài liệu</label>
+                  <div className="vip-toggle-row">
+                    <label className="checkbox-inline" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <input type="checkbox" {...register('IsVipOnly')} />
+                      <span>
+                        <FontAwesomeIcon icon={faStar} style={{ color: '#f59e0b', marginRight: 6 }} />
+                        Đánh dấu là tài liệu Premium
+                      </span>
+                    </label>
+                    <small style={{ color: '#6b7280' }}>Tài liệu Premium chỉ cho phép tài khoản Premium tải xuống.</small>
+                  </div>
+                </div>
+              )}
+
+              <div className="form-group">
+                <label className="form-label" htmlFor="tag-input-upload">Tags</label>
+                <div className="tag-input-row">
+                  <div className="input-wrapper">
+                    <div className="input-icon">
+                      <FontAwesomeIcon icon={faTags} />
+                    </div>
+                    <input
+                      type="text"
+                      id="tag-input-upload"
+                      className="form-input"
+                      value={tagInputText}
+                      onChange={(e) => setTagInputText(e.target.value)}
+                      placeholder="Nhập tên tag rồi nhấn 'Thêm Tag' hoặc Enter"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleAddTag();
+                        }
                       }}
-                      aria-label={`Xóa tag ${tag.label}`}
-                    >
-                      &times;
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-
-          {/* Points feature removed */}
-
-
-          <div className="form-group">
-            <label className="form-label">File tài liệu</label>
-            <div className="input-wrapper">
-              <div className="input-icon"><FontAwesomeIcon icon={faPaperclip} /></div>
-              <input
-                type="file"
-                className="form-input"
-                accept=".pdf,.doc,.docx,.txt"
-                {...register('File', { required: 'Vui lòng chọn file tài liệu' })}
-              />
-            </div>
-            {errors.File && <p className="error-text">{errors.File.message}</p>}
-          </div>
-
-          <div className="form-group margin-bottom">
-            <label className="form-label">Ảnh bìa (JPG, PNG, GIF - tùy chọn)</label>
-            <div className="input-wrapper file-input-group">
-              <div className="input-icon"> <FontAwesomeIcon icon={faImage} /></div>
-              <input
-                type="file"
-                className="form-input file-input"
-                accept="image/jpeg,image/png,image/gif"
-                {...register('CoverImage')}
-              />
-            </div>
-            {previewCover && (
-              <div className="preview-container">
-                <p>Xem trước ảnh bìa:</p>
-                <img src={previewCover} alt="Xem trước ảnh bìa" />
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    className="tag-button"
+                    onClick={handleAddTag}
+                  >
+                    Thêm Tag
+                  </button>
+                </div>
               </div>
-            )}
-          </div>
 
-          <button type="submit" className="submit-button" disabled={isUploading}>
-            {isUploading ? (
-              <>
-                <FontAwesomeIcon icon={faCloudArrowUp} spin /> Đang tải lên...
-              </>
-            ) : (
-              'Tải lên'
-            )}
-          </button>
-        </form>
+
+              {currentTags && currentTags.length > 0 && (
+                <div className="tags-display-upload">
+                  <strong>Tags:</strong>
+                  <ul>
+                    {currentTags.map((tag, index) => (
+                      <li key={index}>
+                        <span>{tag.label}</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const newTags = currentTags.filter((_, i) => i !== index);
+                            setValue('Tags', newTags, { shouldValidate: true, shouldDirty: true });
+                            toast.info(`Tag "${tag.label}" đã được xóa.`);
+                          }}
+                          aria-label={`Xóa tag ${tag.label}`}
+                        >
+                          &times;
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+
+              {/* Points feature removed */}
+
+
+              <div className="form-group">
+                <label className="form-label">File tài liệu</label>
+                <div className="input-wrapper">
+                  <div className="input-icon"><FontAwesomeIcon icon={faPaperclip} /></div>
+                  <input
+                    type="file"
+                    className="form-input"
+                    accept=".pdf,.doc,.docx,.txt"
+                    {...register('File', { required: 'Vui lòng chọn file tài liệu' })}
+                  />
+                </div>
+                {errors.File && <p className="error-text">{errors.File.message}</p>}
+              </div>
+
+              <div className="form-group margin-bottom">
+                <label className="form-label">Ảnh bìa (JPG, PNG, GIF - tùy chọn)</label>
+                <div className="input-wrapper file-input-group">
+                  <div className="input-icon"> <FontAwesomeIcon icon={faImage} /></div>
+                  <input
+                    type="file"
+                    className="form-input file-input"
+                    accept="image/jpeg,image/png,image/gif"
+                    {...register('CoverImage')}
+                  />
+                </div>
+                {previewCover && (
+                  <div className="preview-container">
+                    <p>Xem trước ảnh bìa:</p>
+                    <img src={previewCover} alt="Xem trước ảnh bìa" />
+                  </div>
+                )}
+              </div>
+
+              <button type="submit" className="submit-button" disabled={isUploading || (hasValidLimit && limitRemaining <= 0)}>
+                {isUploading ? (
+                  <>
+                    <FontAwesomeIcon icon={faCloudArrowUp} spin /> Đang tải lên...
+                  </>
+                ) : (
+                  (hasValidLimit && limitRemaining <= 0) ? `Đã hết lượt upload (${limitMax}/ngày)` : 'Tải lên'
+                )}
+              </button>
+            </form>
           </div>
         </div>
 
         {/* Right Sidebar */}
-        <aside 
+        <aside
           className="page-sidebar-right"
           onContextMenu={(e) => handleContextMenu(e, 'right')}
           style={{ cursor: user?.isVip ? 'context-menu' : 'default' }}

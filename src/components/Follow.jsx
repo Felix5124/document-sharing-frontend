@@ -212,7 +212,6 @@ function Follow() {
             </>
           ) : (
             <div className="empty-state">
-              <i className="bi bi-person-x empty-icon"></i>
               <p>Bạn chưa theo dõi ai.</p>
             </div>
           )}
@@ -283,7 +282,7 @@ function Follow() {
                 </>
               ) : (
                 <div className="empty-state">
-                  <i className="bi bi-person-x empty-icon"></i>
+                  
                   <p>Chưa có ai theo dõi bạn.</p>
                 </div>
               )}

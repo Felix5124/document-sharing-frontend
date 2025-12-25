@@ -4,6 +4,8 @@ import {
   getDocumentById,
   getCommentsByDocument,
   downloadDocument,
+  prepareDownload,
+  confirmDownload,
   previewDocument,
   follow,
   unfollow,
@@ -68,6 +70,8 @@ function DocumentDetail() {
   const [isLoadingPreview, setIsLoadingPreview] = useState(false);
   const [countdown, setCountdown] = useState(0);
   const [downloadReady, setDownloadReady] = useState(false);
+  const [isPreparingDownload, setIsPreparingDownload] = useState(false);
+  const [preparedDownloadData, setPreparedDownloadData] = useState(null);
   const [hideLeftSidebar, setHideLeftSidebar] = useState(false);
   const [hideRightSidebar, setHideRightSidebar] = useState(false);
   const [contextMenu, setContextMenu] = useState({ show: false, x: 0, y: 0, type: '' });
@@ -352,37 +356,25 @@ function DocumentDetail() {
 
   const performDownload = async () => {
     try {
-      // BẮT ĐẦU COUNTDOWN NGAY LẬP TỨC
-      setCountdown(5);
+      setIsPreparingDownload(true);
       setDownloadReady(false);
-      
-      let currentCount = 5;
-      const countdownInterval = setInterval(() => {
-        currentCount -= 1;
-        setCountdown(currentCount);
-        if (currentCount <= 0) {
-          clearInterval(countdownInterval);
-        }
-      }, 1000);
 
-      // Gọi API để chuẩn bị file (chạy song song với countdown)
-      const response = await downloadDocument(id, user.userId);
+      // Gọi API prepare (KHÔNG trừ lượt)
+      const response = await prepareDownload(id, user.userId);
 
       // Backend trả JSON với url và fileName
       const { url, fileName } = response.data;
 
       if (!url) {
-        clearInterval(countdownInterval);
         setErrorMessage('Không thể lấy URL tải xuống từ server.');
         setShowErrorModal(true);
-        setCountdown(0);
+        setIsPreparingDownload(false);
         return;
       }
 
-      // Download file từ SAS URL (load trong khi countdown)
+      // Download file từ SAS URL
       const fileResponse = await fetch(url);
       if (!fileResponse.ok) {
-        clearInterval(countdownInterval);
         throw new Error(`Không thể tải file: ${fileResponse.status} ${fileResponse.statusText}`);
       }
 
@@ -391,30 +383,49 @@ function DocumentDetail() {
       // Tạo download link và lưu sẵn
       const downloadUrl = window.URL.createObjectURL(blob);
       
-      // Đợi countdown hoàn thành (nếu chưa xong)
-      const waitForCountdown = () => {
-        return new Promise((resolve) => {
-          const checkInterval = setInterval(() => {
-            if (currentCount <= 0) {
-              clearInterval(checkInterval);
-              resolve();
-            }
-          }, 100);
-        });
-      };
-
-      await waitForCountdown();
+      // Lưu dữ liệu để dùng khi user xác nhận
+      setPreparedDownloadData({
+        downloadUrl,
+        fileName: fileName || `${doc.title || 'document'}.${doc.fileType || 'bin'}`
+      });
       
+      setIsPreparingDownload(false);
       setDownloadReady(true);
       
-      // Sau khi đếm xong mới cho tải
+      // Hiển thị modal xác nhận tải xuống
+      setShowConfirmModal(true);
+
+    } catch (error) {
+      let message = 'Đã xảy ra lỗi khi tải tài liệu.';
+      if (error.response?.data) {
+        message = error.response.data.message || error.response.data.toString() || message;
+      } else if (error.message) {
+        message = error.message;
+      }
+      setErrorMessage(message);
+      setShowErrorModal(true);
+      setIsPreparingDownload(false);
+      setDownloadReady(false);
+    }
+  };
+
+  const handleConfirmDownload = async () => {
+    if (!preparedDownloadData) return;
+    
+    setShowConfirmModal(false);
+    
+    try {
+      // GỌI API XÁC NHẬN TẢI (TRỪ LƯỢT)
+      await confirmDownload(id, user.userId);
+      
+      // Thực hiện tải xuống
       const link = document.createElement('a');
-      link.href = downloadUrl;
-      link.setAttribute('download', fileName || `${doc.title || 'document'}.${doc.fileType || 'bin'}`);
+      link.href = preparedDownloadData.downloadUrl;
+      link.setAttribute('download', preparedDownloadData.fileName);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      window.URL.revokeObjectURL(downloadUrl);
+      window.URL.revokeObjectURL(preparedDownloadData.downloadUrl);
 
       setDoc((prevDoc) => ({
         ...prevDoc,
@@ -434,27 +445,32 @@ function DocumentDetail() {
         }
       }
       
-      setCountdown(0);
-
+      // Cleanup
+      setPreparedDownloadData(null);
+      setDownloadReady(false);
     } catch (error) {
-      let message = 'Đã xảy ra lỗi khi tải tài liệu.';
-      if (error.response?.data) {
-        message = error.response.data.message || error.response.data.toString() || message;
-      } else if (error.message) {
-        message = error.message;
+      console.error('Lỗi khi xác nhận tải:', error);
+      toast.error('Không thể xác nhận tải xuống. Vui lòng thử lại.');
+      
+      // Cleanup on error
+      if (preparedDownloadData?.downloadUrl) {
+        window.URL.revokeObjectURL(preparedDownloadData.downloadUrl);
       }
-      setErrorMessage(message);
-      setShowErrorModal(true);
-      setCountdown(0);
+      setPreparedDownloadData(null);
       setDownloadReady(false);
     }
   };
-
-  const handleConfirmDownload = () => {
+  
+  const handleCancelDownload = () => {
     setShowConfirmModal(false);
-    performDownload();
+    
+    // Cleanup prepared download data
+    if (preparedDownloadData?.downloadUrl) {
+      window.URL.revokeObjectURL(preparedDownloadData.downloadUrl);
+    }
+    setPreparedDownloadData(null);
+    setDownloadReady(false);
   };
-  const handleCancelDownload = () => setShowConfirmModal(false);
   const handleCloseErrorModal = () => {
     setShowErrorModal(false);
     setErrorMessage('');
@@ -576,7 +592,6 @@ function DocumentDetail() {
       return;
     }
     if (!hasDownloaded) {
-      toast.error('Bạn cần tải tài liệu trước khi bình luận.');
       return;
     }
     if (!comment.Content.trim()) {
@@ -605,7 +620,7 @@ function DocumentDetail() {
 
   // Số trang preview tối đa theo loại tài khoản
   const getPreviewLimit = () => {
-    if (hasActiveVip || (user && user.isVip)) return 10;
+    if (hasActiveVip || (user && user.isVip)) return 15;
     return 2;
   };
   const previewLimit = getPreviewLimit();
@@ -834,62 +849,37 @@ function DocumentDetail() {
 
               </div>
               <div className="action-buttons-section">
-                {countdown > 0 ? (
-                  <div style={{
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    padding: '40px',
-                    borderRadius: '15px',
-                    textAlign: 'center',
-                    color: 'white',
-                    marginBottom: '20px',
-                    boxShadow: '0 10px 30px rgba(0,0,0,0.2)'
-                  }}>
-                    <div style={{ fontSize: '72px', fontWeight: 'bold', marginBottom: '20px', textShadow: '2px 2px 4px rgba(0,0,0,0.3)' }}>
-                      {countdown}
-                    </div>
-                    <h3 style={{ fontSize: '24px', marginBottom: '10px', fontWeight: '600' }}>
-                      File sẽ tự động tải về sau {countdown} giây
-                    </h3>
-                    <p style={{ fontSize: '16px', opacity: 0.9 }}>
-                      Vui lòng chờ trong giây lát...
-                    </p>
-                    <div style={{ 
-                      width: '100%', 
-                      height: '6px', 
-                      background: 'rgba(255,255,255,0.3)', 
-                      borderRadius: '3px',
-                      overflow: 'hidden',
-                      marginTop: '25px'
-                    }}>
-                      <div style={{
-                        width: `${((5 - countdown) / 5) * 100}%`,
-                        height: '100%',
-                        background: 'linear-gradient(90deg, #48ff48 0%, #00ff88 100%)',
-                        transition: 'width 1s linear',
-                        boxShadow: '0 0 10px rgba(72, 255, 72, 0.5)'
-                      }}></div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="action-buttons-grid">
-                    <CustomButton
-                      variant="outline-secondary"
-                      onClick={handleDownload}
-                      className="action-btn download-btn"
-                      disabled={doc.approvalStatus === 'Pending' || !canUserDownload().canDownload}
+                <div className="action-buttons-grid">
+                  <CustomButton
+                    variant="outline-secondary"
+                    onClick={handleDownload}
+                    className="action-btn download-btn"
+                    disabled={doc.approvalStatus === 'Pending' || !canUserDownload().canDownload || isPreparingDownload}
                       title={
                         doc.approvalStatus === 'Pending' 
                           ? "Tài liệu đang chờ duyệt" 
                           : !canUserDownload().canDownload 
                             ? canUserDownload().reason
-                            : "Tải xuống tài liệu"
+                            : isPreparingDownload
+                              ? "Đang chuẩn bị file..."
+                              : "Tải xuống tài liệu"
                       }
                     >
-                      <FontAwesomeIcon icon={faDownload} />
-                      <div className="btn-content">
-                        <span className="btn-text">Tải xuống</span>
-                        <span className="file-info">{formatFileSize(doc.fileSize || 0)}</span>
-                      </div>
+                      {isPreparingDownload ? (
+                        <>
+                          <FontAwesomeIcon icon={faSpinner} spin className="btn-icon-detail"/>
+                          <div className="btn-content">
+                            <span className="btn-text">Đang chuẩn bị file...</span>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <FontAwesomeIcon icon={faDownload} className="btn-icon-detail" />
+                          <div className="btn-content">
+                            <span className="btn-text">Tải xuống ({formatFileSize(doc.fileSize || 0)})</span>
+                          </div>
+                        </>
+                      )}
                     </CustomButton>
 
                     <CustomButton
@@ -905,11 +895,10 @@ function DocumentDetail() {
                             : "Xem Online"
                       }
                     >
-                      {!isLoadingPreview && <FontAwesomeIcon icon={faEye} />}
+                      {!isLoadingPreview && <FontAwesomeIcon icon={faEye} className="btn-icon-detail" />}
                       <span className="btn-text">{isLoadingPreview ? 'Đang tải...' : 'Xem Online (PDF)'}</span>
                     </CustomButton>
                   </div>
-                )}
 
                 {/* points badge removed */}
               </div>
@@ -1274,36 +1263,12 @@ function DocumentDetail() {
         show={showConfirmModal}
         onHide={handleCancelDownload}
         title="Xác nhận tải tài liệu"
-        footer={countdown > 0 ? null : <>
+        footer={<>
           <CustomButton variant="cancel" onClick={handleCancelDownload}>Hủy</CustomButton>
           <CustomButton variant="secondary" onClick={handleConfirmDownload}>Xác nhận</CustomButton>
         </>}
       >
-        {countdown > 0 ? (
-          <div style={{ textAlign: 'center', padding: '20px' }}>
-            <div style={{ fontSize: '48px', fontWeight: 'bold', color: '#4CAF50', marginBottom: '10px' }}>
-              {countdown}
-            </div>
-            <p>Đang chuẩn bị tải xuống... Vui lòng chờ {countdown} giây</p>
-            <div style={{ 
-              width: '100%', 
-              height: '4px', 
-              background: '#e0e0e0', 
-              borderRadius: '2px',
-              overflow: 'hidden',
-              marginTop: '15px'
-            }}>
-              <div style={{
-                width: `${((5 - countdown) / 5) * 100}%`,
-                height: '100%',
-                background: '#4CAF50',
-                transition: 'width 1s linear'
-              }}></div>
-            </div>
-          </div>
-        ) : (
-          'Bạn có muốn tải tài liệu này?'
-        )}
+        File đã sẵn sàng. Bạn có muốn tải tài liệu này không?
       </CustomModal>
 
       {/* Modal xem PDF toàn bộ trang */}
