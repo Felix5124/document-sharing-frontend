@@ -465,10 +465,6 @@ function Home() {
               <div className="meta-author" title={doc.fullName || 'Không xác định'}>
                 <FontAwesomeIcon icon={faUser} /> {doc.fullName || 'Không xác định'}
               </div>
-              <div className="meta-date">
-                <FontAwesomeIcon icon={faCalendarDays} />{' '}
-                {new Date(doc.uploadedAt).toLocaleDateString()}
-              </div>
             </div>
           </div>
         </Link>
