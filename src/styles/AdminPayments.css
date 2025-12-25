@@ -24,13 +24,6 @@
   cursor: not-allowed;
 }
 
-.loading-spinner {
-  text-align: center;
-  padding: 50px;
-  font-size: 16px;
-  color: #666;
-}
-
 .no-payments {
   text-align: center;
   padding: 50px;
@@ -353,8 +346,7 @@ input[type="date"].select-filter {
 
 /* Đảm bảo pagination hiển thị đẹp trong container này */
 .pagination-section {
-    margin-top: 30px;
-    padding-top: 20px;
+    padding: 10px 0;
     border-top: 1px solid #e5e7eb;
     display: flex;
     justify-content: center;
@@ -385,32 +377,6 @@ input[type="date"].select-filter {
 .btn-page:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-}
-
-/* Loading container */
-.loading-container {
-    text-align: center;
-    padding: 40px;
-}
-
-.spinner {
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #0d6efd;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 15px;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.loading-text {
-    color: #6b7280;
-    font-size: 16px;
 }
 
 /* Thêm vào cuối file AdminPayments.css */
@@ -574,4 +540,14 @@ input[type="date"].select-filter {
 /* Tam giác chỉ hướng popup */
 .react-datepicker__triangle {
     display: none !important; /* Ẩn tam giác cho gọn */
+}
+.reload-btn{
+    padding: 8px 16px;
+    background: #e7e6e6;
+    color: #333;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s;
 }

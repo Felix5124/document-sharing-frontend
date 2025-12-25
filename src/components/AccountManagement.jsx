@@ -115,7 +115,7 @@ function AccountManagement() {
             {userItem.fullName} 
             {/* Hiển thị nhỏ role bên cạnh tên nếu muốn, không thì bỏ qua */}
             {userItem.isAdmin && <span style={{color: 'red', fontSize: '0.7em', marginLeft: '5px'}}>(Admin)</span>}
-            {userItem.isVip && <span style={{color: '#d97706', fontSize: '0.7em', marginLeft: '5px'}}>(VIP)</span>}
+            {userItem.isVip && <span style={{color: '#d97706', fontSize: '0.7em', marginLeft: '5px'}}>(Premium)</span>}
         </td>
         
         {/* Cột Email */}
@@ -131,18 +131,18 @@ function AccountManagement() {
         {/* Cột Hành động */}
         <td>
           <div className='btn-center'>
-            {/* Ngăn chặn tự khóa chính mình */}
-            {userItem.userId !== user.userId && (
-                <button
-                className={`action-button ${userItem.isLocked ? 'unlock-button' : 'lock-button'}`}
-                onClick={() => handleLockUnlock(userItem.userId, userItem.isLocked)}
-                >
-                <FontAwesomeIcon
-                    icon={userItem.isLocked ? faLockOpen : faLock}
-                    className="icon-margin-right"
-                />
-                {userItem.isLocked ? 'Mở khóa' : 'Khóa'}
-                </button>
+            {/* Ngăn chặn tự khóa chính mình và không cho phép admin khóa admin khác */}
+            {userItem.userId !== user.userId && !userItem.isAdmin && (
+              <button
+              className={`action-button ${userItem.isLocked ? 'unlock-button' : 'lock-button'}`}
+              onClick={() => handleLockUnlock(userItem.userId, userItem.isLocked)}
+              >
+              <FontAwesomeIcon
+                icon={userItem.isLocked ? faLockOpen : faLock}
+                className="icon-margin-right"
+              />
+              {userItem.isLocked ? 'Mở khóa' : 'Khóa'}
+              </button>
             )}
           </div>
         </td>

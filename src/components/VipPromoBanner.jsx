@@ -11,18 +11,18 @@ const VipPromoBanner = ({ variant = 'default' }) => {
       subtitle: 'Nhận huy hiệu Premium độc quyền và ưu tiên duyệt bài từ Admin!',
       features: [
         { icon: faStar, text: 'Huy hiệu Premium đặc biệt' },
-        { icon: faRocket, text: 'Ưu tiên duyệt bài nhanh' },
+        { icon: faRocket, text: 'Tăng giới hạn tải và upload' },
         { icon: faCrown, text: 'Không quảng cáo' }
       ]
     },
     upload: {
       icon: faUpload,
       title: '⚡ Nâng Cấp Premium - Upload & Tải Nhiều Hơn!',
-      subtitle: 'Tài khoản thường chỉ 1 file/ngày. Premium upload 4 file/ngày + tải 8 file thường + 5 Premium!',
+      subtitle: 'Tài khoản thường chỉ 2 file/ngày. Premium upload 5 file/ngày + tải 8 file thường + 5 Premium!',
       features: [
-        { icon: faUpload, text: 'Upload 4 file/ngày' },
+        { icon: faUpload, text: 'Upload 5 file/ngày' },
         { icon: faDownload, text: 'Tải 8 file thường + 5 Premium' },
-        { icon: faRocket, text: 'Ưu tiên duyệt bài' }
+        { icon: faRocket, text: 'Huy hiệu premium' }
       ]
     },
     profile: {
@@ -32,7 +32,7 @@ const VipPromoBanner = ({ variant = 'default' }) => {
       features: [
         { icon: faDownload, text: 'Tải 8 file thường + 5 Premium' },
         { icon: faStar, text: 'Xem trước 10 trang PDF' },
-        { icon: faAward, text: 'Badge Premium + Ưu tiên duyệt' }
+        { icon: faAward, text: 'Huy hiệu Premium' }
       ]
     },
     default: {

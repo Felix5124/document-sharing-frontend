@@ -434,13 +434,15 @@ textarea.form-control {
 .btn-text {
   color: white;
 }
-.action-btn .btn-text {
-  flex: 1;
+.btn-icon-detail{
+  margin-right: 8px;
+  color: white;
 }
 .action-btn .btn-content {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  justify-content: center;
+  align-items: center;
+  min-height: 30px;
 }
 .action-btn .file-info {
   font-size: 0.85rem;
@@ -1075,8 +1077,8 @@ textarea.form-control {
   position: relative;
   display: inline-block;
 }
-.submit-btn-wrapper[title]:not([title=""]):hover::after {
-  content: attr(title);
+.submit-btn-wrapper[data-title]:not([data-title=""]):hover::after {
+  content: attr(data-title);
   position: absolute;
   bottom: 100%;
   right: 0;
@@ -1093,7 +1095,7 @@ textarea.form-control {
   z-index: 1000;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
-.submit-btn-wrapper[title]:not([title=""]):hover::before {
+.submit-btn-wrapper[data-title]:not([data-title=""]):hover::before {
   content: '';
   position: absolute;
   bottom: 100%;
